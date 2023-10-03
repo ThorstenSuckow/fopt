@@ -4,8 +4,9 @@
 public class Main
 {
 
-    public static void main(String[] args)
+    public static void main(String[] args) throws InterruptedException
     {
-        fopt1.uebung2_3.Loesung.run();
+        fopt1.uebung3_1.Loesung.run();
+
     }
 }
