@@ -1,3 +1,4 @@
+import fopt1.uebung4_1.Loesung;
 
 // Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
 // then press Enter. You can now see whitespace characters in your code.
@@ -6,7 +7,7 @@ public class Main
 
     public static void main(String[] args) throws InterruptedException
     {
-        fopt1.uebung3_2.Loesung.run('d');
+        fopt1.uebung4_1.Loesung.run(Loesung.INDIVIDUAL);
 
     }
 }
