@@ -10,8 +10,7 @@ public class Account
         return balance;
     }
 
-    public Account setBalance(float balance)
-    {
+    public Account setBalance(float balance) {
         this.balance = balance;
         return this;
     }
