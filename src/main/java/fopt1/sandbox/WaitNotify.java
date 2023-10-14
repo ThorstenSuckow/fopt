@@ -39,20 +39,35 @@ class Target {
 
     public int slots = 1;
 
+    public boolean checkAccess() {
+        System.out.println("checking access to slots: " + slots);
+        return true;
+    }
+
     public synchronized void dropIn()  {
 
-        while (slots == 0) {
+        System.out.println(Thread.currentThread().getName() + " entering dropIn()");
+
+
+        // change "while" to "if" to see how threads can accidentally concur when not checking against
+        // slots again
+        while (slots == 0 & checkAccess()) {
 
             try {
                 System.out.println(Thread.currentThread().getName() + " waiting for free slots! Free slots now:  " + slots);
                 this.wait();
+                System.out.println(Thread.currentThread().getName() + " resuming; slots are " + slots);
+
             } catch (InterruptedException ignored) {
-                System.out.println("Unexpected InterruptedExcepion");
+                System.out.println("Unexpected InterruptedException");
             }
 
         }
 
         slots--;
+        if (slots < 0) {
+            throw new RuntimeException("i was less than 0");
+        }
         System.out.println(Thread.currentThread().getName() + " entered! Free slots now:  " + slots);
     }
 
@@ -75,19 +90,25 @@ public class WaitNotify {
 
         Target target = new Target();
 
-        Client c1 = new Client(target);
-        Client c2 = new Client(target);
+        Client[] clients = new Client[1000];
 
-        c1.start();
-        c2.start();
+        for (int i = 0; i < clients.length; i++) {
+            clients[i] = new Client(target);
+        }
 
-        try {
+        for (Client client: clients) {
+            client.start();
+        }
+
+
+      /*  try {
             c1.join();
             c2.join();
+            c3.join();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-
+*/
 
         System.out.println("Exiting");
     }
