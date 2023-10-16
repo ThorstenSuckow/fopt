@@ -1,11 +1,59 @@
 package fopt1.sandbox;
 
+class ParkingGarageFair extends ParkingGarageImpl {
+
+
+    private int places;
+    private int nextWaitingNumber;
+    private int nextEnteringNumber;
+
+    public ParkingGarageFair (int places) {
+        this.places = places;
+    }
+
+    public synchronized void enter() {
+
+        int myNumber = nextWaitingNumber++;
+
+        System.out.println(Thread.currentThread().getName() + " entering. Number: " + myNumber);
+
+
+        while (myNumber != nextEnteringNumber || places == 0) {
+
+            try {
+                System.out.println(Thread.currentThread().getName() + " waiting: " + myNumber + " is my number, but next to enter is  " + nextEnteringNumber);
+                wait();
+            } catch (InterruptedException ignored) {
+
+            }
+        }
+
+        places--;
+        nextEnteringNumber++;
+
+        System.out.println(Thread.currentThread().getName() + " entered! My number was " + myNumber + "! next is " + nextEnteringNumber);
+
+        //notify();
+         notifyAll();
+    }
+
+    public synchronized void leave() {
+        places++;
+
+        System.out.println(Thread.currentThread().getName() + " leaving. Byebye!");
+        //notify();
+        notifyAll();
+    }
+
+
+}
+
+
 class ParkingGarageImpl {
 
     protected int places = 0;
 
     public ParkingGarageImpl() {
-        System.out.println("constructor 1");
     }
 
     public ParkingGarageImpl(final int places) {
@@ -26,9 +74,6 @@ class ParkingGarageImpl {
 }
 
 class ParkingGarageImplSucc extends ParkingGarageImpl {
-
-
-
 
 
     public void enter() {
@@ -66,33 +111,38 @@ class Car implements Runnable {
     }
 
     public void run() {
-        if (enter) {
-            garage.enter();
-        } else {
-            garage.leave();
+
+        garage.enter();
+
+        try {
+            Thread.sleep((int) (Math.random() * 100));
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
+
+        garage.leave();
+
+
     }
 
 }
+
+
+
 
 public class ParkingGarage {
 
 
     public static void main(String[] args) throws InterruptedException {
 
-        ParkingGarageImpl garage = new ParkingGarageImplSucc();
+        ParkingGarageFair garage = new ParkingGarageFair(20);
 
-        Thread car1 = new Thread(new Car(garage, true));
-        Thread car2 = new Thread(new Car(garage, false));
-
-        //car1.start();
-      //  car2.start();
-
-        car1.join();
+        for (int i = 0; i < 100; i++) {
+            Thread t1 = new Thread(new Car(garage, i % 2 == 0));
+            t1.start();
+        }
 
         System.out.println("Exiting...");
-
-
 
 
     }
