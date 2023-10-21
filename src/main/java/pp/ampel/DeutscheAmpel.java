@@ -1,25 +1,22 @@
 package pp.ampel;
 
-public class DeutscheAmpel extends AbstractAmpel {
+public class DeutscheAmpel implements Ampel {
+
+    private boolean gruen;
+
+    private int fahrzeuge;
+
+    private int  naechstes;
+
+    private int tickets;
 
 
-    private int wartend;
-
-    private int naechstes;
 
 
-    public DeutscheAmpel() {
-        super();
-    }
-
-
-    public DeutscheAmpel(int fahrzeuge) {
-        super(fahrzeuge);
-    }
 
 
     @Override
-    public void schalteRot() {
+    public synchronized void schalteRot() {
         gruen = false;
     }
 
@@ -29,13 +26,15 @@ public class DeutscheAmpel extends AbstractAmpel {
         notifyAll();
     }
 
+
     @Override
     public synchronized void passieren() {
 
-        int current = wartend++;
+        fahrzeuge++;
 
-        while (!gruen || current != naechstes || fahrzeuge == 0) {
+        int nummer = tickets++;
 
+        while (!gruen || nummer != naechstes) {
             try {
                 this.wait();
             }
@@ -44,9 +43,20 @@ public class DeutscheAmpel extends AbstractAmpel {
             }
         }
 
-        notifyAll();
-        naechstes++;
         fahrzeuge--;
+        naechstes = nummer + 1;
+        notifyAll();
+    }
+
+
+    @Override
+    public boolean istGruen() {
+        return gruen;
+    }
+
+    @Override
+    public synchronized int wartendeFahrzeuge() {
+        return fahrzeuge;
     }
 
 

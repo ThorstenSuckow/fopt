@@ -1,22 +1,14 @@
 package pp.ampel;
 
-public class ItalienischeAmpel extends AbstractAmpel{
+public class ItalienischeAmpel implements Ampel {
 
+    private boolean gruen;
 
-    public ItalienischeAmpel() {
-        super();
-
-    }
-
-
-    public ItalienischeAmpel(int fahrzeuge) {
-        super(fahrzeuge);
-
-    }
+    private int fahrzeuge;
 
 
     @Override
-    public void schalteRot() {
+    public synchronized void schalteRot() {
         gruen = false;
     }
 
@@ -29,7 +21,9 @@ public class ItalienischeAmpel extends AbstractAmpel{
     @Override
     public synchronized void passieren() {
 
-        while (!gruen || fahrzeuge == 0) {
+        fahrzeuge++;
+
+        while (!gruen) {
             try {
                 this.wait();
             }
@@ -38,10 +32,19 @@ public class ItalienischeAmpel extends AbstractAmpel{
             }
         }
 
-        notify();
         fahrzeuge--;
+        notify();
     }
 
+    @Override
+    public boolean istGruen() {
+        return gruen;
+    }
+
+    @Override
+    public synchronized  int wartendeFahrzeuge() {
+        return fahrzeuge;
+    }
 
 
 }

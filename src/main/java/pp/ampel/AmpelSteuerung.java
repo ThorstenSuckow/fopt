@@ -1,5 +1,9 @@
 package pp.ampel;
 
+
+/**
+ * Leider war für diese Klasse keine formale Schnittstellenbeschreibung vorhanden.
+ */
 public class AmpelSteuerung  extends Thread {
 
     private Ampel[] ampeln;
@@ -22,11 +26,5 @@ public class AmpelSteuerung  extends Thread {
         }
     }
 
-    public void run() {
-
-        for (Ampel ampel : ampeln) {
-            ampel.passieren();
-        }
-    }
 
 }

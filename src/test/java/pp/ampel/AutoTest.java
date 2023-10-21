@@ -17,7 +17,7 @@ public class AutoTest {
         Ampel[] ampeln = new Ampel[ampelCount];
 
         for (int j = 0; j < ampelCount; j++) {
-            ampeln[j] = (j % jedesNIstDeutscheAmpel == 0) ? new DeutscheAmpel(2) : new ItalienischeAmpel(2);
+            ampeln[j] = (j % jedesNIstDeutscheAmpel == 0) ? new DeutscheAmpel() : new ItalienischeAmpel();
         }
 
         Auto a1 = new Auto(ampeln);

@@ -19,11 +19,6 @@ public class DeutscheAmpelTest {
         DeutscheAmpel ampel = new DeutscheAmpel();
         Assertions.assertFalse(ampel.istGruen());
         Assertions.assertEquals(0, ampel.wartendeFahrzeuge());
-
-        ampel = new DeutscheAmpel(2);
-
-        Assertions.assertFalse(ampel.istGruen());
-        Assertions.assertEquals(2, ampel.wartendeFahrzeuge());
     }
 
 
@@ -38,7 +33,9 @@ public class DeutscheAmpelTest {
 
         t.start();
 
-        Assertions.assertEquals(0, ampel.wartendeFahrzeuge());
+        Thread.sleep(100);
+
+        Assertions.assertEquals(1, ampel.wartendeFahrzeuge());
         ampel.schalteGruen();
 
         t.join(10);
@@ -52,18 +49,20 @@ public class DeutscheAmpelTest {
     @DisplayName("OneCar")
     void testOneCar() throws InterruptedException {
 
-        DeutscheAmpel ampel = new DeutscheAmpel(2);
+        DeutscheAmpel ampel = new DeutscheAmpel();
 
         Thread t = new Thread(ampel::passieren);
 
         t.start();
 
-        Assertions.assertEquals(2, ampel.wartendeFahrzeuge());
+        Thread.sleep(300);
+
+        Assertions.assertEquals(1, ampel.wartendeFahrzeuge());
         ampel.schalteGruen();
 
         t.join();
 
-        Assertions.assertEquals(1, ampel.wartendeFahrzeuge());
+        Assertions.assertEquals(0, ampel.wartendeFahrzeuge());
     }
 
 
@@ -72,13 +71,15 @@ public class DeutscheAmpelTest {
     @DisplayName("TwoCars")
     void testTwoCars() throws InterruptedException {
 
-        DeutscheAmpel ampel = new DeutscheAmpel(2);
+        DeutscheAmpel ampel = new DeutscheAmpel();
 
         Thread t1 = new Thread(ampel::passieren);
         Thread t2 = new Thread(ampel::passieren);
 
         t1.start();
         t2.start();
+
+        Thread.sleep(100);
 
         Assertions.assertEquals(2, ampel.wartendeFahrzeuge());
         ampel.schalteGruen();
@@ -99,7 +100,7 @@ public class DeutscheAmpelTest {
 
         CountDownLatch latch = new CountDownLatch(numberofCars);
 
-        DeutscheAmpel ampel = new DeutscheAmpel(numberofCars);
+        DeutscheAmpel ampel = new DeutscheAmpel();
 
         for (int i = 0; i < numberofCars; i++) {
             service.execute(() -> {

@@ -9,30 +9,30 @@ public interface Ampel {
     /**
      * Schaltet die Ampel auf Rot.
      */
-    void schalteRot();
+    public void schalteRot();
 
 
     /**
      * Schaltet die Ampel auf Grün.
      */
-    void schalteGruen();
+    public void schalteGruen();
 
 
     /**
      * Bildet das Durchfahren eines Autos an der Ampel nach.
      */
-    void passieren();
+    public void passieren();
 
 
     /**
      * @return die Anzahl der wartenden Fahrzeuge zurück
      */
-    int wartendeFahrzeuge();
+    public int wartendeFahrzeuge();
 
 
     /**
      * @return true, wenn die Ampel auf Grün geschaltet ist
      */
-    boolean istGruen();
+    public boolean istGruen();
 
 }
