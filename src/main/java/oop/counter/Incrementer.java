@@ -1,9 +1,11 @@
 package oop.counter;
 
-public class Incrementer extends AbstractCounter {
+public class Incrementer  {
+
+    private int value;
 
     public Incrementer(int value) {
-        super(value);
+        this.value = value;
     }
 
 
@@ -11,4 +13,8 @@ public class Incrementer extends AbstractCounter {
         value++;
     }
 
+
+    public int getValue() {
+        return value;
+    }
 }

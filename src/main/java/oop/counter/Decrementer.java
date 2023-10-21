@@ -1,14 +1,21 @@
 package oop.counter;
 
-public class Decrementer extends AbstractCounter {
+public class Decrementer {
+
+    private int value;
 
     public Decrementer(int value) {
-        super(value);
+        this.value = value;
     }
 
 
     public void decrement() {
         value--;
+    }
+
+
+    public int getValue() {
+        return value;
     }
 
 }
