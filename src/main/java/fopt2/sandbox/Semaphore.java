@@ -1,6 +1,9 @@
 package fopt2.sandbox;
 
 
+/**
+ * Semaphore / Additive Semaphore implementation.
+ */
 final class Semaphore {
 
     private int value = 0;
@@ -17,8 +20,7 @@ final class Semaphore {
     }
 
     public synchronized void p() {
-
-        while (this.value == 0) {
+        while (value == 0) {
             try {
                 this.wait();
             } catch (InterruptedException ignored) {
@@ -26,13 +28,42 @@ final class Semaphore {
             }
         }
 
-        this.value--;
-
+        value--;
     }
+
+
+    public synchronized void p(int x) {
+
+        if (x < 0) {
+            throw new IllegalArgumentException();
+        }
+
+        while (value - x < 0) {
+            try {
+                this.wait();
+            } catch (InterruptedException ignored) {
+
+            }
+        }
+
+        value -= x;
+    }
+
 
     public synchronized void v() {
         this.value++;
         notify();
+    }
+
+
+    public synchronized void v(int x) {
+
+        if (x < 0) {
+            throw new IllegalArgumentException();
+        }
+
+        this.value += x;
+        notifyAll();
     }
 
 }
