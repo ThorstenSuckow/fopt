@@ -1,10 +1,10 @@
 package fopt2.sandbox.uebung9_1;
 
-class LockAccessThread implements Runnable {
+class LockAccessRunner implements Runnable {
 
     Lock l;
 
-    public LockAccessThread(Lock lock) {
+    public LockAccessRunner(Lock lock) {
         l = lock;
     }
 
@@ -38,9 +38,9 @@ public class LockDemo {
 
         Lock lock = new Lock();
 
-        Thread t1 = new Thread(new LockAccessThread(lock), "t1");
-        Thread t2 = new Thread(new LockAccessThread(lock), "t2");
-        Thread t3 = new Thread(new LockAccessThread(lock), "t3");
+        Thread t1 = new Thread(new LockAccessRunner(lock), "t1");
+        Thread t2 = new Thread(new LockAccessRunner(lock), "t2");
+        Thread t3 = new Thread(new LockAccessRunner(lock), "t3");
 
         t1.start();
         t2.start();
