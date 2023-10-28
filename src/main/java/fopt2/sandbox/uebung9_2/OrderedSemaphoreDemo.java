@@ -1,9 +1,5 @@
 package fopt2.sandbox.uebung9_2;
 
-import fopt2.sandbox.uebung9_1.Lock;
-import org.junit.jupiter.api.Order;
-
-import java.util.Arrays;
 
 class SemaphoreAccessThread extends Thread {
 
