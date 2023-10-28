@@ -4,10 +4,13 @@ package fopt2.sandbox;
 /**
  * Semaphore / Additive Semaphore implementation.
  */
-final class Semaphore {
+public class Semaphore {
 
-    private int value = 0;
+    protected int value = 0;
 
+    public Semaphore() {
+        value = 1;
+    }
 
     public Semaphore(int value) {
 
