@@ -1,4 +1,4 @@
-package fopt2.sandbox.uebung9_2;
+package fopt2.uebung9_2;
 
 
 class SemaphoreAccessThread extends Thread {

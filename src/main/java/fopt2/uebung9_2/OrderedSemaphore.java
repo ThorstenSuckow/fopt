@@ -1,4 +1,4 @@
-package fopt2.sandbox.uebung9_2;
+package fopt2.uebung9_2;
 
 import fopt2.sandbox.Semaphore;
 

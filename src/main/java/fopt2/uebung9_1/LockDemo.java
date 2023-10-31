@@ -1,4 +1,4 @@
-package fopt2.sandbox.uebung9_1;
+package fopt2.uebung9_1;
 
 class LockAccessRunner implements Runnable {
 
