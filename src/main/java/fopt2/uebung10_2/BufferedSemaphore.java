@@ -25,7 +25,7 @@ public class BufferedSemaphore {
         data = new int[size];
     }
 
-    public void send(int x) {
+    public void write(int x) {
         // get access for writing
         writeSem.p();
 
@@ -34,8 +34,6 @@ public class BufferedSemaphore {
 
         data[head++] = x;
         head %= data.length;
-        System.out.println("++ added " + x + "; head: " + head);
-        notifyAll();
 
         // unlock critical block for next reader or writer
         mutexSem.v();
