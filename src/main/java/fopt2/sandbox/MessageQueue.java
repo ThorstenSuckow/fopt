@@ -12,11 +12,19 @@ public class MessageQueue {
 
     int used;
 
-    public MessageQueue(int size) {
+    boolean logEnabled;
+
+
+    public MessageQueue(int size, boolean logEnabled) {
 
         queue = new byte[size][];
-
         used = 0;
+
+        this.logEnabled = logEnabled;
+
+    }
+    public MessageQueue(int size) {
+       this(size, true);
     }
 
     public synchronized void put(byte[] message) {
@@ -24,7 +32,7 @@ public class MessageQueue {
         while (used == queue.length) {
 
             try {
-                System.out.println(Arrays.toString(message) + " is waiting");
+                log(Arrays.toString(message) + " is waiting");
                 this.wait();
             } catch (InterruptedException ignored) {
 
@@ -34,7 +42,7 @@ public class MessageQueue {
         queue[head++] = message.clone();
         used++;
         head %= queue.length;
-        System.out.println("++ added " + Arrays.toString(message) + "; head: " + head);
+        log("++ added " + Arrays.toString(message) + "; head: " + head);
         notifyAll();
     }
 
@@ -53,10 +61,18 @@ public class MessageQueue {
         queue[tail++] = new byte[]{0};
         tail %= queue.length;
 
-        System.out.println("-- removed " + Arrays.toString(message) + "; tail: " + tail);
+        log("-- removed " + Arrays.toString(message) + "; tail: " + tail);
+
         used--;
         notifyAll();
         return message;
+    }
+
+    private void log(String txt) {
+        if (!logEnabled) {
+            return;
+        }
+        System.out.println(txt);
     }
 
     public synchronized byte[][] getQueue() {
