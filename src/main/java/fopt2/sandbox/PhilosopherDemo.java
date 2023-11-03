@@ -1,5 +1,7 @@
 package fopt2.sandbox;
 
+import java.util.Arrays;
+
 class Philosopher implements Runnable {
 
     Table table;
@@ -53,6 +55,60 @@ abstract class Table {
     }
 
     abstract int getSeats();
+}
+
+
+class GroupedSemaphoredTable extends Table {
+
+    private GroupedSemaphore sem;
+
+    private int seats;
+
+
+    private byte[] reservedSet;
+
+    public GroupedSemaphoredTable(int seats) {
+
+        if (seats < 1) {
+            throw new IllegalArgumentException();
+        }
+
+        this.seats = seats;
+        sem = new GroupedSemaphore(seats);
+
+        byte[] init = new byte[seats];
+        reservedSet = new byte[seats];
+
+        for (int i = 0; i < seats; i++) {
+            init[i] = 1;
+            reservedSet[i] = 0;
+        }
+        sem.v(init);
+    }
+
+    private byte[] reservedForks(int seat) {
+        byte[] reserved = reservedSet.clone();
+        reserved[leftFork(seat)] = 1;
+        reserved[rightFork(seat)] = 1;
+
+        return reserved;
+    }
+
+
+    @Override
+    void eat(int seat) {
+        sem.p(reservedForks(seat));
+    }
+
+    @Override
+    void think(int seat) {
+        sem.v(reservedForks(seat));
+    }
+
+    @Override
+    public int getSeats() {
+        return seats;
+    }
 }
 
 class SemaphoredTable extends Table {
@@ -148,8 +204,9 @@ public class PhilosopherDemo {
 
     public static void main (String[] args) {
 
-        //Table t = new SynchronizedTable(4);
-        Table t = new SemaphoredTable(4);
+        // Table t = new SynchronizedTable(4);
+        // Table t = new SemaphoredTable(4);
+        Table t = new GroupedSemaphoredTable(4);
 
         Thread p1 = new Thread(new Philosopher(t, 0));
         Thread p2 = new Thread(new Philosopher(t, 1));

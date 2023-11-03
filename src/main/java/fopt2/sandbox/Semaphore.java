@@ -3,6 +3,8 @@ package fopt2.sandbox;
 
 /**
  * Semaphore / Additive Semaphore implementation.
+ *
+ * If you use the additive semaphore, make sure to use p(int) and v(int), without mixin methods up.
  */
 public class Semaphore {
 
