@@ -83,9 +83,9 @@ public class StudiDemo {
 
     public static void main(String[] args) {
 
-        Semaphore buch1 = new Semaphore(1);
-        Semaphore buch2 = new Semaphore(1);
-        Semaphore buch3 = new Semaphore(2);
+        Semaphore buch1 = new Semaphore(4);
+        Semaphore buch2 = new Semaphore(2);
+        Semaphore buch3 = new Semaphore(5);
 
         for (int i = 0; i < 20; i++) {
             /**
