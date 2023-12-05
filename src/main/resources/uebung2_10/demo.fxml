@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding ="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+<VBox
+        xmlns="http://javafx.com/javafx/8.0.40"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="fopt3.uebung2_10.Controller"
+>
+    <children>
+        <Label fx:id="label" text="0"></Label>
+        <Button text="Erhöhen" onAction="#increment" />
+        <Button text="Zurücksetzen" onAction="#reset" />
+    </children>
+</VBox>
