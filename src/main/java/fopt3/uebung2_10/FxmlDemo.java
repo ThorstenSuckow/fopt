@@ -11,6 +11,9 @@ import javafx.stage.Stage;
  * changing the fx:id will throw a RuntimeException if any of the methods actively accessing "label"
  * are called.
  *
+ * uebung 2.11
+ * setting a property to private and annotating it with @FXML makes sure properties/methods can
+ * be accessed by the javafx framework.
  */
 public class FxmlDemo extends Application {
 

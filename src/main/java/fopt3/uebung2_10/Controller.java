@@ -10,12 +10,16 @@ public class Controller {
     @FXML
     private Label label;
 
-    public void increment(ActionEvent e) {
+    // can be set to private with @FXML annotation
+    //@FXML
+    public /*private*/ void increment(ActionEvent e) {
         counter++;
         label.setText("" + counter);
     }
 
-    public void reset() {
+    // can be set to private with @FXML annotation
+    //@FXML
+    public /*private*/ void reset() {
         counter = 0;
         label.setText("" + counter);
     }
