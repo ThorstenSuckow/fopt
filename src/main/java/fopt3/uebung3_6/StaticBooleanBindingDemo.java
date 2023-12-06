@@ -2,8 +2,6 @@ package fopt3.uebung3_6;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.binding.NumberBinding;
-import javafx.beans.binding.NumberExpression;
 import javafx.beans.property.SimpleIntegerProperty;
 
 public class StaticBooleanBindingDemo {
