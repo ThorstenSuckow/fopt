@@ -46,6 +46,8 @@ public class TableViewDemo extends Application {
         tableView.getColumns().add(value2Column);
 
         TableColumn<SimpleDoubleProperty[], Number> value3Column = new TableColumn<>("y");
+        // Bindings.multiply() creates a binding with the two properties  - setting either will update the value for the
+        // returned ObservableValue<Number>
         value3Column.setCellValueFactory(item -> Bindings.multiply(item.getValue()[0], item.getValue()[1]));
         value3Column.setPrefWidth(100);
         tableView.getColumns().add(value3Column);
