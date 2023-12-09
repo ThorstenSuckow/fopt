@@ -1,5 +1,7 @@
 # fopt
 
+![](img.png)
+
 Lösungen zu Aufgaben und Implementierung der Übungen des Moduls [**fopt**](https://www.hochschule-trier.de/informatik/fernstudium/module/a-h/fopt) im WS 2023/2024 im Fernstudiengang Informatik (M.C.Sc.) der [Hochschule Trier](https://www.hochschule-trier.de/).
 
 
