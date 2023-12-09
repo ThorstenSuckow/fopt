@@ -3,6 +3,7 @@ package fopt3.uebung4_7;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
+import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -42,25 +43,26 @@ public class CenteredTextDemo extends Application {
         textRectangle.setWidth(text.getLayoutBounds().getWidth());
         textRectangle.setHeight(text.getLayoutBounds().getHeight());
 
-        text.layoutXProperty().bind(textRectangle.layoutXProperty());
-        text.layoutYProperty().bind(textRectangle.layoutYProperty().add(text.layoutBoundsProperty().getValue().getHeight()));
+        // x-y coordinates computed from left top instead bottom-left (default)
+        text.setTextOrigin(VPos.TOP);
+        text.xProperty().bind(textRectangle.xProperty());
+        text.yProperty().bind(textRectangle.yProperty());
         pane.getChildren().add(textRectangle);
 
 
-        textRectangle.layoutXProperty().bind(
+        textRectangle.xProperty().bind(
             Bindings.subtract(
-                pane.widthProperty().divide(2),
-                textRectangle.widthProperty().divide(2)
-            )
+                pane.widthProperty(),
+                textRectangle.widthProperty()
+            ).divide(2)
         );
 
-        textRectangle.layoutYProperty().bind(
+        textRectangle.yProperty().bind(
             Bindings.subtract(
-                pane.heightProperty().divide(2),
-                textRectangle.heightProperty().divide(2)
-            )
+                pane.heightProperty(),
+                textRectangle.heightProperty()
+            ).divide(2)
         );
-
 
         root.getChildren().add(pane);
         Scene scene = new Scene(root);
