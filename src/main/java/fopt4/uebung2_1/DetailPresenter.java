@@ -41,7 +41,7 @@ public class DetailPresenter
     }
 
     public void cancel() {
-        overviewPresenter.search();j
+        overviewPresenter.search();
         close();
     }
 
