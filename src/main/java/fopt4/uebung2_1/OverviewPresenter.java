@@ -1,6 +1,7 @@
 package fopt4.uebung2_1;
 
 import javafx.scene.Scene;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.util.List;
@@ -54,6 +55,12 @@ public class OverviewPresenter
         Scene scene = new Scene(detailView);
         stage.setScene(scene);
         stage.setTitle("Kontakt: " + contact.getLastName());
+        /**
+         * @uebung2_8 adding this view's window as the owner will make sure that
+         * subsequent DetailViews are closed if the owner is closed
+         */
+        // stage.initOwner(view.getScene().getWindow());
+
         stage.show();
 
     }
