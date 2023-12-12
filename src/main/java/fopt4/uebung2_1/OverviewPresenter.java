@@ -60,7 +60,17 @@ public class OverviewPresenter
          * subsequent DetailViews are closed if the owner is closed
          */
         // stage.initOwner(view.getScene().getWindow());
-
+        /**
+         * @uebung2_9 setting the DetailView's Modality to APPLICATION_MODAL will make
+         * sure that no additional DetailView's can be opened - the user has to close
+         * the DetailView (either through cancelling or saving any changes made to the
+         * contact being edited) to proceed with the OverviewView.
+         * Setting the Modality to WINDOW_MODAL makes the DetailView modal relative to its owning
+         * window (in this case the primary stage).
+         * Trying to focus the owning window then will create an effect on the focused window
+         * indicating that the modal prevents the owning window from being focused.
+         */
+        //stage.initModality(Modality.APPLICATION_MODAL);
         stage.show();
 
     }
