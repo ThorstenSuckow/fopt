@@ -1,7 +1,5 @@
 package fopt1.uebung3_2;
 
-import java.sql.Array;
-
 public class LoopRunnable implements Runnable
 {
 

@@ -1,6 +1,5 @@
 package fopt2.uebung13_1;
 
-import java.io.IOException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveTask;
 

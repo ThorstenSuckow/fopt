@@ -1,16 +1,15 @@
 package fopt4.uebung1_10;
 
 
-import javafx.beans.Observable;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 
-import javax.swing.Action;
-import javax.swing.event.ChangeEvent;
-import java.awt.event.ActionEvent;
 import java.util.List;
 
 public class OverviewView extends VBox

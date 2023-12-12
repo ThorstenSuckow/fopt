@@ -1,7 +1,7 @@
 package fopt3.uebung2_10;
 
-import javafx.fxml.FXML;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 public class Controller {
 

@@ -1,8 +1,5 @@
 package fopt2.uebung11_1;
 
-import java.util.ArrayList;
-import java.util.List;
-
 abstract class Accessor extends Thread {
 
     Target target;

@@ -1,8 +1,10 @@
 package fopt4.uebung2_3.login.test.presenter;
 
-import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.*;
 import fopt4.uebung2_3.login.Presenter;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PresenterTest
 {

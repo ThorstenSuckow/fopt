@@ -1,7 +1,5 @@
 package fopt2.uebung10_2;
 
-import fopt2.sandbox.Pipe;
-
 import java.util.ArrayList;
 import java.util.List;
 

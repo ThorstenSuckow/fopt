@@ -1,7 +1,5 @@
 package fopt1.uebung7_2;
 
-import org.junit.jupiter.api.Order;
-
 import java.util.ArrayList;
 import java.util.List;
 

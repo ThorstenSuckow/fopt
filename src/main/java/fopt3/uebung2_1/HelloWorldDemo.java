@@ -3,8 +3,8 @@ package fopt3.uebung2_1;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.stage.Stage;
 import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
 
 public class HelloWorldDemo extends Application {
 

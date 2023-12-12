@@ -1,8 +1,11 @@
 package fopt4.uebung2_3.login.test.model;
 
-import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.*;
 import fopt4.uebung2_3.login.Model;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ModelTest
 {

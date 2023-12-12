@@ -3,10 +3,10 @@ package fopt3.uebung4_4;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Slider;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.scene.control.Slider;
 
 /**
  * rightUniSlider is bound to leftUniSlider.

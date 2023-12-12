@@ -1,7 +1,5 @@
 package fopt2.sandbox;
 
-import java.util.Arrays;
-
 class Philosopher implements Runnable {
 
     Table table;

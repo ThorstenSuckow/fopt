@@ -1,7 +1,6 @@
 package fopt4.uebung2_1;
 
 import javafx.scene.Scene;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.util.List;

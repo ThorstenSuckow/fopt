@@ -1,6 +1,6 @@
 package fopt4.uebung2_3.login;
 
-import java.util.*;
+import java.util.HashMap;
 
 public class Model
 {
