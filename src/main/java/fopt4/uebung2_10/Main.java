@@ -44,6 +44,7 @@ public class Main extends Application {
         Alert a = new Alert(Alert.AlertType.CONFIRMATION);
 
         a.setTitle("[title] Bestätigung erforderlich");
+        a.setHeaderText(null);
         a.setContentText("[content] Wollen Sie das Programm wirklich verlassen");
 
         // custom button types using setAll in this case.
@@ -78,6 +79,9 @@ public class Main extends Application {
     }
 
     public static void main(String[] args) {
+        System.out.println(
+                "using the Platform.exit()-button will show a message on the console."
+        );
         launch(args);
         System.out.println(
                 "if Platform.exit() was called, you will see this message. " +
