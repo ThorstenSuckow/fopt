@@ -7,6 +7,7 @@ import fopt4.uebung2_12.model.Contact;
 import fopt4.uebung2_12.model.ContactModel;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
+import javafx.stage.Modality;
 
 public class OverviewPresenter
 {
@@ -47,9 +48,32 @@ public class OverviewPresenter
         {
             return;
         }
+
+        /**
+         * @uebung2_13 set parameter useSingleDialog to false to make sure multiple
+         * dialogs can be shown (will also set Dialog's modality to NONE)
+         */
+        boolean useSingleDialog = true;
+        showDetailDialog(contact, useSingleDialog);
+    }
+
+
+    private void showDetailDialog(Contact contact, boolean useSingeDialog) {
+
+        Dialog<Contact> detailDialog = null;
+
+        if (useSingeDialog) {
+            detailDialog = this.detailDialog;
+        }
+
         if(detailDialog == null)
         {
             detailDialog = new Dialog<>();
+
+            if (!useSingeDialog) {
+                detailDialog.initModality(Modality.NONE);
+            }
+
             DialogDetailView detailView = new DialogDetailView();
             detailDialog.getDialogPane().setContent(detailView);
             detailDialog.getDialogPane().getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
