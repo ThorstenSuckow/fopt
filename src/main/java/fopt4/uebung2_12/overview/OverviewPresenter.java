@@ -71,7 +71,7 @@ public class OverviewPresenter
          *
          *
          */
-        boolean useSingleDialog = false;
+        boolean useSingleDialog = true;
         showDetailDialog(contact, useSingleDialog);
     }
 
