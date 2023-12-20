@@ -4,13 +4,11 @@ import javafx.beans.Observable;
 import javafx.event.ActionEvent;
 import javafx.scene.control.ListView;
 
-import java.util.concurrent.atomic.AtomicReference;
 
 public class Presenter {
 
     private Model model;
 
-    private EditorDialog editorDialog;
     private View view;
 
     public Presenter() {
@@ -21,12 +19,13 @@ public class Presenter {
         this.model = m;
 
         for (String marker: m.getAllMarkers()) {
-            this.view.getListView().getItems().add(model.getTrainingUnit(marker));
+            this.view.getListView().getItems().add(marker);
         }
     }
 
     public void setView(View v) {
         view = v;
+        view.setPresenter(this);
 
         view.getListView().getSelectionModel().selectedItemProperty().addListener(this::onListViewItemChange);
         view.getDeleteButton().setOnAction(this::onDeleteAction);
@@ -35,38 +34,32 @@ public class Presenter {
 
     private void onDeleteAction(ActionEvent e) {
 
-        TrainingUnit t = (TrainingUnit) view.getListView().getSelectionModel().getSelectedItem();
+        Object t = view.getListView().getSelectionModel().getSelectedItem();
 
         if (t == null) {
             return;
         }
 
-        model.removeTrainingUnit(t.getMarker());
+        model.removeTrainingUnit((String) t);
         view.getListView().getItems().remove(t);
 
     }
 
     private void onAddAction(ActionEvent e) {
 
-        TrainingUnit t = showDialog();
+        TrainingUnit t = view.showDialog();
 
-        System.out.println(t);
-
-
+        if (t == null) {
+            return;
+        }
+        model.addTrainingUnit(t);
+        view.getListView().getItems().add(t.getMarker());
+        view.getListView().getSelectionModel().select(t.getMarker());
     }
 
-    private TrainingUnit showDialog() {
 
-
-        if (editorDialog == null) {
-            editorDialog = new EditorDialog();
-            editorDialog.setModel(model);
-            editorDialog.initOwner(view.getScene().getWindow());
-        }
-
-        editorDialog.showAndWait();
-
-        return editorDialog.getTrainingUnit();
+    public boolean trainingUnitExists(TrainingUnit t) {
+        return model.getTrainingUnit(t.getMarker()) != null;
     }
 
 
@@ -74,10 +67,10 @@ public class Presenter {
 
         TrainingUnit t = null;
 
-        ListView<TrainingUnit> listView = view.getListView();
+        ListView<String> listView = view.getListView();
 
         if (listView.getSelectionModel().getSelectedItem() != null) {
-            t = listView.getSelectionModel().getSelectedItem();
+            t = model.getTrainingUnit(listView.getSelectionModel().getSelectedItem());
         }
 
         view.updateTrainingItemInfo(t);

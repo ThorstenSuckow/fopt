@@ -31,14 +31,10 @@ public class EditorDialog extends Stage {
     private Label errorLabel;
 
 
-    private Model model;
+
 
     public EditorDialog() {
         initView();
-    }
-
-    public void setModel(Model m) {
-        model = m;
     }
 
     private void initView() {
@@ -54,6 +50,7 @@ public class EditorDialog extends Stage {
         markerBox.setSpacing(10);
         markerBox.getChildren().add(new Label("Kennung (nicht leer):"));
         markerField = new TextField();
+        markerField.setId("markerTF");
         markerBox.getChildren().add(markerField);
 
 
@@ -61,6 +58,7 @@ public class EditorDialog extends Stage {
         distanceBox.setSpacing(10);
         distanceBox.getChildren().add(new Label("Entfernung (in km):"));
         distanceField = new TextField();
+        distanceField.setId("distanceTF");
         distanceBox.getChildren().add(distanceField);
 
 
@@ -68,6 +66,7 @@ public class EditorDialog extends Stage {
         timeBox.setSpacing(10);
         timeBox.getChildren().add(new Label("Zeit (in Minuten):"));
         timeField = new TextField();
+        timeField.setId("timeTF");
         timeBox.getChildren().add(timeField);
 
         HBox buttonBox = new HBox();
@@ -78,8 +77,10 @@ public class EditorDialog extends Stage {
 
         cancelButton = new Button("Abbrechen");
         buttonBox.getChildren().addAll(addButton, cancelButton);
+        cancelButton.setOnAction(e -> close());
 
         errorLabel = new Label("");
+        errorLabel.setId("errMsgLabel");
 
         vbox.getChildren().addAll(markerBox, distanceBox, timeBox, buttonBox, errorLabel);
 
@@ -91,6 +92,19 @@ public class EditorDialog extends Stage {
 
     private void onAddAction(ActionEvent actionEvent) {
 
+
+    }
+
+    public Button getAddButton() {
+        return addButton;
+    }
+
+    public Label getErrorLabel() {
+        return errorLabel;
+    }
+
+    public TrainingUnit getTrainingUnit() {
+
         String time = timeField.textProperty().get();
         String marker = markerField.textProperty().get().trim();
         String distance = distanceField.textProperty().get();
@@ -100,53 +114,42 @@ public class EditorDialog extends Stage {
 
         if (marker.isEmpty()) {
             errorLabel.setText("Kennung: ung\u00fcltige Eingabe");
-            return;
-        }
-
-        if (model.getTrainingUnit(marker) != null) {
-            errorLabel.setText("Kennung: existiert schon");
-            return;
+            return null;
         }
 
         try {
             distanceValue = Float.parseFloat(distance);
         } catch (NumberFormatException e) {
             errorLabel.setText("Entfernung: ung\u00fcltige Eingabe");
-            return;
+            return null;
         }
 
         if (distanceValue <= 0) {
             errorLabel.setText("Entfernung: ung\u00fcltige Eingabe");
-            return;
+            return null;
         }
 
         try {
             timeValue = Float.parseFloat(time);
         } catch (NumberFormatException e) {
             errorLabel.setText("Zeit: ung\u00fcltige Eingabe");
-            return;
+            return null;
         }
 
         if (timeValue <= 0) {
             errorLabel.setText("Zeit: ung\u00fcltige Eingabe");
-            return;
+            return null;
         }
 
 
         errorLabel.setText("");
 
-        trainingUnit = new TrainingUnit(
+        return new TrainingUnit(
             marker,
             distanceValue,
             timeValue
         );
 
-        close();
-    }
-
-
-    public TrainingUnit getTrainingUnit() {
-        return trainingUnit;
     }
 
 }

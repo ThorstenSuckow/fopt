@@ -8,9 +8,11 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 public class View extends VBox {
 
-    private ListView<TrainingUnit> listView;
+    private ListView<String> listView;
 
     private Button addButton;
 
@@ -21,7 +23,7 @@ public class View extends VBox {
     private Label marker;
     private Label meanSpeed;
 
-
+    private Presenter presenter;
     public View() {
         initView();
     }
@@ -83,15 +85,19 @@ public class View extends VBox {
 
         Label markerLabel = new Label("Kennung:");
         marker = new Label();
+        marker.setId("markerLabel");
 
         Label distanceLabel = new Label("Entfernung [km]:");
         distance = new Label();
+        distance.setId("distanceLabel");
 
         Label timeLabel = new Label("Zeit [Minuten]:");
         time = new Label();
+        time.setId("timeLabel");
 
         Label meanSpeedLabel = new Label("Durchschnittsgeschwindigkeit [km/h]:");
         meanSpeed = new Label();
+        meanSpeed.setId("meanSpeedLabel");
 
         labelBox.add(markerLabel, 0, 0);
         labelBox.add(marker, 1, 0);
@@ -109,11 +115,12 @@ public class View extends VBox {
         return labelBox;
     }
 
-    protected ListView<TrainingUnit> createListView() {
+    protected ListView<String> createListView() {
         if (listView != null) {
             return listView;
         }
         listView = new ListView<>();
+        listView.setId("overviewList");
 
         return listView;
     }
@@ -134,4 +141,31 @@ public class View extends VBox {
 
     }
 
+    public TrainingUnit showDialog() {
+
+        EditorDialog editorDialog = new EditorDialog();
+        editorDialog.initOwner(getScene().getWindow());
+
+        AtomicReference<TrainingUnit> trainingUnit = new AtomicReference<>();
+        
+        editorDialog.getAddButton().setOnAction(e -> {
+            if (editorDialog.getTrainingUnit() != null) {
+                if (presenter.trainingUnitExists(editorDialog.getTrainingUnit())) {
+                    editorDialog.getErrorLabel().setText("Kennung: existiert schon");
+                } else {
+                    trainingUnit.set(editorDialog.getTrainingUnit());
+                    editorDialog.close();
+                }
+            }
+        });
+
+
+        editorDialog.showAndWait();
+
+        return trainingUnit.get();
+    }
+
+    public void setPresenter(Presenter p) {
+        presenter = p;
+    }
 }

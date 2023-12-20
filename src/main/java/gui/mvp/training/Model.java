@@ -5,33 +5,46 @@ import java.util.HashMap;
 
 public class Model {
 
-    private HashMap<String, TrainingUnit> trainingUnits = new HashMap<>();
+    private final ArrayList<TrainingUnit> trainingUnits = new ArrayList<>();
 
 
     public Model() {
-
-
-
     }
 
     public void addTrainingUnit(TrainingUnit unit) {
-
-        if (trainingUnits.get(unit.getMarker()) != null) {
-            throw new IllegalArgumentException();
+        for (TrainingUnit t: trainingUnits) {
+            if (t.getMarker().equals(unit.getMarker())) {
+                throw new IllegalArgumentException();
+            }
         }
 
-        trainingUnits.put(unit.getMarker(), unit);
+        trainingUnits.add(unit);
     }
 
     public TrainingUnit getTrainingUnit(String unit) {
-        return trainingUnits.get(unit);
+        for (TrainingUnit t: trainingUnits) {
+            if (t.getMarker().equals(unit)) {
+                return t;
+            }
+        }
+        return null;
     }
     public void removeTrainingUnit(String marker) {
-        trainingUnits.remove(marker);
+        for (TrainingUnit t: trainingUnits) {
+            if (t.getMarker().equals(marker)) {
+                trainingUnits.remove(t);
+                return;
+            }
+        }
     }
 
     public String[] getAllMarkers() {
-        return trainingUnits.keySet().toArray(new String[0]);
+        String[] markers = new String[trainingUnits.size()];
+        int i = 0;
+        for (TrainingUnit t: trainingUnits) {
+            markers[i++] = t.getMarker();
+        }
+        return markers;
     }
 
 
