@@ -104,8 +104,6 @@ public class EditorDialog extends Stage {
 
     public TrainingUnit getTrainingUnit() {
 
-        TrainingUnit trainingUnit = null;
-
         String time = timeField.textProperty().get();
         String marker = markerField.textProperty().get().trim();
         String distance = distanceField.textProperty().get();
@@ -145,13 +143,12 @@ public class EditorDialog extends Stage {
 
         errorLabel.setText("");
 
-        trainingUnit = new TrainingUnit(
-                marker,
-                distanceValue,
-                timeValue
+        return new TrainingUnit(
+            marker,
+            distanceValue,
+            timeValue
         );
 
-        return trainingUnit;
     }
 
 }

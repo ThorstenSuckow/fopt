@@ -8,35 +8,29 @@ public class TrainingUnit {
 
     private float time; // in minutes
 
-    public TrainingUnit(String marker, float distance, float time)
-    {
+    public TrainingUnit(String marker, float distance, float time) {
         this.marker = marker;
         this.distance = distance;
         this.time = time;
     }
 
-    public String getMarker()
-    {
+    public String getMarker() {
         return marker;
     }
 
-    public float getDistance()
-    {
+    public float getDistance() {
         return distance;
     }
 
-    public float getTime()
-    {
+    public float getTime() {
         return time;
     }
 
-    public float getMeanSpeed() // km/h
-    {
+    public float getMeanSpeed() {
         return distance * 60 / time;
     }
 
-    public String toString()
-    {
+    public String toString() {
         return marker;
     }
 }
