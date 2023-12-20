@@ -4,13 +4,11 @@ import javafx.beans.Observable;
 import javafx.event.ActionEvent;
 import javafx.scene.control.ListView;
 
-import java.util.concurrent.atomic.AtomicReference;
 
 public class Presenter {
 
     private Model model;
 
-    private EditorDialog editorDialog;
     private View view;
 
     public Presenter() {
@@ -27,6 +25,7 @@ public class Presenter {
 
     public void setView(View v) {
         view = v;
+        view.setPresenter(this);
 
         view.getListView().getSelectionModel().selectedItemProperty().addListener(this::onListViewItemChange);
         view.getDeleteButton().setOnAction(this::onDeleteAction);
@@ -48,25 +47,16 @@ public class Presenter {
 
     private void onAddAction(ActionEvent e) {
 
-        TrainingUnit t = showDialog();
+        TrainingUnit t = view.showDialog();
 
-        System.out.println(t);
-
-
+        model.addTrainingUnit(t);
+        view.getListView().getItems().add(t);
+        view.getListView().getSelectionModel().select(t);
     }
 
-    private TrainingUnit showDialog() {
 
-
-        if (editorDialog == null) {
-            editorDialog = new EditorDialog();
-            editorDialog.setModel(model);
-            editorDialog.initOwner(view.getScene().getWindow());
-        }
-
-        editorDialog.showAndWait();
-
-        return editorDialog.getTrainingUnit();
+    public boolean trainingUnitExists(TrainingUnit t) {
+        return model.getTrainingUnit(t.getMarker()) != null;
     }
 
 
