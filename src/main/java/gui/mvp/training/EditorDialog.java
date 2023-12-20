@@ -66,7 +66,7 @@ public class EditorDialog extends Stage {
         timeBox.setSpacing(10);
         timeBox.getChildren().add(new Label("Zeit (in Minuten):"));
         timeField = new TextField();
-        timeField.setId("distanceTF");
+        timeField.setId("timeTF");
         timeBox.getChildren().add(timeField);
 
         HBox buttonBox = new HBox();
@@ -77,6 +77,7 @@ public class EditorDialog extends Stage {
 
         cancelButton = new Button("Abbrechen");
         buttonBox.getChildren().addAll(addButton, cancelButton);
+        cancelButton.setOnAction(e -> close());
 
         errorLabel = new Label("");
         errorLabel.setId("errMsgLabel");

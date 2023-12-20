@@ -8,9 +8,11 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 public class View extends VBox {
 
-    private ListView<TrainingUnit> listView;
+    private ListView<String> listView;
 
     private Button addButton;
 
@@ -113,7 +115,7 @@ public class View extends VBox {
         return labelBox;
     }
 
-    protected ListView<TrainingUnit> createListView() {
+    protected ListView<String> createListView() {
         if (listView != null) {
             return listView;
         }
@@ -144,11 +146,14 @@ public class View extends VBox {
         EditorDialog editorDialog = new EditorDialog();
         editorDialog.initOwner(getScene().getWindow());
 
+        AtomicReference<TrainingUnit> trainingUnit = new AtomicReference<>();
+        
         editorDialog.getAddButton().setOnAction(e -> {
             if (editorDialog.getTrainingUnit() != null) {
                 if (presenter.trainingUnitExists(editorDialog.getTrainingUnit())) {
                     editorDialog.getErrorLabel().setText("Kennung: existiert schon");
                 } else {
+                    trainingUnit.set(editorDialog.getTrainingUnit());
                     editorDialog.close();
                 }
             }
@@ -157,7 +162,7 @@ public class View extends VBox {
 
         editorDialog.showAndWait();
 
-        return editorDialog.getTrainingUnit();
+        return trainingUnit.get();
     }
 
     public void setPresenter(Presenter p) {

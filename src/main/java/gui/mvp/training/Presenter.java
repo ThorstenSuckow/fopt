@@ -19,7 +19,7 @@ public class Presenter {
         this.model = m;
 
         for (String marker: m.getAllMarkers()) {
-            this.view.getListView().getItems().add(model.getTrainingUnit(marker));
+            this.view.getListView().getItems().add(marker);
         }
     }
 
@@ -34,13 +34,13 @@ public class Presenter {
 
     private void onDeleteAction(ActionEvent e) {
 
-        TrainingUnit t = (TrainingUnit) view.getListView().getSelectionModel().getSelectedItem();
+        Object t = view.getListView().getSelectionModel().getSelectedItem();
 
         if (t == null) {
             return;
         }
 
-        model.removeTrainingUnit(t.getMarker());
+        model.removeTrainingUnit((String) t);
         view.getListView().getItems().remove(t);
 
     }
@@ -49,9 +49,12 @@ public class Presenter {
 
         TrainingUnit t = view.showDialog();
 
+        if (t == null) {
+            return;
+        }
         model.addTrainingUnit(t);
-        view.getListView().getItems().add(t);
-        view.getListView().getSelectionModel().select(t);
+        view.getListView().getItems().add(t.getMarker());
+        view.getListView().getSelectionModel().select(t.getMarker());
     }
 
 
@@ -64,10 +67,10 @@ public class Presenter {
 
         TrainingUnit t = null;
 
-        ListView<TrainingUnit> listView = view.getListView();
+        ListView<String> listView = view.getListView();
 
         if (listView.getSelectionModel().getSelectedItem() != null) {
-            t = listView.getSelectionModel().getSelectedItem();
+            t = model.getTrainingUnit(listView.getSelectionModel().getSelectedItem());
         }
 
         view.updateTrainingItemInfo(t);
