@@ -1,54 +1,53 @@
 package gui.country.combo;
 
+import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.application.Application;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.binding.When;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
-import javafx.util.converter.IntegerStringConverter;
 import javafx.util.converter.LongStringConverter;
 
+import java.text.NumberFormat;
 import java.util.regex.Pattern;
 
 
 public class CountryInfo extends Application {
 
-    Label landLabel;
+    private Label landLabel;
 
-    Label hauptstadtLabel;
-    Label einwohnerLabel;
+    private Label hauptstadtLabel;
+    private Label einwohnerLabel;
 
-    Label flaecheLabel;
+    private Label flaecheLabel;
 
-    Label bevoelkerungsdichteLabel;
+    private Label bevoelkerungsdichteLabel;
 
-    CheckBox exactValuesCheckBox;
+    private CheckBox exactValuesCheckBox;
 
-    GridPane labelGridPane;
+    private GridPane labelGridPane;
 
-    TextField countryField;
+    private TextField countryField;
 
-    TextField capitalField;
+    private TextField capitalField;
 
-    TextField populationField;
+    private TextField populationField;
 
-    TextField areaField;
-
-    Button addButton;
-
-    Button deleteButton;
+    private TextField areaField;
 
 
     private ComboBox<Country> countryComboBox;
@@ -67,19 +66,27 @@ public class CountryInfo extends Application {
     class CountryComboBoxChangeListener implements ChangeListener<Country>  {
         @Override
         public void changed(ObservableValue<? extends Country> observableValue, Country oldValue, Country newValue) {
+
+            if (newValue != null && !newValue.isValid()) {
+                return;
+            }
+
             updateLabels(newValue, exactValuesCheckBox.selectedProperty().get());
         }
     }
 
     private String format(long value, boolean exact) {
 
+        boolean isMill = false;
+        boolean isThous = false;
+
         if (!exact) {
             if (value >= 1_000_000) {
-                return (value / 1_000_000) + " Mill.";
-            }
-
-            if (value >= 1_000) {
-                return (value / 1_000) + ".000";
+                isMill = true;
+                value = Math.round(value / 1_000_000d);
+            } else if (value >= 1_000) {
+                isThous = true;
+                value = (long) Math.round(value / 1_000d) * 1000;
             }
         }
 
@@ -96,7 +103,13 @@ public class CountryInfo extends Application {
         } while (i-- != 0);
 
 
-        return p.reverse().toString();
+        String res = p.reverse().toString();
+
+        if (isMill) {
+            return res + " Mill.";
+        }
+
+        return res;
     }
 
     private void updateLabels(Country country, boolean exact) {
@@ -131,16 +144,17 @@ public class CountryInfo extends Application {
         // einwohner
         Label einwohner = new Label("Einwohner:");
         einwohnerLabel = new Label();
-        einwohnerLabel.setId("populationField");
+        einwohnerLabel.setId("population");
 
         // fläche
         Label flaeche = new Label("Fl\u00e4che (in qkm):");
         flaecheLabel = new Label();
-        einwohnerLabel.setId("areaField");
+        flaecheLabel.setId("area");
 
         // bevölkerungsdichte
         Label bevoelkerungsdichte = new Label("Bev\u00f6lkerungsdichte (in Personen pro qkm):");
         bevoelkerungsdichteLabel = new Label();
+        bevoelkerungsdichteLabel.setId("density");
 
         labelGridPane.add(land, 1, 0);
         labelGridPane.add(landLabel, 2, 0);
@@ -163,10 +177,11 @@ public class CountryInfo extends Application {
     private ObservableList<Country> buildCountries() {
 
         ObservableList<Country> countries = FXCollections.observableArrayList(
-                new Country("Kanada", "Ottawa", 34_278_406, 9984670),
+                new Country("Kanada", "Ottawa", 18631, 242),
             new Country("Deutschland", "Berlin", 80_000_000, 357592),
             new Country("Belgien", "Brüssel", 40_000_000, 357592),
-            new Country("Holland", "Amsterdam", 20_000_000, 357592)
+            new Country("Holland", "Amsterdam", 20_000_000, 357592),
+                new Country ("China", "Peking", 1349585838 , 9571302)
         );
 
         return countries;
@@ -180,10 +195,10 @@ public class CountryInfo extends Application {
         }
 
         countryComboBox = new ComboBox<>();
+        countryComboBox.setPromptText("Keine L\u00e4nder vorhanden");
 
         countryComboBox.getSelectionModel().selectedItemProperty().addListener(new CountryComboBoxChangeListener());
 
-        System.out.println(countryComboBox.getConverter());
         countryComboBox.setId("countrySelector");
         ObservableList<Country> countries = buildCountries();
 
@@ -217,7 +232,7 @@ public class CountryInfo extends Application {
         root.setPadding(new Insets(10));
 
         // combobox
-        ComboBox<Country> countryComboBox = getCountryComboBox();
+        countryComboBox = getCountryComboBox();
         root.getChildren().add(countryComboBox);
 
         // checkbox
@@ -234,7 +249,7 @@ public class CountryInfo extends Application {
 
         // delete button
         Button deleteButton = new Button("L\u00f6schen");
-        deleteButton.setId("del");
+        deleteButton.setId("delete");
         root.getChildren().add(deleteButton);
         deleteButton.setOnAction(this::deleteCountry);
 
@@ -242,20 +257,28 @@ public class CountryInfo extends Application {
 
         primaryStage.setScene(scene);
 
-        primaryStage.setTitle("Country");
+        primaryStage.setTitle("L\u00e4nder-Informationen");
         primaryStage.show();
 
 
         // select the first item in the combobox
         countryComboBox.getSelectionModel().select(0);;
 
+
+
     }
 
     private void deleteCountry(ActionEvent actionEvent) {
 
         Country c = countryComboBox.getValue();
-
+        int pos = countryComboBox.getSelectionModel().getSelectedIndex();
         countryComboBox.getItems().remove(c);
+
+        int next = Math.max(countryComboBox.getItems().size() - 1, pos);
+
+        if (next >= 0) {
+            countryComboBox.getSelectionModel().select(next);
+        }
 
     }
 
@@ -274,30 +297,28 @@ public class CountryInfo extends Application {
         formPane.getChildren().add(capitalField);
 
         populationField = new TextField();
-        populationField.setPromptText("Bev\u00f6lkerung");
+        populationField.setPromptText("Einwohner");
         populationField.setId("populationField");
         formPane.getChildren().add(populationField);
 
         areaField = new TextField();
-        areaField.setPromptText("Fl\u00e4nche");
-        areaField.setId("populationField");
+        areaField.setPromptText("Fl\u00e4che");
+        areaField.setId("areaField");
         formPane.getChildren().add(areaField);
 
-        addButton = new Button("Hinzufügen");
+        Button addButton = new Button("Hinzufügen");
         addButton.setId("add");
         formPane.getChildren().add(addButton);
 
-        areaField.setTextFormatter(getNumberFormatter());
-        populationField.setTextFormatter(getNumberFormatter());
 
-        addButton.disableProperty().bind(
-            countryField.textProperty().isEmpty()
-            .or(capitalField.textProperty().isEmpty())
-            .or(populationField.textProperty().isEmpty())
-            .or(areaField.textProperty().lessThanOrEqualTo(String.valueOf(0)))
-            .or(populationField.textProperty().lessThanOrEqualTo(String.valueOf(0)))
-        );
+        BooleanBinding invalidFieldsBinding = Bindings.createBooleanBinding(
+            () -> !populationField.textProperty().getValue().matches("[0-9]+")
+                || !areaField.textProperty().getValue().matches("[0-9]+"),
+            populationField.textProperty(), areaField.textProperty()
+            ).or(countryField.textProperty().isEmpty())
+            .or(capitalField.textProperty().isEmpty());
 
+        addButton.disableProperty().bind(invalidFieldsBinding);
 
         addButton.setOnAction(this::onAddAction);
 
@@ -305,6 +326,7 @@ public class CountryInfo extends Application {
     }
 
     private void onAddAction(ActionEvent actionEvent) {
+
 
         Country c = new Country(
                 countryField.getText(),
@@ -322,22 +344,6 @@ public class CountryInfo extends Application {
         areaField.clear();
     }
 
-
-    public TextFormatter<Long> getNumberFormatter() {
-
-        Pattern validNumberText = Pattern.compile("[0-9]*");
-        return new TextFormatter<Long>(new LongStringConverter(), null,
-                change -> {
-                    String newText = change.getControlNewText();
-                    if (validNumberText.matcher(newText).matches()
-                        //&& !newText.equals("")
-                        // && Long.valueOf(newText) > 0
-                    ) {
-                        return change ;
-                    } else return null ;
-                });
-
-    }
 
     public static void main(String[] args) {
         launch(args);

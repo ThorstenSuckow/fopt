@@ -30,11 +30,15 @@ public class Country {
     }
 
     public int getPopulationDensity() {
-        return (int)(getPeople() / getArea());
+        return (int)Math.round((getPeople() / (double)getArea()));
     }
+
 
     public String toString() {
         return name;
     }
 
+    public boolean isValid() {
+        return people >= 0 && area >= 0;
+    }
 }
