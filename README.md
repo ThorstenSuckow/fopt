@@ -33,6 +33,10 @@ Implementierung der Übungen aus dem Script **FOPT 3**.
 
 Implementierung der Übungen aus dem Script **FOPT 4**.
 
+### fopt5.*
+
+Implementierung der Übungen aus dem Script **FOPT 5**.
+
 ## javafx intellij settings
 
 Die folgenden VM-Optionen sollten zu der Build and run-configuration für javafx-Implementierungen hinzugefügt werden:
