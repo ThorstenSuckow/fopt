@@ -16,6 +16,7 @@ import java.net.UnknownHostException;
  */
 public class IPAddressDemo {
 
+    public static int TIMEOUT = 20;
     public static String[] buildSampleHosts() {
 
         return new String[]{
@@ -37,34 +38,36 @@ public class IPAddressDemo {
         s.append("Resolving host names...\n");
         for (String host: args) {
 
-            s.append("Addresses for host ").append(host);
+            s.append("Resolving host ").append(host);
 
             try {
 
                 InetAddress main = InetAddress.getByName(host);
                 s.append(" (").append(main.getHostName()).append(":");
                 boolean reachable = false;
-                try {
-                    reachable = main.isReachable(20);
-                } catch (IOException ignored) {
 
+                InetAddress[] addresses = InetAddress.getAllByName(host);
+                int j = 0;
+                StringBuilder s2 = new StringBuilder();
+                for (InetAddress address: addresses) {
+                    s2.append(" ").append(j).append(": ").append(address.getHostAddress());
+
+                    if (!reachable) {
+                        try {
+                            reachable = address.isReachable(20);
+                        } catch (IOException ignored) {
+                        }
+                    }
+
+                    if (j++ < addresses.length - 1) {
+                        s2.append("\n");
+                    }
                 }
-
                 if (!reachable) {
                     s.append(" not");
                 }
                 s.append(" reachable)\n");
-
-                InetAddress[] addresses = InetAddress.getAllByName(host);
-                int j = 0;
-                for (InetAddress address: addresses) {
-                    s.append(" ").append(j).append(": ").append(address.getHostAddress());
-                    if (j++ < addresses.length - 1) {
-                        s.append("\n");
-                    }
-                }
-
-
+                s.append(s2);
 
             } catch (UnknownHostException e) {
                 s.append(" [error: unknown host]");
