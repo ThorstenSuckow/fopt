@@ -3,8 +3,11 @@ package sandbox;
 import lib.TCPSocket;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
 public class TCPClientDemo {
@@ -25,18 +28,24 @@ public class TCPClientDemo {
 
         try (TCPSocket client = new TCPSocket(serverAddress, port)) {
 
+            client.setTimeout(1000);
             while (true) {
                 System.out.print("Enter message: ");
                 BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
                 String msg = reader.readLine();
 
                 System.out.println("sending \"" + msg + "\"...");
-                client.sendLine(msg);
+                client.sendLine(msg.trim());
+
 
                 while (true) {
-                    String reply = client.receiveLine();
-                    System.out.println("   received msg " + reply);
-                    break;
+                    try {
+                        String reply = client.receiveLine();
+                        System.out.println("   received msg " + reply);
+                    } catch (SocketTimeoutException e) {
+                        System.err.println("[client] socket timeout.");
+                        break;
+                    }
                 }
 
             }
