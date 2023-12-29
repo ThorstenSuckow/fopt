@@ -3,6 +3,7 @@ package sandbox;
 import lib.UDPSocket;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 
@@ -33,10 +34,16 @@ public class MulticastClientDemo {
                 System.out.println("sending \"" + msg + "\"...");
                 socket.send(msg, receiver, port);
 
+                socket.setTimeout(5000);
+
                 while (true) {
-                    String reply = socket.receive(1024);
-                    System.out.println("   received msg " + reply);
-                    break;
+                    try {
+                        String reply = socket.receive(1024);
+                        System.out.println("   received msg " + reply);
+                    } catch (IOException e) {
+                        System.out.println(e.getMessage());
+                        break;
+                    }
                 }
 
 
