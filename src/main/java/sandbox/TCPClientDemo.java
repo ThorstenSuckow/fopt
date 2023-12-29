@@ -15,7 +15,7 @@ public class TCPClientDemo {
 
     public static void main(String[] args) throws UnknownHostException {
 
-        String serverAddress =InetAddress.getLocalHost().getHostAddress();
+        String serverAddress = InetAddress.getLocalHost().getHostAddress();
         int port = TCPServerDemo.DEFAULT_PORT;
 
         if (args.length > 0) {
