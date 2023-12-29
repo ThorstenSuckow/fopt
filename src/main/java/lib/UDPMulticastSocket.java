@@ -19,6 +19,9 @@ public class UDPMulticastSocket extends UDPSocket{
         super(new MulticastSocket(6789));
     }
 
+    public int getTimeToLive() throws IOException {
+        return ((MulticastSocket)socket).getTimeToLive();
+    }
 
     public void join(String mcAddress) throws IOException {
         InetSocketAddress group = new InetSocketAddress(mcAddress, 0);
