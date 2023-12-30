@@ -15,7 +15,7 @@ public class TCPClientDemo {
 
     public static void main(String[] args) throws UnknownHostException {
 
-        String serverAddress =InetAddress.getLocalHost().getHostAddress();
+        String serverAddress = InetAddress.getLocalHost().getHostAddress();
         int port = TCPServerDemo.DEFAULT_PORT;
 
         if (args.length > 0) {
@@ -28,11 +28,23 @@ public class TCPClientDemo {
 
         try (TCPSocket client = new TCPSocket(serverAddress, port)) {
 
-            client.setTimeout(1000);
+
             while (true) {
                 System.out.print("Enter message: ");
                 BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
                 String msg = reader.readLine();
+
+                if (msg.startsWith("timeout")) {
+                    try {
+                        String[] parts = msg.split("=");
+                        int timeout = Integer.parseInt(parts[1]);
+                        client.setTimeout(timeout);
+                        System.out.println("[client] setting timeout to " + timeout);
+                        continue;
+                    } catch (Exception e) {
+                        System.err.println("[client] setting timeout failed: " + e);
+                    }
+                }
 
                 System.out.println("sending \"" + msg + "\"...");
                 client.sendLine(msg.trim());
