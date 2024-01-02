@@ -12,6 +12,12 @@ class DefaultRMIIncrementor extends UnicastRemoteObject implements RMIIncremento
 
     @Override
     public synchronized int increment() throws RemoteException {
+        // uncomment to force delay
+        //try {
+        //    Thread.sleep(1000);
+        //} catch (Exception e) {
+        //    throw new RemoteException(e.getMessage());
+        //}
         return ++counter;
     }
 
