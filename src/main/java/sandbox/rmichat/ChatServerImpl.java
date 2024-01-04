@@ -41,16 +41,18 @@ public class ChatServerImpl extends UnicastRemoteObject implements ChatServer {
         }
 
         clients.add(client);
+        sendMessage(client.getName() + " enters the chat!");
         return true;
     }
 
     @Override
     public synchronized void removeClient(ChatClient client) throws RemoteException {
         clients.remove(client);
+        sendMessage(client.getName() + " says goodbye!");
     }
 
-    @Override
-    public synchronized void sendMessage(String name, String msg) throws RemoteException {
+
+    private synchronized void sendMessage(String msg) throws RemoteException {
 
         if (simDelay) {
             try {
@@ -61,18 +63,22 @@ public class ChatServerImpl extends UnicastRemoteObject implements ChatServer {
         }
 
 
-
         Iterator<ChatClient> iter = clients.iterator();
         while (iter.hasNext()) {
             ChatClient cc = iter.next();
             try {
-                cc.print(name + ": " + msg);
+                cc.print(msg);
             } catch (RemoteException exc) {
                 iter.remove();
             }
 
         }
 
+    }
+
+    @Override
+    public synchronized void sendMessage(String name, String msg) throws RemoteException {
+        sendMessage(name + ": " + msg);
     }
 
     @Override

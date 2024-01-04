@@ -2,6 +2,7 @@ package sandbox.rmichat;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.stage.WindowEvent;
 
 import java.rmi.Naming;
 
@@ -18,13 +19,26 @@ public class Presenter {
         this.chatView = chatView;
         chatView.initView();
         chatView.showStatus("disconnected");
-        initListeners();
     }
 
-    private void initListeners() {
+    public void initListeners() {
         chatView.getTextField().setOnAction(this::onTextFieldAction);
         chatView.getSendButton().setOnAction(this::onSendButtonAction);
+        chatView.getScene().getWindow().setOnCloseRequest(this::onCloseRequest);
+
     }
+
+    private void onCloseRequest(WindowEvent windowEvent) {
+
+        try {
+            chatServer.removeClient(chatClient);
+        } catch (Exception ignored) {
+            // server will remove faulty clients automatically
+        }
+
+    }
+
+
 
     private void sendMessage() {
 
