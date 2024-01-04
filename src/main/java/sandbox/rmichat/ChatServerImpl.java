@@ -1,5 +1,7 @@
 package sandbox.rmichat;
 
+import sandbox.rmicallbyvalue.Dummy;
+
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -11,10 +13,14 @@ public class ChatServerImpl extends UnicastRemoteObject implements ChatServer {
 
     private boolean simDelay;
 
+    private MessageCounter messageCounter;
+
     public ChatServerImpl(boolean simDelay) throws RemoteException {
 
         this.simDelay = simDelay;
         clients = new ArrayList<>();
+
+        messageCounter = new MessageCounterImpl();
     }
 
     @Override
@@ -54,6 +60,8 @@ public class ChatServerImpl extends UnicastRemoteObject implements ChatServer {
             }
         }
 
+
+
         Iterator<ChatClient> iter = clients.iterator();
         while (iter.hasNext()) {
             ChatClient cc = iter.next();
@@ -66,4 +74,16 @@ public class ChatServerImpl extends UnicastRemoteObject implements ChatServer {
         }
 
     }
+
+    @Override
+    public MessageCounter getMessageCounter() throws RemoteException {
+        return messageCounter;
+    }
+
+    public void printMessageCount() {
+        System.out.println("[MessageCounter] " + messageCounter);
+    }
+
 }
+
+
