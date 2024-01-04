@@ -9,8 +9,6 @@ public class ChatDemo extends Application {
     public void start(Stage stage) {
 
         try {
-
-
             String userName = getParameters().getUnnamed().get(0);
 
             Presenter presenter = new Presenter();
@@ -26,6 +24,7 @@ public class ChatDemo extends Application {
 
             stage.setTitle("RMI ChatDemo");
             stage.show();
+            presenter.initListeners();
 
         } catch (Exception e) {
             System.err.println("Unexpected exception: " + e);
