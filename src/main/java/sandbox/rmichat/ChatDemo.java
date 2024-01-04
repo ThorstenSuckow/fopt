@@ -45,6 +45,11 @@ public class ChatDemo extends Application {
         }
 
         launch(opts);
+
+        // UnicastRemoteObjects are actively communicating via TCP over the network,
+        // represented by threads
+        // System.exit(0) terminates the currently running Java Virtual Machine
+        System.exit(0);
     }
 
 }

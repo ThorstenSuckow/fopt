@@ -36,13 +36,17 @@ public class Presenter {
             if (msg.trim().isEmpty()) {
                 return;
             }
+            chatServer.getMessageCounter().updateMessageCount();
             chatServer.sendMessage(chatClient.getName(), msg);
+            chatServer.printMessageCount();
             Platform.runLater( () -> {
                 chatView.getTextField().setText("");
             });
 
         } catch (Exception e) {
-            chatView.showStatus("error while sending message: " + e);
+            Platform.runLater( () -> {
+                chatView.showStatus("error while sending message: " + e);
+            });
         } finally {
             Platform.runLater( () -> {
                 disableControls(false);
