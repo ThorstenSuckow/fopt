@@ -1,4 +1,4 @@
-package sandbox.rmisemaphor;
+package sandbox.rmi.semaphor;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;

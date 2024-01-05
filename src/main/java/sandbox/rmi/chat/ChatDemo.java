@@ -1,4 +1,4 @@
-package sandbox.rmichat;
+package sandbox.rmi.chat;
 
 import javafx.application.Application;
 import javafx.scene.Scene;

@@ -1,4 +1,4 @@
-package sandbox.rmisemaphor;
+package sandbox.rmi.semaphor;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;

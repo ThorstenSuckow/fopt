@@ -1,6 +1,4 @@
-package sandbox.rmichat;
-
-import sandbox.rmicallbyvalue.Dummy;
+package sandbox.rmi.chat;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;

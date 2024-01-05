@@ -1,4 +1,4 @@
-package sandbox.rmichat;
+package sandbox.rmi.chat;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
