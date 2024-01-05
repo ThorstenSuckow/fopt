@@ -6,34 +6,28 @@ import java.util.ArrayList;
 
 public class ServiceImpl extends UnicastRemoteObject implements Service {
 
-    private Data data;
+    private DataImpl dataImpl;
 
+    private Data exported;
     private boolean isOpen;
 
-    protected ServiceImpl() throws RemoteException {
-        isOpen = true;
-    }
-    protected ServiceImpl(Data d) throws RemoteException {
-        this();
-        data = d;
+    public ServiceImpl() throws RemoteException {
+        dataImpl = new DataImpl();
+        open();
     }
 
 
     @Override
     public synchronized Data open() throws RemoteException {
         isOpen = true;
-        return getData();
+        return get();
     }
 
-    @Override
-    public synchronized Data get() throws RemoteException {
-        return null;
-    }
 
     @Override
     public synchronized Data close() throws RemoteException {
         isOpen = false;
-        return getData();
+        return get();
     }
 
     @Override
@@ -41,21 +35,22 @@ public class ServiceImpl extends UnicastRemoteObject implements Service {
         return isOpen;
     }
 
-    private Data getData() throws RemoteException {
+    @Override
+    public synchronized Data get() throws RemoteException {
 
         if (isOpen()) {
-            return data;
+            if (exported == null) {
+                exported = (Data) UnicastRemoteObject.exportObject(dataImpl, 0);
+            }
+            return exported;
+        } else {
+            if (exported != null) {
+                UnicastRemoteObject.unexportObject(dataImpl, true);
+                exported = null;
+            }
         }
 
-        ArrayList<String> values = data.getValues();
-
-        DataImpl d = new DataImpl();
-
-        for (String value: values) {
-            d.append(value);
-        }
-
-        return d;
+        return dataImpl;
     }
 
 }

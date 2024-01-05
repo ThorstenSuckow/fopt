@@ -14,13 +14,10 @@ public class ServiceServer {
 
             Registry r = LocateRegistry.createRegistry(port);
 
-            DataImpl data = new DataImpl();
-            data.append("123");
-            data.append("456");
+            ServiceImpl service = new ServiceImpl();
 
-            assert(data.asString().equals("123456"));
-
-            ServiceImpl service = new ServiceImpl(data);
+            service.get().append("123");
+            service.get().append("456");
 
             r.rebind("service", service);
 

@@ -1,6 +1,7 @@
 package da.tasks.rmi.central;
 
 import java.rmi.Naming;
+import java.rmi.server.UnicastRemoteObject;
 
 public class DataClient {
 
@@ -16,7 +17,11 @@ public class DataClient {
 
             Service service = (Service) Naming.lookup("service");
 
-            Data d = service.open();
+            Data d = service.get();
+
+            System.out.println(d.asString());
+
+
 
             myAssert(d.asString(), d.asString().equals("123456"));
 

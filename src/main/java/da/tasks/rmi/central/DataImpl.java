@@ -1,10 +1,9 @@
 package da.tasks.rmi.central;
 
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 
-public class DataImpl extends UnicastRemoteObject implements Data {
+public class DataImpl implements Data {
 
     private final ArrayList<String> values;
 
