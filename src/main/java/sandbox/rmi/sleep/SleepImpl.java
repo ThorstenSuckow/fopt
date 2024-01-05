@@ -1,6 +1,5 @@
-package sandbox.rmisleep;
+package sandbox.rmi.sleep;
 
-import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 

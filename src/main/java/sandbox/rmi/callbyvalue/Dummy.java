@@ -1,4 +1,4 @@
-package sandbox.rmicallbyvalue;
+package sandbox.rmi.callbyvalue;
 
 public class Dummy {
 

@@ -1,4 +1,4 @@
-package sandbox.rmichat;
+package sandbox.rmi.chat;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;

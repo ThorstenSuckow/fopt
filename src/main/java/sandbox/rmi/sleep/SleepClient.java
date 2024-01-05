@@ -1,4 +1,4 @@
-package sandbox.rmisleep;
+package sandbox.rmi.sleep;
 
 import java.rmi.Naming;
 import java.rmi.RemoteException;

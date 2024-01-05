@@ -1,9 +1,9 @@
-package sandbox.rmisleep;
+package sandbox.rmi.callbyvalue;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-public class SleepServer {
+public class CallByValueServer {
 
 
     public static void main(String[] args) {
@@ -11,8 +11,7 @@ public class SleepServer {
         try {
             Registry registry = LocateRegistry.createRegistry(1099);
 
-            registry.rebind("sleep1", new SleepImpl());
-            registry.rebind("sleep2", new SleepImpl());
+            registry.rebind("callbyvalue", new CallByValueImpl());
 
         } catch (Exception e) {
             System.out.println("[server] error: " + e.getMessage());

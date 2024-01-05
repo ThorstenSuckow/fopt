@@ -1,4 +1,4 @@
-package sandbox.rmichat;
+package sandbox.rmi.chat;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

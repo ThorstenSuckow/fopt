@@ -1,4 +1,4 @@
-package sandbox.rmicallbyvalue;
+package sandbox.rmi.callbyvalue;
 
 
 import java.rmi.Naming;
