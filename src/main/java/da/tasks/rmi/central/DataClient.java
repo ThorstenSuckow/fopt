@@ -1,7 +1,6 @@
 package da.tasks.rmi.central;
 
 import java.rmi.Naming;
-import java.rmi.server.UnicastRemoteObject;
 
 public class DataClient {
 

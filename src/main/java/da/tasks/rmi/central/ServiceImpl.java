@@ -2,7 +2,6 @@ package da.tasks.rmi.central;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
 
 public class ServiceImpl extends UnicastRemoteObject implements Service {
 
