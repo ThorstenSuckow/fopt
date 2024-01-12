@@ -11,7 +11,11 @@
 <a href="sandbox/hello-servlet">Hello Servlet</a> | <a href="sandbox/demo-servlet">Demo Servlet</a>
 | <a href="sandbox/form-servlet">Form Servlet</a> | <a href="sandbox/servlet405">405 Servlet (will produce 405!)</a>
 <h2>Uebungen</h2>
-<a href="uebung15_1/demo-servlet?meta=1">Uebung 15.1 (meta-tag)</a> /
-<a href="uebung15_1/demo-servlet">Uebung 15.1 (header)</a>
+<ul>
+  <li><a href="uebung15_1/demo-servlet?meta=1">Uebung 15.1 (meta-tag)</a> </li>
+  <li><a href="uebung15_1/demo-servlet">Uebung 15.1 (header)</a></li>
+  <li><a href="uebung15_2/demo-servlet">Uebung 15.2</a> </li>
+  <li></li>
+</ul>
 </body>
 </html>
