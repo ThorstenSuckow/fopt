@@ -1,4 +1,4 @@
-package fopt6.sandbox.counter;
+package fopt6.sandbox.util;
 
 
 public class Counter {
