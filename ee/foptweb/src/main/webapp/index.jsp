@@ -19,6 +19,7 @@
   <li><a href="uebung15_1/demo-servlet">Uebung 15.1 (header)</a></li>
   <li><a href="uebung15_2/demo-servlet">Uebung 15.2 (responds w/ 405)</a> </li>
   <li><a href="uebung15_3/demo-servlet">Uebung 15.3</a> </li>
+  <li><a href="uebung16_2/demo-servlet">Uebung 16.2</a> </li>
 </ul>
 </body>
 </html>
