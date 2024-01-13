@@ -1,4 +1,4 @@
-package fopt6.sandbox.servletContext;
+package fopt6.sandbox.servletContexListener;
 
 import fopt6.sandbox.util.Counter;
 import jakarta.servlet.ServletException;
@@ -9,19 +9,15 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-/**
- * loadOnStartup needs to hold a value less than the value assigned to this attribute in IncrementServlet,
- * since IncrementServlet relies on the availability of this property.
- */
-@WebServlet(urlPatterns = "/sandbox/context-servlet/increment", loadOnStartup = 1)
+
+@WebServlet(urlPatterns = "/sandbox/contextlistener-servlet/increment", loadOnStartup = 0)
 public class ResetServlet extends HttpServlet {
 
     private Counter counter;
 
     public void init() {
-        counter = new Counter();
-        getServletContext().setAttribute("counter", counter);
-        System.out.println("init() registering counter in servlet context at sandbox/context-servlet w/ " + counter);
+        counter = (Counter) getServletContext().getAttribute("counter_2");
+        System.out.println("init() accessing counter_2 in servlet context (via listener) at sandbox/contextlistener-servlet w/ " + counter);
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
