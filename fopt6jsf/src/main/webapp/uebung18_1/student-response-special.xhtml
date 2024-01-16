@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+		
+    <h:head>
+        <title>Bestätigung der Anmeldung</title>
+    </h:head>
+    <h:body>
+        <h1>Bestätigung der Anmeldung</h1>
+        <h2>Wir sind sehr begeistert, dass gerade Sie sich anmelden, #{student.firstName} #{student.lastName}!!!!</h2>
+        <p>Geboren in: #{student.bornInCountry}</p>
+        <p>Wohnhaft in: #{student.livingInCountry}</p>
+        <p>Bevorzugte Programmiersprache: #{student.progLanguage}</p>
+        <p>Andere Programmiersprachen:</p>
+            <ul>
+                <ui:repeat value="#{student.otherProgLanguages}" var="tempLang">
+                    <li>#{tempLang}</li>
+                </ui:repeat>
+            </ul>
+    </h:body>
+</html>

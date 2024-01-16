@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+	
+    <h:head>
+        <title>Anmeldung für Studierende</title>
+    </h:head>
+    <h:body>
+        <h1>Anmeldung für Studierende</h1>
+        <h:form>
+            <p>Vorname: <h:inputText value="#{student.firstName}"/></p>
+            <p>Nachname: <h:inputText value="#{student.lastName}"/></p>
+            <p>Geboren in:
+                <h:selectOneMenu value="#{student.bornInCountry}">
+                    <f:selectItem itemLabel="Dänemark" itemValue="Dänemark"/>
+                    <f:selectItem itemLabel="Deutschland" itemValue="Deutschland"/>
+                    <f:selectItem itemLabel="Frankreich" itemValue="Frankreich"/>
+                    <f:selectItem itemLabel="Großbritannien" itemValue="Großbritannien"/>
+                    <f:selectItem itemLabel="Italien" itemValue="Italien"/>
+                    <f:selectItem itemLabel="Österreich" itemValue="Österreich"/>
+                    <f:selectItem itemLabel="Portugal" itemValue="Portugal"/>
+                    <f:selectItem itemLabel="Schweiz" itemValue="Schweiz"/>
+                    <f:selectItem itemLabel="Spanien" itemValue="Spanien"/>
+                </h:selectOneMenu>
+            </p>
+            <p>Wohnhaft in: 
+                <h:selectOneMenu value="#{student.livingInCountry}">
+                    <f:selectItems value="#{choices.countryOptions}"/>
+                </h:selectOneMenu>
+            </p>
+            <p>Bevorzugte Programmiersprache: 
+                <h:selectOneRadio value="#{student.progLanguage}">
+                    <f:selectItems value="#{choices.languageOptions}"/>
+                </h:selectOneRadio>
+            </p>
+            <p>Programmiersprachen, die ebenfalls beherrscht werden: 
+                <h:selectManyCheckbox value="#{student.otherProgLanguages}">
+                    <f:selectItems value="#{choices.languageOptions}"/>
+                </h:selectManyCheckbox>
+            </p>
+            <p>
+                <h:commandButton value="Absenden" action="#{student.handleRequest()}"/>
+            </p>
+        </h:form>
+    </h:body>
+</html>
