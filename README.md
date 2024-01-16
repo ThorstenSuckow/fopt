@@ -17,6 +17,12 @@ ASB-Aufgabe zu FOPT 1.
 ### pp.synchstacksem
 ASB-Aufgabe zu FOPT 2.
 
+### gui
+ASB-Aufgabe zu FOPT 3 und 4.
+
+## da.tasks.rmi.central
+ASB-Aufgabe zu FOPT 5.
+
 ### fopt1.*
 Implementierung der Übungen aus dem Script **FOPT 1**.
 
@@ -36,6 +42,13 @@ Implementierung der Übungen aus dem Script **FOPT 4**.
 ### fopt5.*
 
 Implementierung der Übungen aus dem Script **FOPT 5**.
+
+### ee
+Verzeichnis enthält die Übungen zu den Servlets aus **FOPT6**.
+
+### fopt6jsf
+Verzeichnis enthält die Übungen zu den Java Server Faces aus **FOPT6**.
+
 
 ## javafx intellij settings
 
