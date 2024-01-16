@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+<f:view>
+
+
+
+    <h1>@ApplicationScoped</h1>
+    <h:form>
+        <h:outputLabel value="value is #{counter.value}"/>
+        <br />
+        <h:commandButton value="increment (handle)" action="#{counter.handleIncrement()}" />
+        <h:commandButton value="reset (handle)" action="#{counter.handleReset()}" />
+        <br />
+        <h:commandButton value="increment" action="#{counter.increment()}" />
+        <h:commandButton value="reset" action="#{counter.reset()}" />
+    </h:form>
+
+    <h1>@RequestScoped</h1>
+
+    <h:form>
+        <h:outputLabel value="value is #{requestScopedCounter.value}"/>
+        <br />
+        <h:commandButton value="increment (handle)" action="#{requestScopedCounter.handleIncrement()}" />
+        <h:commandButton value="reset (handle)" action="#{requestScopedCounter.handleReset()}" />
+        <br />
+        <h:commandButton value="increment" action="#{requestScopedCounter.increment()}" />
+        <h:commandButton value="reset" action="#{requestScopedCounter.reset()}" />
+    </h:form>
+
+    <h1>@ViewScoped</h1>
+
+    <h:form>
+        <h:outputLabel value="value is #{viewScopedCounter.value}"/>
+        <br />
+        <h:commandButton value="increment (handle)" action="#{viewScopedCounter.handleIncrement()}" />
+        <h:commandButton value="reset (handle)" action="#{viewScopedCounter.handleReset()}" />
+        <br />
+        <h:commandButton method="GET" value="increment" action="#{viewScopedCounter.increment()}" />
+        <h:commandButton value="reset" action="#{viewScopedCounter.reset()}" />
+
+    </h:form>
+    <h1>@SessionScoped</h1>
+
+    <h:form>
+        <h:outputLabel value="value is #{sessionScopedCounter.value}"/>
+        <br />
+        <h:commandButton value="increment (handle)" action="#{sessionScopedCounter.handleIncrement()}" />
+        <h:commandButton value="reset (handle)" action="#{sessionScopedCounter.handleReset()}" />
+        <br />
+        <h:commandButton value="increment" action="#{sessionScopedCounter.increment()}" />
+        <h:commandButton value="reset" action="#{sessionScopedCounter.reset()}" />
+
+    </h:form>
+    <br />
+    <br />
+    <h:link value="&lt; Home" outcome="index.xhtml" />
+</f:view>
+</html>
