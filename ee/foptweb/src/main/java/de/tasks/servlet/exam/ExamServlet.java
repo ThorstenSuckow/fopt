@@ -99,26 +99,14 @@ public class ExamServlet extends BaseServlet {
 
     private String getForm(String container) {
 
-        Map<String, String[]> parameters = requestContext.getParameterMap();
-
-        String id = getPersistedValue(toKey("id"), container);
-        boolean wasIdNull = id == null;
-
-        boolean q1;
-        boolean q2;
-
-        if (wasIdNull) {
-            id = parameters.get("id") != null && parameters.get("id").length >= 1 ? parameters.get("id")[0] : "";
-        }
+        String id = String.valueOf(getPersistedValue(toKey("id"), container));
 
 
-        q1 = Boolean.parseBoolean(getPersistedValue(toKey("q1", id), container));// != null && getPersistedValue(toKey("q1", id), container).equals("true");//parameters.get("q1") != null && parameters.get("q1").length >= 1 ? parameters.get("q1")[0] : "";
-        q2 = Boolean.parseBoolean(getPersistedValue(toKey("q2", id), container));// != null && getPersistedValue(toKey("q2", id), container).equals("true");//parameters.get("q2") != null && parameters.get("q2").length >= 1 ? parameters.get("q2")[0] : "";
-
-
+        boolean q1 = Boolean.parseBoolean(getPersistedValue(toKey("q1", id), container));
+        boolean q2 = Boolean.parseBoolean(getPersistedValue(toKey("q2", id), container));
 
         return "<form method=\"GET\">" +
-                "<p><input type=\"number\" value=\"" + (wasIdNull ? "" : id) + "\" name=\"id\" /> Pruefungsnummer</p>" +
+                "<p><input type=\"number\" value=\"" + id + "\" name=\"id\" /> Pruefungsnummer</p>" +
                 "<p>3 + 1 = 4?</p>"+
                 "<p><input type=\"radio\" name=\"q1\" " + (q1 ? "checked=\"checked\"" : "") + " value=\"y\" /> Ja</p>"+
                 "<p><input type=\"radio\" name=\"q1\" " + (!q1 ? "checked=\"checked\"" : "") + " value=\"n\" /> Nein</p>"+
