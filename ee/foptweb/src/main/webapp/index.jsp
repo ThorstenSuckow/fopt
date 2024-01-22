@@ -22,5 +22,9 @@
   <li><a href="uebung15_3/demo-servlet">Uebung 15.3</a> </li>
   <li><a href="uebung16_2/demo-servlet">Uebung 16.2</a> </li>
 </ul>
+<h2>Aufgaben</h2>
+<ul>
+  <li><a href="aufgabe6/exam-servlet">Aufgabe 6 ExamServlet</a> </li>
+</ul>
 </body>
 </html>
