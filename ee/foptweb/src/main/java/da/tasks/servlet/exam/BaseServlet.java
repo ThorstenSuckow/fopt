@@ -14,6 +14,8 @@ public class BaseServlet extends HttpServlet {
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+        response.setContentType("text/html");
+
         PrintWriter p = response.getWriter();
 
         p.println(getOutput());

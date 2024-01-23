@@ -19,20 +19,28 @@ public class MultiListener implements ServletContextListener, ServletContextAttr
 
     public void attributeAdded(javax.servlet.ServletContextAttributeEvent event) {
         String key = event.getName();
+
+        if (key.equals("results")) {
+            return;
+        }
+
         Object value = event.getValue();
 
-        boolean isYes = (boolean)value;
         String question = "";
         Integer id = null;
+        boolean isYes = false;
+
 
         String[] parts = key.split("-");
         System.out.println(Arrays.toString(parts));
         if (parts.length == 3) {
             question = parts[1];
-            id = Integer.parseInt(parts[2]);
             if (!question.equals("q1") && !question.equals("q2")) {
                 return;
             }
+            id = Integer.parseInt(parts[2]);
+            isYes = (boolean)value;
+
         }
 
         if (id == null) {
