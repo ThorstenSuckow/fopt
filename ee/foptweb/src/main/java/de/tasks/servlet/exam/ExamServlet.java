@@ -29,11 +29,11 @@ public class ExamServlet extends BaseServlet {
 
             SERVLET_CONTEXT
         }
-        HttpServletRequest request;
+        private final HttpServletRequest request;
 
-        HttpServletResponse response;
+        private final HttpServletResponse response;
 
-        ContainerType containerType;
+        private final ContainerType containerType;
         public RequestContext(HttpServletRequest request, HttpServletResponse response, ContainerType containerType) {
             this.request = request;
             this.response = response;
@@ -108,7 +108,7 @@ public class ExamServlet extends BaseServlet {
 
 
     protected void persistValue(String key, String value, RequestContext requestContext, RequestContext.CastType saveAs) {
-         requestContext.saveToContainer(key, value, saveAs);
+        requestContext.saveToContainer(key, value, saveAs);
     }
 
 
@@ -163,11 +163,11 @@ public class ExamServlet extends BaseServlet {
         return "<form method=\"GET\">" +
                 "<p><input type=\"number\" value=\"" + id + "\" name=\"id\" /> Pruefungsnummer</p>" +
                 "<p>3 + 1 = 4?</p>"+
-                "<p><input type=\"radio\" name=\"q1\" " + (q1 != null && q1 == true ? "checked=\"checked\"" : "") + " value=\"y\" /> Ja</p>"+
-                "<p><input type=\"radio\" name=\"q1\" " + (q1 != null && q1 == false ? "checked=\"checked\"" : "") + " value=\"n\" /> Nein</p>"+
+                "<p><input type=\"radio\" name=\"q1\" " + (q1 != null && q1 ? "checked=\"checked\"" : "") + " value=\"y\" /> Ja</p>"+
+                "<p><input type=\"radio\" name=\"q1\" " + (q1 != null && !q1 ? "checked=\"checked\"" : "") + " value=\"n\" /> Nein</p>"+
                 "<p>5 + 6 = 10?</p>"+
-                "<p><input type=\"radio\" name=\"q2\" " + (q2 != null && q2 == true ? "checked=\"checked\"" : "") + " value=\"y\" /> Ja</p>"+
-                "<p><input type=\"radio\" name=\"q2\" " + (q2 != null && q2 == false ? "checked=\"checked\"" : "") + " value=\"n\" /> Nein</p>"+
+                "<p><input type=\"radio\" name=\"q2\" " + (q2 != null && q2 ? "checked=\"checked\"" : "") + " value=\"y\" /> Ja</p>"+
+                "<p><input type=\"radio\" name=\"q2\" " + (q2 != null && !q2 ? "checked=\"checked\"" : "") + " value=\"n\" /> Nein</p>"+
                 "<p><input type=\"submit\" value=\"Einreichen\" /></p>" +
                 "</form>";
 

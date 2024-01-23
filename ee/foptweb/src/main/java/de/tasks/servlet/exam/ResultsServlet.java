@@ -12,7 +12,7 @@ import java.util.List;
 @WebServlet(urlPatterns = "/aufgabe6/results-servlet")
 public class ResultsServlet extends BaseServlet {
 
-    Results results;
+    private Results results;
 
     public void init() {
 

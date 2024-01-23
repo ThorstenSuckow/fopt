@@ -10,9 +10,9 @@ import java.util.Map;
 public class Results {
 
 
-    Map<Question, List<Integer>> yesAnswers;
+    private final Map<Question, List<Integer>> yesAnswers;
 
-    Map<Question, List<Integer>> noAnswers;
+    private final Map<Question, List<Integer>> noAnswers;
 
     public Results() {
         yesAnswers = new HashMap<>();
