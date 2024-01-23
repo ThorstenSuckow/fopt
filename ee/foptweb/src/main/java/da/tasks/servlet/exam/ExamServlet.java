@@ -1,17 +1,13 @@
-package de.tasks.servlet.exam;
+package da.tasks.servlet.exam;
 
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.SessionCookieConfig;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import javax.servlet.ServletContext;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Map;
 
 @WebServlet(urlPatterns = "/aufgabe6/exam-servlet")
 public class ExamServlet extends BaseServlet {
