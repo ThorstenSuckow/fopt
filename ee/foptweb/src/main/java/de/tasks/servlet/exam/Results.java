@@ -1,5 +1,7 @@
 package de.tasks.servlet.exam;
 
+import jakarta.servlet.annotation.WebServlet;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,8 +20,9 @@ public class Results {
         clear();
     }
 
-    public void addAnswer(Question q, Boolean answer, int id) {
+    public synchronized void addAnswer(Question q, Boolean answer, int id) {
 
+        System.out.println("add: " + q + " " + answer + " " + id );
         if (answer) {
             noAnswers.get(q).remove(Integer.valueOf(id));
             yesAnswers.get(q).add(Integer.valueOf(id));
@@ -30,15 +33,15 @@ public class Results {
 
     }
 
-    public List<Integer> getYesAnswers(Question q) {
+    public synchronized List<Integer> getYesAnswers(Question q) {
         return yesAnswers.get(q);
     }
 
-    public List<Integer> getNoAnswers(Question q) {
+    public synchronized List<Integer> getNoAnswers(Question q) {
         return noAnswers.get(q);
     }
 
-    public void clear() {
+    public synchronized void clear() {
         yesAnswers.put(Question.Q1, new ArrayList<>());
         yesAnswers.put(Question.Q2, new ArrayList<>());
 
