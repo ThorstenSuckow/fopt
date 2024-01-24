@@ -12,6 +12,6 @@ public class AttributeListener implements ServletContextAttributeListener {
 
     @Override
     public void attributeAdded(ServletContextAttributeEvent event) {
-        System.out.println("   Attribute added: " + event.getName());
+        System.out.println("   Attribute added: " + event.getName() + " - " +event.getValue());
     }
 }
