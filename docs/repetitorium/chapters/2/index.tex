@@ -1,0 +1,94 @@
+\chapter{Grundlegende Synchronisationskonzepte in Java}
+
+Die Schlüsselwörter \code{synchronized}, \code{wait}, \code{notify} sowie \code{notifyAll} sind essentiell für die Umsetzung von Synchronisation mit Java.
+
+\section{Erzeugung und Start von Java-Threads}
+
+\begin{itemize}
+    \item Klasse muss von \code{java.lang.Thread} erben oder
+    \item einer \code{Thread}-Klasse wird wird ein Objekt übergeben, welches das Interface \code{java.lang.Runnable} implementiert
+\end{itemize}\\
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    frame=lines,
+    framesep=2mm]{java}
+
+    class Countdown extends Thread {
+        public void run() {
+            // do something
+        }
+    }
+
+    Countdown c = new Countdown();
+    c.start();
+\end{minted}
+
+
+Insbesondere im letzten Fall muss die \code{+run():void}-Methode überschrieben werden; wird \code{run()} der Thread-Klasse nicht überschrieben, passiert folglich beim Starten eines Threads nichts (\code{run()} besitzt eine leere Implementierung\footnote{
+    Class Thread - \url{https://docs.oracle.com/javase/8/docs/api/java/lang/Thread.html#Thread-java.lang.Runnable-} - abgerufen 24.01.2024
+}).
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    frame=lines,
+    framesep=2mm]{java}
+
+    class Countdown implements Runnable {
+        public void run() {
+            // do something
+        }
+    }
+
+    Thread t = new Thread(new Countdown());
+    t.start();
+
+\end{minted}\\
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    frame=lines,
+    framesep=2mm]{java}
+
+    Thread t1 = new Thread();
+    t.start(); // does nothing
+
+\end{minted}
+
+
+Die \code{Runnable}-Schnittstelle ist ein \textbf{Functional Interface}\footnote{
+    Java Language Specification - 9.8. Functional Interfaces: \url{https://docs.oracle.com/javase/specs/jls/se21/html/jls-9.html#jls-9.8} - abgerufen 24.01.2024
+}, deshalb kann dem Konstruktor auch ein passender Lambda-Ausdruck\footnote{
+    Java Language Specification - 15.27.4. Run-Time Evaluation of Lambda Expressions: \url{https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.27.4}  - abgerufen 24.01.2024
+} übergeben werden\footnote{funktioniert seit Java 8}.
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    frame=lines,
+    framesep=2mm]{java}
+
+    Thread t1 = new Thread(() -> doSomething());
+    t.start();
+
+    Runnable r = () -> doSomething();
+    Thread t2 = new Thread(r);
+    t2.start();
+
+\end{minted}\\
+
+Das \textit{Pausieren} von Threads kann mittels der Methode \code{+sleep():void throws java.lang.InterruptedException} realisiert werden.\\
+
+\textbf{Echte Parallelität} wird bei der Betrachtung möglicher Reihenfolgen von Aktionen nicht berücksichtigt: Wenn $A$ und $B$ \textit{parallel} laufen, entspricht das der Reihenfolge $A\ \rightarrow\ B$ bzw. $B\ \rightarrow\ A$ - viele Probleme ergeben sich aus den möglichen Reihenfolgen der Abarbeitung, deshalb ist es wichtig, den Programmcode so zu implementieren, dass er alle Prozesse vom Vorrang her (zunächst)\footnote{
+wartenden Prozessen kann später über bestimmte Warteschlangenimplementierungen nach der Wiederuafnahme ihrer Tätigkeit Vorrang eingeräumt werden
+} als ``gleichberechtigt`` ansieht.
+
+
+
