@@ -1,0 +1,40 @@
+\chapter{Parallelität, Nebenläufigkeit und Verteilung}
+
+
+\textbf{Parallelität} bzw. \textbf{Nebenläufigkeit (concurrency)} bedeutet: Mehrere Vorgänge laufen auf dem Rechner gleichzeitig ab.\\
+
+Es wird unterschieden zwischen \textbf{echt gleichzeitig} und \textbf{scheinbar} gleichzeitig:
+\begin{itemize}
+    \item \textbf{echt gleichzeitig}: Mehrere Prozessoren (\textbf{Parallelität})
+    \item \textbf{scheinbar gleichzeitig}: Ein Prozessor kümmert sich um mehrere Vorgänge gleichzeitig und schaltet auf sie in hoher Frequenz um (\textbf{Pseudoparallelität, Nebenläufigkeit})
+\end{itemize}
+
+Das Lernmaterial macht bewusst keine Unterscheidung zwischen Nebenläufigkeit und Parallelität, beide Begriffe schließen die echte und die Pseudoparallelität ein.
+
+\begin{itemize}[label=$\rightarrow$]
+    \item gleichzeitige Vorgänge auf einem Rechner: \textbf{Parallelität}
+    \item gleichzeitige Vorgänge auf mehreren Rechnern: \textbf{Verteilung}
+    \item \textbf{eng gekoppeltes System}: mehrere gekoppelte Prozessoren, die sich den Speicher teilen
+    \item \textbf{lose gekoppeltes System}: verteiltes System, gekoppelte Prozessoren, ohne gemeinsamen Speicher, nutzen ein Kommunikationssystem zum Nachrichtenaustausch
+\end{itemize}\\
+
+Parallelität wird über Hard- und Software realisiert; das Betriebssystem spielt eine entscheidende Rolle und kann durch \textbf{Virtualisierung} die Anzahl der Prozessoren \textit{virtuell vervielfachen}.
+
+\subsection{Programme, Prozesse und Threads}
+
+In Zusammenhang mit Parallelität, Nebenläufigkeit und Verteilung muss unterschieden werden zwischen
+
+\begin{itemize}
+    \item \textbf{Programm}
+    \item  \textbf{Prozess}
+    \item \textbf{Thread} (``Ausführungsfaden``)
+\end{itemize}\\
+
+\subsection*{Prozess}
+Der \textbf{Prozess} stellt im wesentlichen den Adressraum für \textbf{Programmcode} und \textbf{Daten} dar; ein Programm hat mindestens einen Thread; dieser kann weitere Threads starten; jeder Thread kann auf dieselben Objekte innerhalb eines Prozesses zugreifen, aber nicht auf Objekte außerhalb des Prozesses $\rightarrow$ \textbf{Isolation}
+
+\subsection*{Isolation}
+Wird über das Betriebssystem verwaltet. Bestimmte Systemaufrufe erlauben das Durchbrechen der Isolation, so dass Prozesse untereinander kommunizieren bzw. miteinander agieren können.
+
+\subsection*{``isoliert``}
+Ein isolierter Prozess kann nicht auf den Adressraum eines anderen Prozesses zugreifen.
