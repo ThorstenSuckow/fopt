@@ -6,6 +6,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 
 @WebServlet(urlPatterns = "/aufgabe6/results-servlet")
@@ -21,6 +23,14 @@ public class ResultsServlet extends BaseServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         if (request.getParameter("reset") != null) {
+            Enumeration<String> attributes = getServletContext().getAttributeNames();
+
+            while (attributes.hasMoreElements()) {
+                String att = attributes.nextElement();
+                if (att.startsWith("exam-")) {
+                    getServletContext().removeAttribute(att);
+                }
+            }
             results.clear();
         }
 
@@ -42,11 +52,11 @@ public class ResultsServlet extends BaseServlet {
         int answersQ1Size = yesAnswersQ1.size() + noAnswersQ1.size();
         int answersQ2Size = yesAnswersQ2.size() + noAnswersQ2.size();
 
-        int yesAnswersQ1Percentage = !yesAnswersQ1.isEmpty() ? answersQ1Size / yesAnswersQ1.size() : 0;
-        int noAnswersQ1Percentage = !noAnswersQ1.isEmpty() ? answersQ1Size / noAnswersQ1.size() : 0;
+        int yesAnswersQ1Percentage = (int)(!yesAnswersQ1.isEmpty() ? (100d / answersQ1Size) * yesAnswersQ1.size() : 0);
+        int noAnswersQ1Percentage = (int)(!noAnswersQ1.isEmpty() ? (100d / answersQ1Size) * noAnswersQ1.size() : 0);
 
-        int yesAnswersQ2Percentage = !yesAnswersQ2.isEmpty() ? answersQ2Size / yesAnswersQ2.size() : 0;
-        int noAnswersQ2Percentage = !noAnswersQ2.isEmpty() ? answersQ2Size / noAnswersQ2.size() : 0;
+        int yesAnswersQ2Percentage = (int)(!yesAnswersQ2.isEmpty() ? (100d / answersQ2Size) * yesAnswersQ2.size() : 0);
+        int noAnswersQ2Percentage = (int)(!noAnswersQ2.isEmpty() ? (100d / answersQ2Size) * noAnswersQ2.size() : 0);
 
 
 
@@ -66,7 +76,7 @@ public class ResultsServlet extends BaseServlet {
                 "</table>" +
                 "<form method=\"GET\">" +
                 "<input type=\"hidden\" name=\"reset\" value=\"1\" />" +
-                "<input type=\"submit\" value=\"Zu&uuml;cksetzen\" />" +
+                "<input type=\"submit\" value=\"Zurücksetzen\" />" +
                 "</form>";
 
 

@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import javax.servlet.ServletContext;
+import java.awt.*;
 import java.io.IOException;
 
 @WebServlet(urlPatterns = "/aufgabe6/exam-servlet")
@@ -37,8 +38,10 @@ public class ExamServlet extends BaseServlet {
         }
 
         public void saveToContainer(String key, Object value, CastType castType) {
-            ServletContext s = getServletContext();
+            saveToContainer(key, value, castType, containerType);
+        }
 
+        public void saveToContainer(String key, Object value, CastType castType, ContainerType cType) {
             if (value == null) {
                 return;
             }
@@ -53,21 +56,26 @@ public class ExamServlet extends BaseServlet {
                 }
             }
 
-            s.setAttribute(key, v);
-
-            if (containerType == ContainerType.SESSION) {
+            if (cType == ContainerType.SESSION) {
                 request.getSession().setAttribute(key, v);
-            } else if (containerType == ContainerType.COOKIES) {
+            } else if (cType == ContainerType.COOKIES) {
                 response.addCookie(new Cookie(key, String.valueOf(v)));
+            } else if (cType == ContainerType.SERVLET_CONTEXT) {
+                ServletContext s = getServletContext();
+                s.setAttribute(key, v);
             }
         }
+
         public String getFromContainer(String key) {
+            return getFromContainer(key, ContainerType.SERVLET_CONTEXT);
+        }
+        public String getFromContainer(String key, ContainerType cType) {
 
             Object v =  null;
 
-            if (containerType == ContainerType.SESSION) {
+            if (cType == ContainerType.SESSION) {
                 v = request.getSession().getAttribute(key);
-            } else if (containerType == ContainerType.COOKIES) {
+            } else if (cType == ContainerType.COOKIES) {
                 Cookie[] c = request.getCookies();
 
                 for (int i = 0; c != null && i < c.length; i++) {
@@ -77,7 +85,7 @@ public class ExamServlet extends BaseServlet {
                     }
                 }
 
-            } else if (containerType == ContainerType.SERVLET_CONTEXT) {
+            } else if (cType == ContainerType.SERVLET_CONTEXT) {
                 v = getServletContext().getAttribute(key);
             } else {
                 throw new RuntimeException();
@@ -103,30 +111,51 @@ public class ExamServlet extends BaseServlet {
     }
 
 
+    protected void persistValue(
+        String key,
+        String value,
+        RequestContext requestContext,
+        RequestContext.CastType saveAs,
+        RequestContext.ContainerType containerType) {
+        requestContext.saveToContainer(key, value, saveAs, containerType);
+    }
+
     protected void persistValue(String key, String value, RequestContext requestContext, RequestContext.CastType saveAs) {
-        requestContext.saveToContainer(key, value, saveAs);
+        requestContext.saveToContainer(key, value, saveAs, RequestContext.ContainerType.SERVLET_CONTEXT);
     }
 
 
     protected String getPersistedValue(String key, RequestContext requestContext) {
-        return requestContext.getFromContainer(key);
+        return requestContext.getFromContainer(key, RequestContext.ContainerType.SERVLET_CONTEXT);
     }
 
+    protected String getPersistedValue(String key, RequestContext requestContext, RequestContext.ContainerType containerType) {
+        return requestContext.getFromContainer(key, containerType);
+    }
 
     protected void processParams(HttpServletRequest request, RequestContext requestContext) {
 
-        String id = getPersistedValue(toKey("id"), requestContext);
+        RequestContext.ContainerType cookieContainer =  RequestContext.ContainerType.COOKIES;
+        RequestContext.CastType booleanType = RequestContext.CastType.BOOLEAN;
+        RequestContext.CastType stringType = RequestContext.CastType.STRING;
+
+        String id = getPersistedValue(toKey("id"), requestContext, cookieContainer);
 
         if (id == null || id.trim().isEmpty()) {
             id = request.getParameter("id");
             if (id != null && !id.trim().isEmpty()) {
-                persistValue(toKey("id"), id, requestContext, RequestContext.CastType.STRING);
+                persistValue(toKey("id"), id, requestContext, stringType);
+                persistValue("exam-id", id, requestContext, stringType, cookieContainer);
             }
         }
 
         if (id != null && !id.trim().isEmpty()) {
-            persistValue(toKey("q1", id), request.getParameter("q1"), requestContext, RequestContext.CastType.BOOLEAN);
-            persistValue(toKey("q2", id), request.getParameter("q2"), requestContext, RequestContext.CastType.BOOLEAN);
+            System.out.println("persist for " + id);
+            persistValue(toKey("q1", id), request.getParameter("q1"), requestContext, booleanType);
+            persistValue(toKey("q2", id), request.getParameter("q2"), requestContext, booleanType);
+            persistValue("exam-q1", request.getParameter("q1"), requestContext, booleanType, cookieContainer);
+            persistValue("exam-q2", request.getParameter("q2"), requestContext, booleanType, cookieContainer);
+
         }
 
     }
@@ -143,16 +172,18 @@ public class ExamServlet extends BaseServlet {
 
         String id = String.valueOf(getPersistedValue(toKey("id"), requestContext));
 
-
         Boolean q1 = null;
         Boolean q2 = null;
 
-        if (getPersistedValue(toKey("q1", id), requestContext) != null) {
-            q1 = Boolean.parseBoolean(getPersistedValue(toKey("q1", id), requestContext));
+        String q1Raw = getPersistedValue(toKey("q1", id), requestContext);
+        String q2Raw = getPersistedValue(toKey("q2", id), requestContext);
+
+        if (q1Raw != null) {
+            q1 = Boolean.parseBoolean(q1Raw);
         }
 
-        if (getPersistedValue(toKey("q2", id), requestContext) != null) {
-            q2 = Boolean.parseBoolean(getPersistedValue(toKey("q2", id), requestContext));
+        if (q2Raw != null) {
+            q2 = Boolean.parseBoolean(q2Raw);
         }
 
 

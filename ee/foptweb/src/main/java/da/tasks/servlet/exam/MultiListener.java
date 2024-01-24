@@ -1,6 +1,8 @@
 package da.tasks.servlet.exam;
 
+import javax.servlet.ServletContextAttributeEvent;
 import javax.servlet.ServletContextAttributeListener;
+import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
@@ -12,12 +14,28 @@ public class MultiListener implements ServletContextListener, ServletContextAttr
     private Results results;
 
 
-    public void contextInitialized(javax.servlet.ServletContextEvent sce) {
+    public void contextInitialized(ServletContextEvent sce) {
         results = new Results();
         sce.getServletContext().setAttribute("results", results);
     }
 
-    public void attributeAdded(javax.servlet.ServletContextAttributeEvent event) {
+    public void attributeAdded(ServletContextAttributeEvent event) {
+        updateAnswerFromEvent(event);
+    }
+
+    public void contextDestroyed(ServletContextEvent event) {
+
+    }
+
+    public void attributeRemoved(ServletContextAttributeEvent event) {
+
+    }
+
+    public void attributeReplaced(ServletContextAttributeEvent event) {
+        updateAnswerFromEvent(event);
+    }
+
+    private void updateAnswerFromEvent(ServletContextAttributeEvent event) {
         String key = event.getName();
 
         if (key.equals("results")) {
@@ -50,19 +68,6 @@ public class MultiListener implements ServletContextListener, ServletContextAttr
         Question q = question.equals("q1") ? Question.Q1 : Question.Q2;
 
         results.addAnswer(q, isYes, id);
-
-    }
-
-    public void contextDestroyed(javax.servlet.ServletContextEvent sce) {
-
-    }
-
-    public void attributeRemoved(javax.servlet.ServletContextAttributeEvent scae) {
-
-    }
-
-    public void attributeReplaced(javax.servlet.ServletContextAttributeEvent scae) {
-
     }
 
 }
