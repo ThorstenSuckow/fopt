@@ -77,7 +77,11 @@ public class ResultsServlet extends BaseServlet {
                 "<form method=\"GET\">" +
                 "<input type=\"hidden\" name=\"reset\" value=\"1\" />" +
                 "<input type=\"submit\" value=\"Zurücksetzen\" />" +
+                "</form>" +
+                "<form action=\"download-servlet\" method=\"GET\">" +
+                "<input type=\"submit\" value=\"Download\" />" +
                 "</form>";
+
 
 
     }

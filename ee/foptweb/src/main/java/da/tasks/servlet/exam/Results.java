@@ -20,7 +20,6 @@ public class Results {
 
     public synchronized void addAnswer(Question q, Boolean answer, Integer id) {
 
-        System.out.println("add: " + q + " " + answer + " " + id );
         if (answer) {
             noAnswers.get(q).remove(id);
             yesAnswers.get(q).add(id);
