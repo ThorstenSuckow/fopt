@@ -240,7 +240,6 @@ das interne flag wieder zurückgesetzt, die Schleife läuft weiter\footnote{
             }
         }
     }
-}
 \end{minted}\\
 
 Die alternative (richtige) Imeplementierung berücksichtigt sowohl das \textit{Interrupt-Flag} als auch eine \code{InterruptedException} - in beiden Fällen wird die \code{while}-Schleife unterbrochen:
@@ -260,7 +259,6 @@ Die alternative (richtige) Imeplementierung berücksichtigt sowohl das \textit{I
             System.out.println("[InterruptedException]");
         }
     }
-}
 \end{minted}\\
 
 Es ist zu berücksichtigen, dass \code{interrupt()} \underline{kein sofortiges Ende} des Ziel-Threads bedingt: Der Thread läuft so lange weiter, wie es seine \code{run()}-Methode bedingt (vgl.~\cite[44 f.]{Oec22}):
@@ -300,7 +298,6 @@ Es ist zu berücksichtigen, dass \code{interrupt()} \underline{kein sofortiges E
     System.out.println(
         "Thread lived " + i + " iterations after interrupting"
     );
-}
 \end{minted}\\
 
 In dem Code-Beispiel wird in der \code{while}-Schleife \code{isAlive()} als Abbruchbedingung verwendet, was \textbf{aktives Warten} darstellt.
@@ -325,5 +322,88 @@ das Ende der Ausführung gewartet werden.
     t1.join(10000);
     t1.interrupt();
     t1.join();
-}
+\end{minted}\\
+
+
+\section{wait und notify}
+
+Werden Objekte von mehreren Threads genutzt und dabei verändert, helfen \code{synchronized}-Methoden dabei, für ein Objekt einen konsistenten Zustand zu gewährleisten.\\
+
+\textbf{Aktives Warten} wurde im vorhergehenden Abschnitt bereits kurz erwähnt.
+\code{wait} und \code{notify} ermöglichen Implementierungen \textit{aktives warten} nutzen zu müssen: Die Methoden werden auf ein Objekt angewendet, das der aufrufende Thread zum Zeitpunkt des Aufrufs durch \code{synchronized} gesperrt hat.
+
+\begin{tcolorbox}
+    Der aufrufende Thread von \code{wait} / \code{notify} muss auch das Objekt über \code{synchronized} gesperrt haben, ansonsten wird eine \code{java.lang.IllegalMonitorStateException} geworfen\footnote{
+    class IllegalMonitorStateException - \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/IllegalMonitorStateException.html} - abgerufen 25.01.2024
+    }.
+\end{tcolorbox}\\
+
+\begin{center}
+\code{+java.lang.Object::wait():void throws InterruptedException}
+\end{center}
+
+blockiert den aufrufenden Thread und fügt ihn in die Warteschlange des Objektes ein, das von dem Thread gesperrt wurde.
+Danach wird die Sperre des Objektes aufgehoben.
+
+\begin{center}
+    \code{+java.lang.Object::notify():void throws InterruptedException}
+\end{center}
+
+holt einen wartenden Thread aus der Warteschlange.\\
+Die Sperre des Objektes wird aufgehoben, sobald die \code{synchronized}-Methode, in der \code{notify()} aufgerufen wurde, beendet ist.\\
+Der Thread, der aus der Warteschlange kommt, wird an der Stelle weiter ausgeführt, an der er in die Warteschlange eingetreten ist: Dafür sperrt er aber zunächst erneut das Objekt!
+
+\begin{center}
+    \code{+java.lang.Object::notifyAll():void throws InterruptedException}
+\end{center}
+
+weckt \underline{alle} Threads auf, die sich in der Warteschlange befinden, und die erneut die Wartebedingungen überprüfen können.\\
+Die Reihenfolge, in der wartende Threads mittels \code{notify()}/\code{notifyAll()} aus der Warteschlange entfernt werden, ist nicht festgelegt.
+
+\newpage
+Im folgenden Beispiel wird ein Thread in die Warteschlange des \code{Waiter}-Objekts eingereiht, bevor ein zweiter ihn mittels \code{notify()} daraus wieder entfernt.
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    frame=lines,
+    framesep=2mm]{java}
+    class Waiter {
+        private int n = 0;
+        public synchronized void enter() {
+            String currentThread = Thread.currentThread().getName();
+            System.out.println(currentThread + " entering.");
+            while (n <= 0) {
+                try {
+                    System.out.println(currentThread + " getting some rest.");
+                    this.wait();
+                    System.out.println(currentThread + ", rise and shine!");
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            System.out.println(currentThread + " says bye bye!");
+        }
+        public synchronized void leave() {
+            n++;
+            notify();
+        }
+    }
+
+    // ... main()
+    public static void main(String[] args) throws InterruptedException {
+        Waiter waiter = new Waiter();
+
+        Runnable r1 = waiter::enter;
+        Runnable r2 = waiter::leave;
+
+        Thread enterThread = new Thread(r1);
+        Thread leaveThread = new Thread(r2);
+
+        enterThread.start();
+        leaveThread.start();
+
+        enterThread.join();
+        leaveThread.join();
+    }
 \end{minted}\\
