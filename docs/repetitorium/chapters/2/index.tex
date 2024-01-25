@@ -84,10 +84,14 @@ Die \code{Runnable}-Schnittstelle ist ein \textbf{Functional Interface}\footnote
 
 \end{minted}\\
 
-Das \textit{Pausieren} von Threads kann mittels der statischen Methode\footnote{
+Das \textbf{Pausieren von Threads} kann mittels der statischen Methode\footnote{
     statisch, weil der \underline{gerade aktive Thread} ``schlafen`` gelegt wird.
-} \code{+sleep():void throws java.lang.InterruptedException} realisiert werden.
-Der Thread wird dann bei der Thread-Umschaltung für die geg. Zeit nicht mehr vom Betriebssystem berücksichtigt und verbraucht in dieser Zeit auch keine Rechnezeit (vgl~\cite[16]{Oec22}).\\
+}
+\begin{center}
+\staticcode{+sleep(milis:long):void} \code{throws java.lang.InterruptedException}
+\end{center}
+realisiert werden.
+Der Thread wird dann bei der Thread-Umschaltung für die geg. Zeit nicht mehr vom Betriebssystem berücksichtigt und verbraucht in dieser Zeit auch keine Rechenzeit (vgl~\cite[16]{Oec22}).\\
 
 $\rightarrow$ Die Reihenfolge der auszuführenden Threads ist nicht fest vorgegeben, deshalb kann man mit \code{sleep} keine Ausführungsreihenfolge erzwingen.\\
 
@@ -103,12 +107,12 @@ wartenden Prozessen kann später über bestimmte Warteschlangenimplementierungen
 
 In Java besitzt jedes Objekt eine \textbf{Sperre}, die in der Klasse \code{Object} gesetzt wird (vgl.\cite[26]{Oec22}).\\
 
-Wenn eine Methode, die nicht als \code{static} gekennzeichnet ist, mit \code{synchronized}\footnote{
+Wenn eine Methode, die nicht als \staticcode{static} gekennzeichnet ist, mit \code{synchronized}\footnote{
     Java Language Specification - 8.4.3.6. synchronized Methods: \url{https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.4.3.6} - abgerufen 25.01.2024
 } gekennzeichnet wird, dann wird das Objekt für andere Threads $t_2..t_n$ gesperrt, wenn ein Thread $t_1$ auf die Methode zugreift.
 
 Hierbei wird die Sperre gesetzt, bevor die Methode ausgeführt wird - ist bereits eine Sperre gesetzt, dann kann der Thread nicht auf die Methode zugreifen und wird in die \textbf{Warteschlange} des Objektes für die betreffende Methode eingereiht, der aufrufende Thread ist dann \textbf{blockiert}.
-Solange der Thread blockiert ist, wird er (wie bei \code{sleep}) nicht mehr beim Umschalten berücksichtigt und verbraucht so keine Rechenzeit (vgl.~\cite[26]{Oec22}).
+Solange der Thread blockiert ist, wird er (wie bei \staticcode{sleep}) nicht mehr beim Umschalten berücksichtigt und verbraucht so keine Rechenzeit (vgl.~\cite[26]{Oec22}).
 \\
 
 Neben \textit{synchronisierten Methoden} können auch \textbf{synchronisierte Anweisungsblöcke}\footnote{
@@ -121,7 +125,6 @@ Java Language Specification - 14.19. The synchronized Statement: \url{https://do
     gobble=2,
     frame=lines,
     framesep=2mm]{java}
-
     // statt
     public synchronized void doDomething() {
         // ...
@@ -140,12 +143,9 @@ Beim Synchronisieren statischer Methoden werden nicht die Objekte der betreffend
 
 In Java sind Sperren \textbf{reentrant} (\textit{wiederbetretbar}):
 
-\blockquote[\url{https://docs.oracle.com/javase/tutorial/essential/concurrency/locksync.html}, Hervorhebungen i.O.]{
+\blockquote[\url{https://docs.oracle.com/javase/tutorial/essential/concurrency/locksync.html}, Hervorhebungen i.O., abgerufen 25.01.2024]{
      [...] a thread can acquire a lock that it already owns. Allowing a thread to acquire the same lock more than once enables \textit{reentrant} synchronization. This describes a situation where synchronized code, directly or indirectly, invokes a method that also contains synchronized code, and both sets of code use the same lock. Without reentrant synchronization, synchronized code would have to take many additional precautions to avoid having a thread cause itself to block.
 
-\footnote{
-Java Tutorials - Intrinsic Locks and Synchronization: \url{https://docs.oracle.com/javase/tutorial/essential/concurrency/locksync.html} - abgerufen 25.01.2024
-}
 }\\
 
 \textbf{Konstruktoren} können nicht synchronisiert werden, aber man kann einen Anweisungsblock innerhalb eines Konstruktors synchroniseren.
@@ -174,8 +174,13 @@ Ein Thread ist \textbf{beendet}, wenn seine \code{run}- bzw. die \code{main}-Met
 
 Die \code{+start():void}-Methode eines Thread-Objekts kann maximal einmal aufgerufen werden (ansonsten kommt es zu einer \code{java.lang.IllegalThreadStateException}) - zu jedem Thread-Objekt gibt es also maximal einen Thread.
 
-Mittels \code{+join(millis: int = 0):void throws java.lang.InterruptedException} kann auf das Ende eines Threads gewartet werden.
-\code{millis} ist Optional und gibt ein Timeout an, es wird dann höchstens so lange auf das Ende eines Threads gewartet.\\
+Mittels
+
+\begin{center}
+    \code{+join(millis: int = 0)} \code{throws java.lang.InterruptedException}
+\end{center}
+kann auf das Ende eines Threads gewartet werden.
+\code{millis} ist optional und gibt ein Timeout an, es wird dann höchstens so lange auf das Ende eines Threads gewartet.\\
 Nachdem \code{join} beendet ist, läuft die implementierende Methode weiter.\\
 
 \code{start()} und \code{join()} haben einen \code{volatile}-Effekt: Daten, die von Thread $t_a$ geändert wurden, sind für Thread $t_b$ aktuell, wenn $t_b$ mittels \code{join} auf das Ende von $t_a$ gewartet hat.\\
@@ -189,10 +194,136 @@ Die Anzahl der zur Verfügung stehenden Prozessoren kann über
     gobble=2,
     frame=lines,
     framesep=2mm]{java}
-
     java.lang.Runtime.getRuntime().availableProcessors();
 \end{minted}\\
 
 ermittel werden.\\
 
-Bei der \textbf{Parallelisierung} geht es nicht nur um die Ersparnis von Rechenzeit, sondern auch darum, Arbeit in kürzerer Zeit zu verrichten.
+Um einen Thread zu unterbrechen, wurde die Methode \code{stop} genutzt, die aber mittlerweile \textbf{depcrecated} ist\footnote{
+Grund: Ist der Thread gerade in einem \textit{synchronized}-Block und der Thread wird gestoppt, ist es möglich, dass das Objekt in einen inkonsistenten Zustand überführt wird (vgl.~\cite[40]{Oec22}).
+}.\\
+Stattdessen sollte \code{+isInterrupted():boolean} verwendet werden um zu überprüfen, ob ein Thread unterbrochen wurde - \code{isInterrupted()} ändert dabei nicht den \textbf{interrupted status} des betreffenden Objektes, im Gegensatz zu
+\begin{center}
+\staticcode{+interrupted():boolean throws InterruptedException}
+\end{center}
+welche das \textit{Interrupted-Flag} zurücksetzt.\\
+
+Wird ein Thread unterbrochen, und er befindet sich bspw. gerade über \code{sleep} / \code{join} / \code{wait} in einem bestimmten Zustand, werfen diese Methoden eine \code{InterruptedException}, auf die man entsprechend reagieren sollte.
+
+\newpage
+
+Im folgenden Beispiel wird die \code{InterruptedException} innerhalb der \code{while}-Schleife gefangen. Danach wird
+das interne flag wieder zurückgesetzt, die Schleife läuft weiter\footnote{
+    Class Thread - sleep(): \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Thread.html#sleep(long)}
+}.
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    frame=lines,
+    framesep=2mm]{java}
+    public void run() {
+    while (true) {
+        while (!isInterrupted()) {
+            try {
+                /**
+                 * sleep() bubbles InterruptedException up.
+                 * From the Thread.sleep() docs:
+                 * "Throws: InterruptedException – if any thread has
+                 * interrupted the current thread.
+                 * The interrupted status of the current thread is
+                 * cleared when this exception is thrown."
+                 */
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                System.out.println("[InterruptedException]");
+            }
+        }
+    }
+}
+\end{minted}\\
+
+Die alternative (richtige) Imeplementierung berücksichtigt sowohl das \textit{Interrupt-Flag} als auch eine \code{InterruptedException} - in beiden Fällen wird die \code{while}-Schleife unterbrochen:
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    frame=lines,
+    framesep=2mm]{java}
+    public void run() {
+        try {
+            while (!isInterrupted()) {
+                Thread.sleep(100);
+            }
+        } catch (InterruptedException e) {
+            System.out.println("[InterruptedException]");
+        }
+    }
+}
+\end{minted}\\
+
+Es ist zu berücksichtigen, dass \code{interrupt()} \underline{kein sofortiges Ende} des Ziel-Threads bedingt: Der Thread läuft so lange weiter, wie es seine \code{run()}-Methode bedingt (vgl.~\cite[44 f.]{Oec22}):
+
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    frame=lines,
+    framesep=2mm]{java}
+    Runnable r = () -> {
+        while (!Thread.currentThread().isInterrupted()) {
+            // do something...
+        }
+
+        int[] p = new int[100];
+        for (int i = 0; i < 10; i++) {
+            for (int j = i; j < 10; j++) {
+                p[j] = i - j;
+                Arrays.sort(p);
+            }
+        }
+    };
+
+    // main() ruft Thread auf:
+    Thread t1 = new Thread(t1);
+
+    t1.start();
+    Thread.sleep(1000);
+    System.out.println("isAlive(): " + t1.isAlive());
+    demo.interrupt();
+    int i = 0;
+    while (demo.isAlive()) {
+        i++;
+    }
+    System.out.println(
+        "Thread lived " + i + " iterations after interrupting"
+    );
+}
+\end{minted}\\
+
+In dem Code-Beispiel wird in der \code{while}-Schleife \code{isAlive()} als Abbruchbedingung verwendet, was \textbf{aktives Warten} darstellt.
+Dies ist in dem Beispiel nötig, um an die Zählvariable zu kommen.
+Um auf das Ende eines Threads zu warten, verwendet man \code{join}.
+
+\subsection*{Befristetes Warten}
+
+Befristetes Warten kann verwendet werden, um einen Thread nach einer gewissen Zeitdauer zu beenden.
+Hierzu wird \code{join(milis:long):void} genutzt.\\
+Im folgenden Beispiel wird $10$ Sekunden auf das Ende eines Threads gewartet.
+Läuft der Thread danach noch, wird er mittels \code{interrupt()} unterbrochen.
+Da der Thread in seiner  \code{run}-Methode danach noch weiter laufen kann (s. o.), muss erneut mittels \code{join()} auf
+das Ende der Ausführung gewartet werden.
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    frame=lines,
+    framesep=2mm]{java}
+    t1.join(10000);
+    t1.interrupt();
+    t1.join();
+}
+\end{minted}\\

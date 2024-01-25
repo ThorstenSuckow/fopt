@@ -17,6 +17,7 @@
 \usepackage{enumitem}
 \usepackage[outputdir=../../auxil]{minted}
 \usepackage{comment}
+\usepackage{ulem}
 \usepackage[inkscapeformat=png]{svg}
 \usepackage[titles]{tocloft}
 \usepackage{titlesec}
@@ -92,6 +93,10 @@
 \NewDocumentCommand{\code}{v}{%
 	\texttt{\textcolor{blue}{#1}}%
 }
+\NewDocumentCommand{\staticcode}{v}{%
+	\underline{\texttt{\textcolor{blue}{#1}}}%
+}
+
 
 \usepackage{textcomp} 			% Celsius-Darstellung
 \usepackage{amssymb,amsfonts,amstext,amsmath}	% Mathematische Symbole
