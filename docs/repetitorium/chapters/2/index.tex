@@ -84,11 +84,115 @@ Die \code{Runnable}-Schnittstelle ist ein \textbf{Functional Interface}\footnote
 
 \end{minted}\\
 
-Das \textit{Pausieren} von Threads kann mittels der Methode \code{+sleep():void throws java.lang.InterruptedException} realisiert werden.\\
+Das \textit{Pausieren} von Threads kann mittels der statischen Methode\footnote{
+    statisch, weil der \underline{gerade aktive Thread} ``schlafen`` gelegt wird.
+} \code{+sleep():void throws java.lang.InterruptedException} realisiert werden.
+Der Thread wird dann bei der Thread-Umschaltung für die geg. Zeit nicht mehr vom Betriebssystem berücksichtigt und verbraucht in dieser Zeit auch keine Rechnezeit (vgl~\cite[16]{Oec22}).\\
+
+$\rightarrow$ Die Reihenfolge der auszuführenden Threads ist nicht fest vorgegeben, deshalb kann man mit \code{sleep} keine Ausführungsreihenfolge erzwingen.\\
 
 \textbf{Echte Parallelität} wird bei der Betrachtung möglicher Reihenfolgen von Aktionen nicht berücksichtigt: Wenn $A$ und $B$ \textit{parallel} laufen, entspricht das der Reihenfolge $A\ \rightarrow\ B$ bzw. $B\ \rightarrow\ A$ - viele Probleme ergeben sich aus den möglichen Reihenfolgen der Abarbeitung, deshalb ist es wichtig, den Programmcode so zu implementieren, dass er alle Prozesse vom Vorrang her (zunächst)\footnote{
 wartenden Prozessen kann später über bestimmte Warteschlangenimplementierungen nach der Wiederuafnahme ihrer Tätigkeit Vorrang eingeräumt werden
 } als ``gleichberechtigt`` ansieht.
 
+\section{Probleme beim Zugriff auf gemeinsam genutzte Objekte}
 
+\begin{tcolorbox}
+   Wenn mehrere Threads lesend und mindestens ein Thread schreibend auf gemeinsame Daten zugreifen, dann müssen diese Zugriffe \textbf{synchronisiert} werden.
+\end{tcolorbox}\\
 
+In Java besitzt jedes Objekt eine \textbf{Sperre}, die in der Klasse \code{Object} gesetzt wird (vgl.\cite[26]{Oec22}).\\
+
+Wenn eine Methode, die nicht als \code{static} gekennzeichnet ist, mit \code{synchronized}\footnote{
+    Java Language Specification - 8.4.3.6. synchronized Methods: \url{https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.4.3.6} - abgerufen 25.01.2024
+} gekennzeichnet wird, dann wird das Objekt für andere Threads $t_2..t_n$ gesperrt, wenn ein Thread $t_1$ auf die Methode zugreift.
+
+Hierbei wird die Sperre gesetzt, bevor die Methode ausgeführt wird - ist bereits eine Sperre gesetzt, dann kann der Thread nicht auf die Methode zugreifen und wird in die \textbf{Warteschlange} des Objektes für die betreffende Methode eingereiht, der aufrufende Thread ist dann \textbf{blockiert}.
+Solange der Thread blockiert ist, wird er (wie bei \code{sleep}) nicht mehr beim Umschalten berücksichtigt und verbraucht so keine Rechenzeit (vgl.~\cite[26]{Oec22}).
+\\
+
+Neben \textit{synchronisierten Methoden} können auch \textbf{synchronisierte Anweisungsblöcke}\footnote{
+Java Language Specification - 14.19. The synchronized Statement: \url{https://docs.oracle.com/javase/specs/jls/se21/html/jls-14.html#jls-14.19}, insb. 14.2. Blocks: \url{https://docs.oracle.com/javase/specs/jls/se21/html/jls-14.html#jls-Block} - beides abgerufen 25.01.2024
+} implementiert werden:\\
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    frame=lines,
+    framesep=2mm]{java}
+
+    // statt
+    public synchronized void doDomething() {
+        // ...
+    }
+
+    // ... geht auch:
+    public void doSomething() {
+        synchronized (this) {
+            // ...
+        }
+    }
+\end{minted}\\
+
+Es ist ebenfalls möglich, \textit{statische Methoden} zu synchronisieren.
+Beim Synchronisieren statischer Methoden werden nicht die Objekte der betreffenden Klasse gesperrt, wenn ein Thread die statische Methode aufruft.\\
+
+In Java sind Sperren \textbf{reentrant} (\textit{wiederbetretbar}):
+
+\blockquote[\url{https://docs.oracle.com/javase/tutorial/essential/concurrency/locksync.html}, Hervorhebungen i.O.]{
+     [...] a thread can acquire a lock that it already owns. Allowing a thread to acquire the same lock more than once enables \textit{reentrant} synchronization. This describes a situation where synchronized code, directly or indirectly, invokes a method that also contains synchronized code, and both sets of code use the same lock. Without reentrant synchronization, synchronized code would have to take many additional precautions to avoid having a thread cause itself to block.
+
+\footnote{
+Java Tutorials - Intrinsic Locks and Synchronization: \url{https://docs.oracle.com/javase/tutorial/essential/concurrency/locksync.html} - abgerufen 25.01.2024
+}
+}\\
+
+\textbf{Konstruktoren} können nicht synchronisiert werden, aber man kann einen Anweisungsblock innerhalb eines Konstruktors synchroniseren.
+
+\subsection*{Notwendigkeit von synchronized}
+
+In Java sind lesende und schreibende Zugriffe auf Referenzen und Basisdatentypen \textbf{atomar}\footnote{
+hiermit ist \textit{unteilbar} gemeint
+}.\\
+
+Zugriffe auf \code{long} und \code{double} sind nicht atomar: Lesen und schreiben kann hier in zwei Schritten auf jeweils 32 Bits erfolgen (vgl.~\cite[30]{Oec22}).\\
+
+\subsection*{volatile}
+\code{volatile}\footnote{``flüchtig``.
+S. a. Java Language Specification - 8.3.1.4. volatile Fields: \url{https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.3.1.4} - abgerufen 25.01.2024
+} kann verwendet werden, um sicherzustellen, dass ein Thread immer den aktuellen Wert der Variable liest.
+Der Compiler führt ggf. Optimierungen vor, und Variablen werden aus dem Cache gelesen.
+Ein Thread $t_3$ schreibt die Daten, andere Threads $t_1, t_2$ greifen aber auf diese Daten über nicht synchronisierte Methoden zu.
+Die Verwendung von \code{volatile} führt dazu, das Zugriff auf die Daten immer über den Hauptspeicher erfolgt, und somit immer der aktuelle Wert gelesen wird.
+
+$\rightarrow$ für Variablen, die in \code{synchronized} Blöcken/Methoden stehen, geschieht dies automatische.
+
+\section{Ende von Java-Threads}
+
+Ein Thread ist \textbf{beendet}, wenn seine \code{run}- bzw. die \code{main}-Methode des Ursprungs-Threads beendet ist (vgl.~\cite[33]{Oec22}).\\
+
+Die \code{+start():void}-Methode eines Thread-Objekts kann maximal einmal aufgerufen werden (ansonsten kommt es zu einer \code{java.lang.IllegalThreadStateException}) - zu jedem Thread-Objekt gibt es also maximal einen Thread.
+
+Mittels \code{+join(millis: int = 0):void throws java.lang.InterruptedException} kann auf das Ende eines Threads gewartet werden.
+\code{millis} ist Optional und gibt ein Timeout an, es wird dann höchstens so lange auf das Ende eines Threads gewartet.\\
+Nachdem \code{join} beendet ist, läuft die implementierende Methode weiter.\\
+
+\code{start()} und \code{join()} haben einen \code{volatile}-Effekt: Daten, die von Thread $t_a$ geändert wurden, sind für Thread $t_b$ aktuell, wenn $t_b$ mittels \code{join} auf das Ende von $t_a$ gewartet hat.\\
+Für \code{start} gilt, wenn $t_a$ den Thread $t_b$ startet, liest $t_b$ die von $t_a$ geänderten Daten aktuell (vgl.~\cite[37]{Oec22}).\\
+
+Die Anzahl der zur Verfügung stehenden Prozessoren kann über
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    frame=lines,
+    framesep=2mm]{java}
+
+    java.lang.Runtime.getRuntime().availableProcessors();
+\end{minted}\\
+
+ermittel werden.\\
+
+Bei der \textbf{Parallelisierung} geht es nicht nur um die Ersparnis von Rechenzeit, sondern auch darum, Arbeit in kürzerer Zeit zu verrichten.
