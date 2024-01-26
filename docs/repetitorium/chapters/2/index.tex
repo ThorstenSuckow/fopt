@@ -499,3 +499,32 @@ Im folgenden Beispiel werden 3 Threads in die Warteschlange eines Objektes einge
 
     }
 \end{minted}\\
+
+
+\section{Vordergrund- und Hintergrundthreads}
+
+Es existiert ein Thread\footnote{
+der sog. \textbf{Reference Handler} mit der höchsten Thread-Priorität von $10$.
+} in Java, der nach nicht mehr referenzierten Objekten sucht und den belegten Speicherplatz solcher Objekte wieder dem Freispeicher hinzufügt, als Teil der \textbf{Garbage Collection} in Java (vgl.~\cite[88]{Oec22}).\\
+\noindent
+Dieser Thread läuft als \code{Hintergrund-Thread} bzw. \textbf{Daemon Thread}.\\
+
+\noindent
+Ein Java-Programm ist beendet, wenn alle Threads beendet sind - dazu gehört der \textit{Main}-Thread wie auch alle \textbf{Vordergrund-Threads} (auch: \code{User Threads}) - Hintergrund-Threads werden hierbei nicht beachtet.\\
+
+\noindent
+Threads können von dem Entwickler \underline{vor dem Start des Threads} zu \textit{Daemon Threads} gemacht werden (\code{+java.lang.Thread::setDaemon(on: boolean): void}) - ohne expliziten Status hat ein Thread denjenigen Status, wie der Thread, aus dem er erzeugt wird.
+
+\noindent
+$\rightarrow$ Der Thread, der die \code{main}-Methode eines Java-Programms ausführt, ist ein Vordergrund-Threads.
+Der Status dieses Threads kann nachträglich nciht mehr geändert werden, da er schon läuft, wenn das Programm gestartet ist.\\
+Alle durch ihn erzeugten Threads sind implizit auch Vordergrund-Threads.
+
+\section{Zusammenfassung}
+
+\textbf{Aktive Klassen} sind \textbf{Thread-Klassen} bzw. Klassen, die \code{Runnable} implementieren.\\
+
+\noindent
+\textbf{Passive Klassen} sind Klassen der Objekte, die von mehreren Threads benutzt werden.\\
+
+$\rightarrow$ Synchronisation ( \code{wait, notify, notifyAll, synchronized...}) ist i.d.R. immer in der passiven Klasse realisiert.
