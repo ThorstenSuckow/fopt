@@ -145,8 +145,12 @@ In Java sind Sperren \textbf{reentrant} (\textit{wiederbetretbar}):
 
 \blockquote[\url{https://docs.oracle.com/javase/tutorial/essential/concurrency/locksync.html}, Hervorhebungen i.O., abgerufen 25.01.2024]{
      [...] a thread can acquire a lock that it already owns. Allowing a thread to acquire the same lock more than once enables \textit{reentrant} synchronization. This describes a situation where synchronized code, directly or indirectly, invokes a method that also contains synchronized code, and both sets of code use the same lock. Without reentrant synchronization, synchronized code would have to take many additional precautions to avoid having a thread cause itself to block.
-
 }\\
+
+\begin{tcolorbox}
+    Ein Thread kann eine weitere Sperre für ein Objekt anfordern, für das der Thread bereits eine Sperre hält.
+    Ansonsten könnte es passieren, dass sich Threads selber ausschließen.
+\end{tcolorbox}\\
 
 \textbf{Konstruktoren} können nicht synchronisiert werden, aber man kann einen Anweisungsblock innerhalb eines Konstruktors synchroniseren.
 
@@ -240,7 +244,6 @@ das interne flag wieder zurückgesetzt, die Schleife läuft weiter\footnote{
             }
         }
     }
-}
 \end{minted}\\
 
 Die alternative (richtige) Imeplementierung berücksichtigt sowohl das \textit{Interrupt-Flag} als auch eine \code{InterruptedException} - in beiden Fällen wird die \code{while}-Schleife unterbrochen:
@@ -260,7 +263,6 @@ Die alternative (richtige) Imeplementierung berücksichtigt sowohl das \textit{I
             System.out.println("[InterruptedException]");
         }
     }
-}
 \end{minted}\\
 
 Es ist zu berücksichtigen, dass \code{interrupt()} \underline{kein sofortiges Ende} des Ziel-Threads bedingt: Der Thread läuft so lange weiter, wie es seine \code{run()}-Methode bedingt (vgl.~\cite[44 f.]{Oec22}):
@@ -300,7 +302,6 @@ Es ist zu berücksichtigen, dass \code{interrupt()} \underline{kein sofortiges E
     System.out.println(
         "Thread lived " + i + " iterations after interrupting"
     );
-}
 \end{minted}\\
 
 In dem Code-Beispiel wird in der \code{while}-Schleife \code{isAlive()} als Abbruchbedingung verwendet, was \textbf{aktives Warten} darstellt.
@@ -325,5 +326,205 @@ das Ende der Ausführung gewartet werden.
     t1.join(10000);
     t1.interrupt();
     t1.join();
-}
 \end{minted}\\
+
+
+\section{wait und notify}
+
+Werden Objekte von mehreren Threads genutzt und dabei verändert, helfen \code{synchronized}-Methoden dabei, für ein Objekt einen konsistenten Zustand zu gewährleisten.\\
+
+\noindent
+\textbf{Aktives Warten} wurde im vorhergehenden Abschnitt bereits kurz erwähnt.
+\code{wait} und \code{notify} ermöglichen Implementierungen \underline{ohne} auf \textit{aktives warten} zurückgreifen zu müssen: Die Methoden werden auf ein Objekt angewendet, das der aufrufende Thread zum Zeitpunkt des Aufrufs durch \code{synchronized} gesperrt hat.
+
+\begin{tcolorbox}
+    Der Thread, der \code{wait} / \code{notify} auf ein Objekt aufruft, muss auch die Sperre des Objektes halten, ansonsten wird eine \code{java.lang.IllegalMonitorStateException} geworfen\footnote{
+    class IllegalMonitorStateException - \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/IllegalMonitorStateException.html} - abgerufen 25.01.2024
+    } (``...current Thread is not owner.``).
+\end{tcolorbox}\\
+
+\begin{center}
+\code{+java.lang.Object::wait():void throws InterruptedException}
+\end{center}
+\noindent
+blockiert den aufrufenden Thread und fügt ihn in die Warteschlange des Objektes ein, das von dem Thread gesperrt wurde.\\
+\underline{Danach wird die Sperre des Objektes aufgehoben}.
+
+\begin{center}
+    \code{+java.lang.Object::notify():void throws InterruptedException}
+\end{center}
+\noindent
+holt einen wartenden Thread aus der Warteschlange.\\
+Die Sperre des Objektes wird aufgehoben, sobald die \code{synchronized}-Methode, in der \code{notify()} aufgerufen wurde, beendet ist (durch eine Rückgabe).\\
+Der Thread, der aus der Warteschlange kommt, wird an der Stelle weiter ausgeführt, an der er in die Warteschlange eingetreten ist: Dafür sperrt er aber zunächst erneut das Objekt!
+
+\begin{center}
+    \code{+java.lang.Object::notifyAll():void throws InterruptedException}
+\end{center}
+\noindent
+weckt \underline{alle} Threads auf, die sich in der Warteschlange befinden, und die erneut die Wartebedingungen überprüfen können.\\
+Die Reihenfolge, in der wartende Threads mittels \code{notify()}/\code{notifyAll()} aus der Warteschlange entfernt werden, ist nicht festgelegt.
+
+\newpage
+\noindent
+Im folgenden Beispiel wird ein Thread in die Warteschlange des \code{Waiter}-Objekts eingereiht, bevor ein zweiter ihn mittels \code{notify()} daraus wieder entfernt.
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    frame=lines,
+    framesep=2mm]{java}
+    class Waiter {
+        private int n = 0;
+        public synchronized void enter() {
+            String currentThread = Thread.currentThread().getName();
+            System.out.println(currentThread + " entering.");
+            while (n <= 0) {
+                try {
+                    System.out.println(currentThread + " getting some rest.");
+                    this.wait();
+                    System.out.println(currentThread + ", rise and shine!");
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            System.out.println(currentThread + " says bye bye!");
+        }
+        public synchronized void leave() {
+            n++;
+            notify();
+        }
+    }
+
+    // ... main()
+    public static void main(String[] args) throws InterruptedException {
+        Waiter waiter = new Waiter();
+
+        Runnable r1 = waiter::enter;
+        Runnable r2 = waiter::leave;
+
+        Thread enterThread = new Thread(r1);
+        Thread leaveThread = new Thread(r2);
+
+        enterThread.start();
+        leaveThread.start();
+
+        enterThread.join();
+        leaveThread.join();
+    }
+\end{minted}\\
+
+\code{wait} besitzt überladene Variantent, mit denen man einen Zeitraum angeben kann in dem gewartet wird - nach der angegebenen Zeitspanne wird der Thread aus der Warteschlange geholt.
+Wie bei join erwartet \code{wait} hier einen Wert in \textit{millisekunden}. \code{wait(0)} entspricht \code{wait()}.
+
+
+\begin{tcolorbox}
+    Es ist nicht garantiert, dass ein geweckter Thread die nächste Sperre setzt - das kann durch jeden anderen Thread passieren, der Zugriff auf die Methode anmeldet (vgl.~\cite[61]{Oec22}).
+\end{tcolorbox}\\
+
+\section{notifyAll}
+
+Erst wenn in einer \code{synchronized}-Methode eine Rückgabe erfolgt, wird die Sperre auf das Objekt aufgehoben (es sei denn, die Sperre wurde bspw. durch ein \code{wait} vorher aufgehoben.)
+
+\noindent
+Mit der Methode
+
+\begin{center}
+    \code{+java.lang.Object::notifyAll():void throws InterruptedException}
+\end{center}
+
+\noindent
+werden \underline{alle} in der Warteschlange eines Objektes befindlichen Threads geweckt.
+\noindent
+Der aufrufende Thread muss Besitzer der Sperre sein, ansonsten wird eine \code{IllegalMonitorStateException} geworfen.\\
+
+\begin{tcolorbox}
+Wenn in unterschiedlichen Methoden \code{wait()} genutzt wurde, um Threads in die Warteschlange einzufügen, dann bewirkt ein Aufruf von \code{notifyAll()} auch, dass alle diese wartenden Threads geweckt werden und ihre Wartebedingungen überprüfen.
+Es ist also wichtig, dass die Wartebedingungen sinnvoll implementiert sind, ansonsten kann es zu unerwünschten Seiteneffekten kommen\footnote {
+    in \cite[71 ff.]{Oec22} anhand des Erzeuger-Verbraucher-Problems beschrieben.
+}.\\
+Genberell sollte \code{notifyAll} dann verwendet werden, wenn sich Threads mit unterschiedlichen Wartebedingungen in einer Warteschlange befinden, oder wenn sich der Zustand  des Objektes so ändert, dass mehrere Threads ihre \textit{while-wait-Schleife} verlassen können (vgl.~\cite[73]{Oec22}).
+\end{tcolorbox}
+
+
+\noindent
+Je nach Anzahl der wartenden Threads is \code{notifyAll()} nicht sehr performant, insb. wenn die Überprüfung der Wartebedingung komplex ist.
+
+\noindent
+Im folgenden Beispiel werden 3 Threads in die Warteschlange eines Objektes eingereiht. \code{notifyAll()} weckt alle diese Threads - das Verhalten danach ist das gleiche, als würde keine Warteschlange genutzt: Die Threads reihen sich ein und bekommen Zugriff auf das Objekt, sobald eine Sperre aufgehoben wird:
+\blockquote[{java.lang.Object - notifyAll(): \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#notifyAll()} - abgerufen 26.01.2024}]{
+    Wakes up all threads that are waiting on this object's monitor.\\ A thread waits on an object's monitor by calling one of the wait methods.
+    The awakened threads will not be able to proceed until the current thread relinquishes the lock on this object. The awakened threads will compete in the usual manner with any other threads that might be actively competing to synchronize on this object; for example, the awakened threads enjoy no reliable privilege or disadvantage in being the next thread to lock this object.
+}
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    frame=lines,
+    framesep=2mm]{java}
+    class Waiter {
+        public synchronized void enter() {
+            String currentThread = Thread.currentThread().getName();
+            System.out.println(currentThread + " entering.");
+            try {
+                System.out.println(currentThread + " getting some rest.");
+                this.wait();
+                System.out.println(currentThread + ", rise and shine!");
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            System.out.println(currentThread + " says bye bye!");
+        }
+        public synchronized void leave() {
+            notifyAll();
+        }
+    }
+
+    // ... main()
+    public static void main(String[] args) throws InterruptedException {
+        Waiter waiter = new Waiter();
+
+        Thread t1 = new Thread(waiter::enter);
+        Thread t2 = new Thread(waiter::enter);
+        t1.start();
+        t2.start();
+
+        // t1 und t2  Zeit geben, um sich in die Warteschlange einzureihen
+        Thread.sleep(1000);
+
+        // notifyAll() - Threads werden geweckt und führen ihre Aufgaben durch
+        Thread leaveThread = new Thread(waiter::leave);
+        leaveThread.start();
+
+    }
+\end{minted}\\
+
+
+\section{Vordergrund- und Hintergrundthreads}
+
+Es existiert ein Thread\footnote{
+der sog. \textbf{Reference Handler} mit der höchsten Thread-Priorität von $10$.
+} in Java, der nach nicht mehr referenzierten Objekten sucht und den belegten Speicherplatz solcher Objekte wieder dem Freispeicher hinzufügt, als Teil der \textbf{Garbage Collection} in Java (vgl.~\cite[88]{Oec22}).\\
+\noindent
+Dieser Thread läuft als \code{Hintergrund-Thread} bzw. \textbf{Daemon Thread}.\\
+
+\noindent
+Ein Java-Programm ist beendet, wenn alle Threads beendet sind - dazu gehört der \textit{Main}-Thread wie auch alle \textbf{Vordergrund-Threads} (auch: \code{User Threads}) - Hintergrund-Threads werden hierbei nicht beachtet.\\
+
+\noindent
+Threads können von dem Entwickler \underline{vor dem Start des Threads} zu \textit{Daemon Threads} gemacht werden (\code{+java.lang.Thread::setDaemon(on: boolean): void}) - ohne expliziten Status hat ein Thread denjenigen Status, wie der Thread, aus dem er erzeugt wird.
+
+\noindent
+$\rightarrow$ Der Thread, der die \code{main}-Methode eines Java-Programms ausführt, ist ein Vordergrund-Threads.
+Der Status dieses Threads kann nachträglich nciht mehr geändert werden, da er schon läuft, wenn das Programm gestartet ist.\\
+Alle durch ihn erzeugten Threads sind implizit auch Vordergrund-Threads.
+
+\section{Zusammenfassung}
+
+\textbf{Aktive Klassen} sind \textbf{Thread-Klassen} bzw. Klassen, die \code{Runnable} implementieren.\\
+
+\noindent
+\textbf{Passive Klassen} sind Klassen der Objekte, die von mehreren Threads benutzt werden.\\
+
+$\rightarrow$ Synchronisation ( \code{wait, notify, notifyAll, synchronized...}) ist i.d.R. immer in der passiven Klasse realisiert.
