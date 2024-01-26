@@ -443,7 +443,7 @@ Wenn in unterschiedlichen Methoden \code{wait()} genutzt wurde, um Threads in di
 Es ist also wichtig, dass die Wartebedingungen sinnvoll implementiert sind, ansonsten kann es zu unerwünschten Seiteneffekten kommen\footnote {
     in \cite[71 ff.]{Oec22} anhand des Erzeuger-Verbraucher-Problems beschrieben.
 }.\\
-Genberell sollte \code{notifyAll} dann verwendet werden, wenn sich Threads mit unterschiedlichen Wartebedingungen in einer Warteschlange befinden, oder wenn sich der Zustand  des Objektes so ändert, dass mehrere Threads ihre \textit{while-wait-Schleife} verlassen können (vgl.~\cite[73]{Oec22}).
+Genberell sollte \code{notifyAll} dann verwendet werden, wenn sich Threads mit unterschiedlichen Wartebedingungen in einer Warteschlange befinden (also wenn es \textbf{mehrere Wartebedingungen} gibt), oder wenn sich der Zustand des Objektes so ändert, dass mehrere Threads ihre \textit{while-wait-Schleife} verlassen können (vgl.~\cite[73]{Oec22}).
 \end{tcolorbox}
 
 
