@@ -177,7 +177,6 @@ Jeder Eintrag in dem Feld repräsentiert ein Mitglied der Semaphorgruppe.
 Auf die Implementierung von \code{p()}/\code{v()} wird hierbei verzichtet - stattdessen gibt es eine Methode mit einer Signatur ähnlich zu
 
 \begin{minted}[mathescape,
-    linenos,
     numbersep=5pt,
     gobble=2,
     frame=none,
@@ -190,7 +189,6 @@ Die Methode schiebt so lange einen Thread in eine Warteschlange, bis die Wartebe
 
 
 \begin{minted}[mathescape,
-    linenos,
     numbersep=5pt,
     gobble=2,
     frame=none,
@@ -200,10 +198,61 @@ Die Methode schiebt so lange einen Thread in eine Warteschlange, bis die Wartebe
     }
 \end{minted}\\
 
-überprüft: Änderungen werden dann nur durchgeführt, wenn nach der Änderung die Werte aller Semaphore der Gruppe nicht negativ sind (vgl.~\cite[109](Oec22)).\\
+Änderungen werden dann nur durchgeführt, wenn nach der Änderung die Werte aller Semaphore der Gruppe nicht negativ sind (vgl.~\cite[109]{Oec22}).\\
 
 \noindent
-Wie bei der additiven Semaphore ist es nötig, Threads über \code{notifyAll()} aus der Warteschlange zu holen - ansonsten kann es auch hier vorkommen, dass ein Thread, der weiterlaufen könnte, nicht geweckt wird.
+Wie bei der additiven Semaphore ist es nötig, Threads über \code{notifyAll()} aus der Warteschlange zu holen - ansonsten kann es auch hier vorkommen, dass ein Thread, der weiterlaufen könnte, nicht geweckt wird.\\
+
+\noindent
+Das folgende Beispiel zeigt eine Implementierung einer einfachen Semaphorgruppe (vgl.~\cite[110, Listing 3.5]{Oec22} .
+Auf die Überprüfung der Argumente in den Methoden (Eingabelänge == Argumentlänge) wurde verzichtet.
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    fontsize=\small,
+    frame=lines,
+    framesep=2mm]{java}
+    class SemaphoreGroup {
+        int[] values;
+        public SemaphoreGroup (int n) {
+            values = new int[n];
+            for (int i = 0; i < n; i++) {
+                values[i] = 1;
+            }
+        }
+
+        public synchronized void change(int[] set) {
+
+            while (!canChange(set)) {
+                try {
+                    wait();
+                } catch (InterruptedException ignored) {}
+            }
+
+            changeValues(set);
+            notifyAll();
+        }
+
+        private void changeValues(int[] set) {
+            for (int i = 0; i < set.length; i++) {
+                values[i] =  values[i] + set[i];
+            }
+        }
+
+        private boolean canChange(int[] set) {
+            for (int i = 0; i < set.length; i++) {
+                if (values[i] + set[i] < 0) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+    }
+\end{minted}
+
 
 
 \subsection{Notizen zu den Übungen}
@@ -212,10 +261,11 @@ Die Abfrage von Außen auf Listen/Felder von Threads, die sich derzeitig in der 
 Außerdem sollte eine Kopie der Listen zurückgegeben werden, um Manipulation an der tatsächlichen Liste zu verhindern.\\
 
 \noindent
-Bei Exceptions, die nicht abgefangen werden, sorg \code{finally} für ein Ausführen des durch \textit{finally} eingeleiteten Anweisungsblock auch im Fall einer Exception\footnote{
+Bei Exceptions, die nicht abgefangen werden, sorgt \code{finally} für ein Ausführen des durch \textit{finally} eingeleiteten Anweisungsblock auch im Fall einer Exception\footnote{
 Java Language Specification - 14.20.2. Execution of try-finally and try-catch-finally : \url{https://docs.oracle.com/javase/specs/jls/se21/html/jls-14.html#jls-14.20.2} - abgerufen 26.01.2024
-}
+}, wie folgendes Beispiel zeigt:
 
+\newpage
 \begin{minted}[mathescape,
     linenos,
     numbersep=5pt,
@@ -308,8 +358,53 @@ Beim Empfangen wird nur so lange gewartet, bis der Puffer nicht mehr leer ist:
     \item Es werden $n$ Daten aus dem Puffer gelesen - sind weniger als $n$ Daten im Puffer, werden auch nur soviele Daten gelesen (die Daten werden hierbei in ein Feld passender Länge kopiert).
 \end{itemize}
 
-\section{Philosophen-Problem}
-  - keine Notizen -
+\section{Das Philosophen-Problem}
+ Das \textbf{Philosophen-Problem}\footnote{
+Wikipedia - Dining Philosophers Problem: \url{https://en.wikipedia.org/wiki/Dining_philosophers_problem} - abgerufen 27.01.2024
+}
+veranschaulicht die Entstehung von Verklemmungen: An einem runden Tisch sitzen 5 Philosophen ($P_1,...,P_5$), die abwechselnd mit Denken und Essen beschäftigt sind.\\
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.25]{chapters/3/img/philosopher}
+    \caption{ Eine Illustration des Philosophen-Problems: Ein Philosoph benötigt jeweils die Gabel links und rechts von ihm zum Essen (Quelle: eigene)}
+    \label{fig:philosopher}
+\end{figure}
+
+
+ Zum Essen benötigen die Philosophen Gabeln, und zwar eine in jeder Hand.
+ Die Gabeln liegen genau zwischen den Philosophen.
+ Angenommen, alle Philosophen sind mit Denken beschäftigt.
+ Wenn jetzt ein Philosoph $P_1$ davon zum Essen übergeht, greift er links eine Gabel, und genau in dem Moment wollen die anderen Philosophen auch zum Essen übergehen: Alle nehmen ihre linken Gabeln.
+$P_1$ möchte nun die rechte Gabel nehmen, die aber als linke Gabel von $P_5$ von diesem gehalten wird - also muss $P_1$ warten, bis $P_5$ seine Gabel freigibt - der gleichzeitig aber nicht essen kann, weil er dazu die Gabel benötigt, die $P_4$ hält.
+Da alle Philosophen auf eine Freigabe der Gabeln warten, kommt keiner dazu, zu essen.\\
+
+\noindent
+Diese Verklemmungssituation läßt sich bspw. durch Semaphorgruppen lösen, wobei ein Philosoph jeweils zwei Gabeln \textbf{auf einen Schlag} anfordert, oder auch durch $n$ Semaphoren, wobei jeder Semaphor eine Gabel repräsentiert, und ein zusätzlicher Semaphor als ``Essenserlaubnis``, die den ``Gabel-Semaphoren`` vorgeschaltet ist, wie im folgenden Beispiel:
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    fontsize=\small,
+    frame=lines,
+    framesep=2mm]{java}
+    public void run() {
+        while (true) {
+            // eatLock ist eine Mutex-Semaphore.
+            // left() und right() rufen jeweils p()
+            // (bzw. v() wenn release == true) auf
+            // die benachbarten Gabeln auf (wobei Gabel rechts ==
+            // index des aufrufenden Philosophen ist)
+            eatLock.acquire();
+            table.left(position, false).right(position, false);
+            eatLock.release();
+
+            table.left(position, true).right(position, true);
+        }
+\end{minted}\\
+
+
 
 \section{Leser-Schreiber-Problem}
 
