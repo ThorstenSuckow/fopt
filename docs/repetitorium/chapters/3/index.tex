@@ -388,7 +388,6 @@ Seut Java 5 gibt es drei weitere Packages, die Klassen und Schnittstellen anbiet
 \begin{minted}[mathescape,
     numbersep=5pt,
     gobble=2,
-    fontsize=\small,
     frame=none,
     framesep=2mm]{java}
     java.util.concurrent
@@ -442,3 +441,87 @@ Zu den \textbf{Synchronisationsklassen} zählen die Klassen
 
 \noindent
 \code{Queue}-Klassen ermöglichen den \code{synchronisierten} Datenaustausch zwischen Thread nach dem Erzeuger-Verbraucher-Prinzip: Ein Objekt in eine volle Warteschlange zu legen wird so lange blockiert, bis die Warteschlange nicht mehr voll ist; entsprechend wird der Versuch blockiert, aus einer leeren Warteschlange etwas zu entnehmen (vgl.~\cite[164]{Oec22}).
+
+\section{Das Fork-Join-Framework von Java 7}
+
+Die \code{concurrent}-Bibliothek wurde in Java 7 um das \textbf{Fork-Join-Framework} erweitert.\\
+
+\noindent
+Eine zentrale Klasse davon ist \code{ForkJoinPool}, der wie der \code{ThreadPoolExecutor} ein \code{ThreadPool} realisiert und \code{ExecutorService} implementiert.\\
+
+\noindent
+\$rightarrow\ dieser \code{ThreadPool} ist speziell für baumartige Berechnungen gedacht.\\
+
+\begin{tcolorbox}
+Ein Objekt von \code{RecursiveTask} / \code{RecursiveAction} stellt einen Knoten des Berechnungsbaumes dar.
+\end{tcolorbox}\\
+
+\noindent
+Der Konstruktor von \code{ForkJoinPool} erlaubt auch Übergabe eines \code{int}-Wertes, mit dem man den Parallelitätsgrad angeben kann\footnote{default entspricht der Anzahl der Prozessoren}.\\
+
+\noindent
+Aufträge werden durch Objekte der generischen Klasse \code{ForkJoinTask} repräsentiert, wobei der Typparameter der Typ des Resultats ist.\\
+
+\noindent
+\code{RecursiveAction}/\code{RecursiveTask} sind aus \code{ForkJoinTask} abgeleitet: \code{RecursiveAction} ist für Aufträge ohne Resultat gedacht (bspw. sortieren), \code{RecursiveTask} für Aufträge mit Ergebnis:\\
+
+\noindent
+Ein Thread eines \code{ForkJoinPools} kann weitere Aufträge bearbeiten, sobald er mit \code{join()} auf das Ende eines anderen Auftrages wartet - er ist durch das Warten also nicht blockiert; dadurch kann ein \code{ForkJoinPool} auch mit wenigen Threads baumartig verzweigte Berechnungen durchführen - das ist mit einem normalen \code{ThreadPool} nicht möglich (vgl.~\cite[168]{Oec22})\footnote{
+ebenda wird dies als der wesentliche Unterschied zwischen \textit{ForkJoinPool} und \textit{ThreadPoolExecutor} bezeichnet.
+}.\\
+
+\noindent
+Alle Threads des \code{ForkJoinPool}s sind \textbf{Daemon}-Threads.\\
+
+\noindent
+Vorgehen bei der Implementierung - \textbf{Divide & Conquer}: Prüfen, ob Berechnung klein genug, um direkt zu bearbeiten, falls nein,, neie \code{ForkJoinTasks} erzeugen und durch \code{fork()} dem \textbf{ThreadPool} übergeben, mit \code{join} auf auf die Bearbeitung warten und dann Teilergebnisse zu Gesamtergebnis kombinieren.
+
+Das folgende Beispiel ist \cite[168, Listing 3.25]{Oec22} entnommen und beinhaltet die Implementierung von \code{compute()}\footnote{
+    Class RecursiveTask<V> - compute(): \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/RecursiveTask.html#compute()} - abgerufen 27.01.2024
+} zur Berechnung der Fakultät:
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    fontsize=\small,
+    frame=lines,
+    framesep=2mm]{java}
+    class RecursiveTaskImpl extends RecursiveTask<Integer> {
+
+        private int n;
+
+        public RecursiveTaskImpl(int n) {
+            this.n = n;
+        }
+
+        public Integer compute() {
+            if (n == 0) {
+                return 1;
+            }
+
+            RecursiveTaskImpl t = new RecursiveTaskImpl(n - 1);
+            t.fork();
+            int r = t.join();
+            return n * r;
+        }
+    }
+\end{minted}\\
+
+\section{Ursachen für Verklemmungen}
+
+\begin{tcolorbox}
+    Ein \textbf{Betriebsmittel} ist ein Objekt, auf das ein Thread unter Umständen warten muss, bevor er es benutzen kann; es kann auch ein Objekt sein, dessen Nutzung durch höchstens einen Thread zu einem Zeitpunkt über Semaphore oder Locks realisiert wird (vgl.~\cite[186]{Oec22}).
+\end{tcolorbox}\\
+
+\noindent
+Folgende Bedingungen müssen erfüllt sein, damit es zu einer \textbf{Verklemmung} kommt:
+
+\begin{itemize}
+    \item Betriebsmittel sind nur unter gegenseitigem Ausschluss nutzbar (exklusiv).
+    \item Betriebsmittel, die in Verwendung sind, können dem benutzenden Thread nicht entzogen werden.
+    \item Threads besitzen bereits Betriebsmittel und fordern weitere an.
+    \item Folgende Bedingung gilt genau dann, wenn eine Verklemmung konkret vorliegt:
+    \begin{itemize}
+        \item Es gibt eine zyklische Kette von Threads, von denen jeder mindestens ein Betriesbmittel besitzt, das der nächste Thread in der Kette benötigt.
+    \end{itemize}
+\end{itemize}
