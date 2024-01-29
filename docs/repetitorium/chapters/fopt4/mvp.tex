@@ -45,9 +45,18 @@ Die \textbf{Präsentationskomponente} ist zuständig für die Ablaufsteuerung, i
 
 \begin{tcolorbox}
 Der \textbf{Presenter} hat eine Vermittlerrolle: Er kennt das \textbf{Model} und kann bei Bedarf vermitteln.\\
-Im Unterschied zu \textbf{MVC} kennen sich Model und \textbf{View} nicht.\\
+Im Unterschied zu \textbf{MVC} kennen sich Model und \textbf{View} nicht (s. Abbildung~\ref{fig:mvp}).\\
 \end{tcolorbox}
 
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.5]{chapters/fopt4/img/mvp}
+    \caption{Während bei MVC die Komponenten direkt  Informationen untereinander austauschen können, kennen sich bei MVP Model und View nicht, vermittelt wird über den Presenter. Der Presenter ist auch in der Lage, sich Daten von der View zu beschaffen. (Quelle: in Anlehnung an \cite[223, Bild 4.12]{Oec22})}
+    \label{fig:mvp}
+\end{figure}
+
+
+\noindent
 Der Presenter kann einen Teil der Validierungslogik enthalten, bspw. zum Erkennen fehlerhafter Eingabedaten.\\
 
 \noindent
