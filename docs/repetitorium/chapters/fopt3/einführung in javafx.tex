@@ -1,4 +1,4 @@
-\section{Einführung in die Programmierung grafischer Benutezroberflächen mit JavaFX}
+\section{Einführung in die Programmierung grafischer Benutzeroberflächen mit JavaFX}
 
 
 Eine grafische Benutzeroberfläche besteht i.d.R aus \textbf{Controls} und \textbf{Widgets}: \textbf{Buttons}, \textbf{Labels}, \textbf{Input-Elemente} (Textfelder)...\\
@@ -247,4 +247,92 @@ Die Klasse \code{Control} ist (über mehrere Klassen) von \code{Node} abgeleitet
 
 
 \noindent
-Wichtige Interaktionslemente sind bspw. die von der abstrakten Klasse \code{Labeled} abgeleiteten Klassen\code{CommandButtons}
+Wichtige Interaktionslemente sind bspw. die von der abstrakten Klasse \code{Labeled} sogenannten \textbf{Command Buttons} und \textbf{Choice Buttons}.\\
+Zu den Choice Buttons gehören bspw. \code{CheckBox}, \code{ToggleButton}, \code{RadioButton}.\\
+Zu den Command Buttons gehören u.a. \code{Button} und \code{Hyperlink}.\\
+
+\noindent
+Eine \code{CheckBox} kann in JavaFX drei Zustände besitzen: \code{true}, \code{false}, \code{undefined} (steuerbar über \code{setAllowIndeterminate}):
+
+\blockquote[{Class CheckBox: \url{https://docs.oracle.com/javase/8/javafx/api/javafx/scene/control/CheckBox.html} - abgerufen 29.01.2024}]{
+    A tri-state selection Control typically skinned as a box with a checkmark or tick mark when checked. A CheckBox control can be in one of three states:
+    \begin{itemize}
+        \item checked: indeterminate == false, checked == true
+        \item unchecked: indeterminate == false, checked == false
+        \item undefined: indeterminate == true
+    \end{itemize}
+}
+
+\noindent
+\code{ToggleButton}s und \code{RadioButton}s sind einander ähnlich, sie können selektiert und deselektiert werden.
+
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.5]{chapters/fopt3/img/javafx/radiobutton}
+    \caption{Die Klasse RadioButton im Package javafx.scene.control. (Quelle: eigene)}
+    \label{fig:radiobutton}
+\end{figure}
+
+\noindent
+\code{ToggleGroup} fasst Objekte dieser Klasse zusammen und erlaubt, dass höchstens ein Element dieser Gruppe selektiert sein kann.\\
+
+\noindent
+Darüber hinaus existieren Auswahlelemente wie \code{ChoiceBox}, \code{ComboBox}, \code{ListView}, \code{DatePicker}, \code{ColorPicker}, \code{FileChooser}.\\
+
+\noindent
+\code{ComboBox} ist ähnlich \code{ChoiceBox}, aber bietet mehr Funktionalität: So besitzt die Klasse Typparameter, der dem Typen der enthaltenen Elemente entspricht.\\
+Änderungen der Auswahl erfährt man über einen \code{ChangeListener}\footnote{
+    Interface ChangeListener<T>: \url{https://docs.oracle.com/javase/8/javafx/api/javafx/beans/value/ChangeListener.html} - abgerufen 29.01.2024
+}, den man für den Rückgabewert von \code{valueProperty()}\footnote{
+Der Rückgabewert ist \textit{ObjectProperty<T>}; die Klasse leitet von \textit{ReadOnlyObjectProperty<T>} ab.
+} konfiguriert:
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    frame=lines,
+    framesep=2mm]{java}
+    ComboBox<String> cb = new ComboBox();
+    cb.getItems().add("one");
+    cb.getItems().add("two");
+    cb.getItems().add("three");
+
+    cb.valueProperty().addListener(
+        (ObservableProperty<? extends String> ov,
+        String oldValue,
+        String newValue) -> {
+            System.out.println(oldValue + "; " + newValue)
+        }
+    );
+\end{minted}\\
+
+\noindent
+Eine \code{ComboBox} nutzt intern eine \code{ListView} zur Anzeige der Inhalte. \code{ListView} erlaubt sowohl Einfach- als auch Mehrfachauswahl.\\
+
+\noindent
+Texteingabeelemente wie \code{TextField}, \code{TextArea} sind von der abstrakten Basisklasse \code{TextInputControl} abgeleitet.\\
+
+\noindent
+\code{TextField} erlaubt mittels \code{setOnAction} die Registrierung eines \code{EventHandler<ActionEvent>}.\\
+Das Ereignis wird bspw. beim Betätigen der \textit{Return}-Taste ausgelöst:\\
+
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    frame=lines,
+    framesep=2mm]{java}
+    TextField f = new TextField();
+    f.setOnAction((ActionEvent e) -> System.out.println(e));
+\end{minted}\\
+
+\noindent
+\textbf{Numerische Werte} können anhand eines \code{Slider}s eingegeben werden.\\
+\code{Slider} erlauben die Konfiguration von minimalen und maximalen Werten.\\
+Der aktuelle Wert wird über eine \code{DoubleProperty} repräsentiert und kann über \code{valueProperty()} abgefragt werden.\\
+
+\noindent
+Weitere Interaktionselemente sind \code{ProgressBar}, \code{ProgressIndicator}, \code{TreeView}, \code{TableView}, \code{TreeTableView}.
