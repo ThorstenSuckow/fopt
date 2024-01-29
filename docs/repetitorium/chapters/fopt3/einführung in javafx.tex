@@ -187,3 +187,64 @@ $\rightarrow$ für den Zugriff auf die Kindelemete eines Containers in JavaFX ru
     \caption{Parent ist in JavaFX eine Container-Klasse. getChildren() liefert eine beobachtbare Liste mit Kindelementen zurück. (Quelle: eigene)}
     \label{fig:nodeparent}
 \end{figure}
+
+\section{Elemente von JavaFX}
+
+Die grafische Benutzeroberfläche besitzt eine baumartige Struktur.\\
+
+\noindent
+Elemente die Nachfolger in diesem Baum sind, sind \textbf{Container-Elemente}, die ein bestimmtes \textbf{Layout} realisieren für die darin enthaltenen Elemente.\\
+
+\noindent
+Elemente, die keinen Nachfolger besitzen, können unter dem Begriff \textbf{Interaktionselemente} zusammengefaßt werden (\code{Label}s, \code{Button}s, ...).
+
+\subsection{Container}
+
+\code{Node} ist die Basisklasse für Container und Interaktionselemente.\\
+
+\noindent
+\code{Pane} ist ein Kind von \code{Parent} und die Basisklasse für Container-Klassen.
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.5]{chapters/fopt3/img/javafx/pane}
+    \caption{Vererbungshierarchie der Container-Klasse Pane. (Quelle: eigene)}
+    \label{fig:pane}
+\end{figure}
+
+\noindent
+\code{Pane} selber realisiert kein Layout, Kindelemente werden absolut positioniert.\\
+
+\noindent
+Unterklassen von \code{Pane} hingegen realisieren verschiedene aouts, bspw.
+
+\begin{itemize}
+    \item \code{VBox}
+    \item \code{HBox}
+    \item \code{FlowPane}
+    \item \code{BorderPane}
+    \item \code{StackPane}
+    \item \code{TilePane}
+    \item \code{GridPane}
+    \item \code{AnchorPane}
+\end{itemize}
+
+
+\subsection{Interaktionselemente}
+
+Interaktionselemente haben wie die Container-Klassen \code{Node} als Basisklasse.\\
+
+\noindent
+Die Klasse \code{Control} ist (über mehrere Klassen) von \code{Node} abgeleitet und (abstrakte) Basisklasse aller Interaktionselemente.
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.5]{chapters/fopt3/img/javafx/control}
+    \caption{Die Klasse Control ist direkt von Region abgeleitet. (Quelle: eigene)}
+    \label{fig:control}
+\end{figure}
+
+
+
+\noindent
+Wichtige Interaktionslemente sind bspw. die von der abstrakten Klasse \code{Labeled} abgeleiteten Klassen\code{CommandButtons}
