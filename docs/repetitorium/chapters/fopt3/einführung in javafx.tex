@@ -117,7 +117,7 @@ Die Benachrichtigung erfolgt über Schnittstellenmethoden, die die Beobachter im
 
 
 \noindent
-Spezielle varianten der Properties sind die \code{ReadOnlyProperty}s - diese können von \code{ReadOnlyWrapper}n zur Verfügung gestellt machen, um beobachtbare Properties öffentlich zu machen, aber deren Zustandsänderung von Außen zu untersagen.
+Spezielle Varianten der Properties sind die \code{ReadOnlyProperty}s - diese können von \code{ReadOnlyWrapper}n zur Verfügung gestellt machen, um beobachtbare Properties öffentlich zu machen, aber deren Zustandsänderung von Außen zu untersagen.
 
 \begin{minted}[mathescape,
     linenos,
@@ -163,4 +163,27 @@ Ein \textbf{bidirektionales} Binding bewirkt die Änderung der Properties in bei
     \includegraphics[scale=0.5]{chapters/fopt3/img/javafx/binding}
     \caption{Unidirektionales (a) und Bidirektionales (b) Binding in JavaFX. Die Properties sind vom Typ SimpleIntegerProperty. (Quelle: eigene)}
     \label{fig:binding}
+\end{figure}
+
+\subsection{JavaFX-Collections}
+
+\textbf{Collections} sind in JavaFX Schnittstellen und Implementierungen, um Daten über einen ``Behälter`` zu verwalten (Listen, Mengen, Hash-Tabellen...).\\
+
+\noindent
+Collections in JavaFX erweitern die Collections von Java\footnote{
+    ``Java collections framework``: \url{https://en.wikipedia.org/wiki/Java_collections_framework}: abgerufen 29.01.2024
+
+}, um die Property-Charakteristik, sie sind also genauso \textit{observable}, wie bspw.: \code{ObservableList}, \code{ObservableMap}, \code{ObservableSet}.\\
+
+\noindent
+In der Regel werden diese Collections von den Container-Elementen verwendet, die ein bestimmtes \textbf{Layout} realisieren.\\
+
+\noindent
+$\rightarrow$ für den Zugriff auf die Kindelemete eines Containers in JavaFX ruft man i.d.R. \code{getChildren} auf; der Rückgabewert ist die beobachtbare Liste.
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.5]{chapters/fopt3/img/javafx/nodeparent}
+    \caption{Parent ist in JavaFX eine Container-Klasse. getChildren() liefert eine beobachtbare Liste mit Kindelementen zurück. (Quelle: eigene)}
+    \label{fig:nodeparent}
 \end{figure}
