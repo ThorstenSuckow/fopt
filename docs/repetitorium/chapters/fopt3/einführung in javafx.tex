@@ -336,3 +336,66 @@ Der aktuelle Wert wird über eine \code{DoubleProperty} repräsentiert und kann 
 
 \noindent
 Weitere Interaktionselemente sind \code{ProgressBar}, \code{ProgressIndicator}, \code{TreeView}, \code{TableView}, \code{TreeTableView}.
+
+
+\subsection{Grafikprogrammierung}
+
+Unter \textbf{Grafikprogrammierung} versteht man das Zeichnen verschiedener Formen in ein Fenster.\\
+
+\noindent
+In JavaFX ist das realisiert durch Objekte verschiedener Klassen, die aus \code{Shape} abgeleitet sind.\\
+
+\noindent
+Die Basisklasse für Farben und Gradienten ist \code{Paint}.\\
+
+\noindent
+Es gibt verschiedene vordefinierte Konstanten für Farben, wie z.B. \code{Color.BLACK}, \code{Color.GREEN} usw.\\
+
+\noindent
+Eine \code{Shape} hat je eine \code{ObjectProperty<Paint>} für \textit{Linienfarbe} und \textit{Füllfarbe}, sowie eine \code{Double}-Property für die Liniendicke.\\
+
+\noindent
+Aus \code{Shape} abgeleitet sind bspw.
+
+\begin{itemize}
+    \item \code{Line}
+    \item \code{Rectangle}
+    \item \code{Circle}
+    \item \code{Ellipse}
+    \item \code{Polyline}
+    \item \code{Polygon}
+    \item \code{Arc}
+    \item \code{QuadCurve}
+    \item \code{CubicCurve}
+    \item \code{Text}
+    \item ...
+\end{itemize}
+
+\noindent
+\textbf{Koordinaten} verlaufen in JavaFX i. A.
+
+\begin{itemize}
+    \item $x$: links $\rightarrow$ rechts
+    \item $y$: oben $\rightarrow$ unten
+\end{itemize}
+
+
+\noindent
+Bereits die Basisklasse \code{Node} stellt Funktionen zur Ereignisbehandlung von Mausereignissen zur Verfügung:
+
+\begin{itemize}
+    \item \code{setOnMousePressed()}
+    \item \code{setOnMouseReleased()}
+    \item \code{setOnMouseMoved()}
+    \item ...
+\end{itemize}
+
+\noindent
+Der Parametertyp für diese Ereignisbehandlung ist wie bei \code{setOnAction} ein \code{EventHandler}, dessen generischer Typ auf \code{MouseEvent} festgelegt ist\footnote{
+    oder einer Unterklasse davon, bspw. \code{MouseDragEvent}
+}.\\
+
+\noindent
+Zur Ereignisbehandlung von \textbf{click-Events} wird i.d.R. mithilfe eines \code{ActionListeners} reagiert, da solch ein Interaktionsereignis \uunderline{eine höhere Abstraktionsebene darstellt}, z.B. wird ein Button auch aktiviert, wenn er den Fokus hat und die \textbf{enter-Taste} gedrückt wird:  Action-Ereignis $\rightarrow$ aktivieren eines Elements (vgl.~\cite[220]{Oec22}).
+
+
