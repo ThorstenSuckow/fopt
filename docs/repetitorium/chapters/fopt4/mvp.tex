@@ -77,7 +77,7 @@ Das primäre Stage-Objekt wird von der Platform vorgegeben, nachfolgenden Stage-
 Der \textbf{JavaFX Application Thread} ist auch zuständig für die Ereignisbehandlung - insgesamt gibt es nur einen solchen Thread für die Verwaltung von UI-Elementen und deren Ereignisse. \\
 
 \noindent
-Mit der Methode \code{Platform.runLater()} lassen sich Aktionen am \textbf{JavaFX Application Thread} \textit{anmelden} bzw. in dessen \textit{Warteschlange} einreihen (Parameter vom Typ \code{Runnable}).\\
+Mit der Methode \staticcode{javafx.application.Platform.runLater()}) lassen sich Aktionen am \textbf{JavaFX Application Thread} \textit{anmelden} bzw. in dessen \textit{Warteschlange} einreihen (Parameter vom Typ \code{Runnable}).\\
 
 \subsection*{Regel 1}
 Die Durchführung der Ereignisbehandlung sollte in \underline{möglichst kurzer Zeit} abgeschlossen sein, auf \code{sleep()} und \code{wait()} sollte möglichst verzichtet werden.
