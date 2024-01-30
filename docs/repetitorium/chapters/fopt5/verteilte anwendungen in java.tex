@@ -44,6 +44,7 @@ Schicht 3 ist die \textbf{Vermittlungsschicht} (\textbf{Network Layer}), hier be
 
 \noindent
 Jeder Netzanschluss enthält eine eindeutige \textbf{IP-Adresse}.\\
+Die Schicht sorgt für eine einheitliche, strukturierte und weltweit eindeutige Adressierung (vgl.~\cite[258]{Oec22}).\\
 
 \noindent
 Über das IP-Protokoll werden Datenpakete über verschiedene Netze weitergeleitet, bis sie beim Zielrechner ankommen.\\
@@ -64,8 +65,12 @@ Zwei verbreitete Transportprotokolle sind \textbf{UDP} und \textbf{TCP};
 
 \begin{itemize}
     \item \textbf{UDP} (\textit{User Datagram Protocol}) hat dieselbe Eigenschaften wie das IP-Protokoll und erweitert es um die Adressierung mit Portnummern.\\
-    Es ist genauso verbindungslos und unzuverlässig wie das IP-Protokoll.
-    \item \textbf{TCP} (\textit{Transmission Control Protocol}) behebt die Nachteile des IP-Protokolls: Die Empfänger müssen den Nachrichtenerhalt bestätigen, ansonsten wird die Nachricht nochmals gesendet.
+    Es ist genauso   \textit{verbindungslos} und \textit{unzuverlässig}\footnote{
+    es sind Verluste und Reihenfolgevertauschungen möglich.
+    } wie das IP-Protokoll.
+    \item \textbf{TCP} (\textit{Transmission Control Protocol}) behebt die Nachteile des IP-Protokolls: Die Empfänger müssen den Nachrichtenerhalt bestätigen\footnote{ \textbf{ACK},
+    was wiederum von Sender-Seite überwacht wird; s.a. ``Transmission Control Protocol``: \url{https://en.wikipedia.org/wiki/Transmission_Control_Protocol} - abgerufen 30.01.2024
+    }, ansonsten wird die Nachricht nochmals gesendet.
 \end{itemize}
 
 
@@ -105,9 +110,71 @@ Ein DNS-Name kann auch mehrere Aliase besitzen; dadurch, dass ein Rechner mehrer
 Transportprotokolle existieren, damit mehrere Anwendungen, die über das Internet kommunizieren, gleichzeitig laufen und Daten untereinander austauschen können.\\
 
 \noindent
-Bei der Übertragung von Daten besitzt IP die Eigenschaften, dass Daten in unterschiedlicher Reihenfolge eintreffen können, was aus Anwendersicht problematisch ist; auf Anwendungsschicht könnte man hier Gegenmaßnahmen treffen, aber das würde bedeuten, die Gegenmaßnahmen in jeder Anwendung zu implementieren - deshalb werden diese Problematiken über die \textbf{Transportschicht} über \textbf{Transportprotokolle} gelöst.
+Bei der Übertragung von Daten besitzt IP die Eigenschaften, dass Daten in unterschiedlicher Reihenfolge eintreffen können, was aus Anwendersicht problematisch ist; auf Anwendungsschicht könnte man hier Gegenmaßnahmen treffen, aber das würde bedeuten, die Gegenmaßnahmen in jeder Anwendung implementieren zu müssen - deshalb werden diese Problematiken in der \textbf{Transportschicht} über \textbf{Transportprotokolle} gelöst.\\
+
+\noindent
+\textbf{UDP} (\textbf{User Datagram Protocol}) ermöglicht die Kommunikation verschiedener Dienste gleichzeitig (spezifische Anwendung wird über Portnummer adressiert).\\
+
+\noindent
+Ein \textbf{Datagramm}\footnote{
+Kunstwort abgeleitet aus\textit{Telegramm} (vgl.~\cite[260]{Oec22})
+} bezeichnet eine Dateneinheit, die in ein IP-Paket gepackt und über das Netz verschickt wird.\\
+
+\begin{tcolorbox}
+\textbf{UDP} ist Nachrichtenorientiert.
+\end{tcolorbox}
+
+\noindent
+Ein \textbf{UDP-Datagram} enthält neben der Zielportnummer auch die Quellportnummer, damit der Empfänger dem Sender antworten kann.
+
+\noindent
+UDP ist wie IP \textbf{verbindungslos} - es können \textit{Datagrammverluste} oder \textit{Reihenfolgevertauschungen} von Datagrammen vorkommen.\\
+
+\noindent
+UDP ist \textbf{datagrammorientiert}: Eine an das UDP-Protokoll übergebene Menge an Daten wird in ein Datagramm gepackt und über IP verschickt\\
+$\rightarrow$ die Daten kommen als Einheit beim Empfänger an (entspricht dem Verhalten einer \textbf{Message Queue})
 
 
+\subsection{Das Transportprotokoll TCP}
+
+\textbf{TCP} ist ein Protokoll für genau zwei Partner, weshalb es nicht mit \textbf{Multicast} genutzt werden kann.\\
+
+\noindent
+\textbf{TCP} ist verbindungsorientiert, wobei der Verbindungsauf- und -abbau einen gewissen Aufwand erfordert\footnote{
+    Wenn Datenverluste nicht hinnehmbar sind und wegen höherem Aufwand für die Verbindung trotzdem UDP verwendet wird, erweitert man die Anwendung entsprechend um Gegenmaßnahmen für den Datenverlust (vlg. \cite[261]{Oec22}).
+}.
+
+\noindent
+\textbf{TCP} ist ein zuverlässiges Protokoll, es können keine Daten vertauscht oder verloren gehen, außerdem gibt es eine \textbf{Flusskontrolle} (zum Verhindern einer Überflutung des Empfängers mit Datenpaketen)\footnote{Empfangsbestätigung abwarten} und eine \textbf{Überlastkontrolle} (um eine Überlastung des Netzes zu verhindern)\footnote{informal: falls ein ACK ausbleibt, könnte der Sender versucht sein, ständig neue Pakete hinterherzuschicken, was zu einem Stau führen könnte. Siehe hierzu auch ``Modul 6: TCP-Überlastkontrolle``: \url{https://leischner.inf.h-brs.de/lehre/ikomm/ikomm06-ueberlastkontrolle.pdf} - abgerufen 30.01.2024}.\\
+
+\noindent
+\textbf{TCP} ist \textbf{datenstromorientiert} - der Empfänger erkennt an dem Datenstrom nicht, in welchen Portionen die Daten vom Sender geschickt wurden (entspricht dem Verhalten von \textbf{Pipes} (s. a. Abschnitt~\ref{sec:messagequeues})).
+
+
+\setlength{\tabcolsep}{0.8em}
+{\renewcommand{\arraystretch}{1.7}%
+\begin{table}
+[htbp]
+    \centering
+
+    \begin{tabular}{|l|l|}
+        \toprule
+        \hline
+        \textbf{UDP} & \textbf{TCP}  \\
+        \midrule
+        \hline
+        verbindungslos & verbindungsorientiert \\
+        \hline
+        unzuverlässig  & zuverlässig mit Fluss- und Überlastkontrolle \\
+        \hline
+        datagrammorientiert & datenstromorientiert \\
+        \hline
+        \bottomrule
+    \end{tabular}
+
+    \caption{Vergleich zwischen UDP und TCP. (Quelle: in Anlehnung an \cite[261, Tabelle 5.1]{Oec22})}
+
+\end{table}
 
 
 
