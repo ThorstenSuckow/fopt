@@ -27,7 +27,9 @@ Die Schicht hat die Aufgabe, einzelne Bits zu einem Datenblock in einem bestimmt
 $\rightarrow$ bestimmte Informationen wie z.B. Adressen haben eine bestimmte Struktur und Bitlänge und stehen an bestimmten Stellen in einem Datenblock.\\
 
 \noindent
-Bei lokalen Netzen wie {bspw.} Ethernet hat die Leitungsschicht kommen durch das gemeinsame Medium noch weitere Funktionen: Sie garantiert, dass immer nur höchstens eine Station sendet, außerdem werden durch sie die angeschlossenen Rechner korrekt adressiert.
+Bei lokalen Netzen wie {bspw.} Ethernet hat die \textbf{Leitungsschicht} durch das gemeinsame Medium noch weitere Funktionen: Sie garantiert, dass immer nur höchstens eine Station sendet, außerdem werden durch sie die angeschlossenen Rechner korrekt adressiert\footnote{
+``Bei einer Punkt-zu-Punkt-Leitung kann eine empfangene Station davon ausgehen, dass die ankommenden Daten für sie bestimmt sind, bei einem gemeinsamen Medium dagegen nicht.``~\cite[257]{Oec22}
+}
 
 \begin{tcolorbox}
     Schicht 1 und 2 werden über Hardware ({bspw.} Ethernet-Adapter) und entsprechende Treiber im Betriebssystem realisiert.
@@ -78,7 +80,7 @@ Schicht 5 ist die \textbf{Anwendungsschicht} (\textbf{Application Layer}), in ih
 
 \begin{figure}
     \centering
-    \includegraphics[scale=0.5]{chapters/fopt3/img/javafx/pane}
+    \includegraphics[width=16cm]{chapters/fopt5/img/layers}
     \caption{Skizze des Schichtenmodels. (Quelle: in Anlehnung an \cite[257, Bild 5.2]{Oec22})}
     \label{fig:layers}
 \end{figure}
@@ -96,3 +98,20 @@ IP-Adressen können auch durch (Rechner-)Namen aufgelöst werden durch das \text
 
 \noindent
 Ein DNS-Name kann auch mehrere Aliase besitzen; dadurch, dass ein Rechner mehrere IP-Adressen haben kann (bspw. durch mehrere Netzanschlüsse) besteht so zwischen Rechnernamen und IP-Adressen eine $m:n$-Beziehung.
+
+
+\subsection{Das Transportportprotokoll UDP}
+
+Transportprotokolle existieren, damit mehrere Anwendungen, die über das Internet kommunizieren, gleichzeitig laufen und Daten untereinander austauschen können.\\
+
+\noindent
+Bei der Übertragung von Daten besitzt IP die Eigenschaften, dass Daten in unterschiedlicher Reihenfolge eintreffen können, was aus Anwendersicht problematisch ist; auf Anwendungsschicht könnte man hier Gegenmaßnahmen treffen, aber das würde bedeuten, die Gegenmaßnahmen in jeder Anwendung zu implementieren - deshalb werden diese Problematiken über die \textbf{Transportschicht} über \textbf{Transportprotokolle} gelöst.
+
+
+
+
+
+
+
+
+
