@@ -304,8 +304,49 @@ Beispiel für das Lesen von Daten über einen Socket mittels eines \code{Buffere
 \end{minted}\\
 
 \noindent
-Das Ende eines Datenstroms wird durch den Rückgabewert \code{null} angezeigt (bei Dateioperationen bspw. als Ende der Dateo; TCP-Verbindung: Client hat die Verbindung geschlossen usw.).\\
+Das Ende eines Datenstroms wird durch den Rückgabewert \code{null} angezeigt (bei Dateioperationen {bspw.} als Ende der Datei; TCP-Verbindung: Client hat die Verbindung geschlossen usw.).\\
 
 \begin{tcolorbox}
-    Das Senden und Lesen sind blockierende OPeratioen,
+    Das Lesen ist eine blockierende Operation.\\
+    Das Schreiben von Daten mit anschliessendem \code{flush} ist nicht blockierend.
+    Sollte der Sender allerdings direkt nach dem Senden der Daten mithilfe einer Leseoperation auf die Antwort des Empfängers warten, ist auch diese Leseoperation blockierend und es kann erst wieder gesendet werden, nachdem der Aufrufer nicht mehr blockiert ist.
 \end{tcolorbox}
+
+\noindent
+Solange ein \textbf{TCP}-Server\footnote{
+ wie bspw in \cite[288, Listing 5.8]{Oec22} implementiert
+} eine Verbindung mit einem Client aufrechterhält, kann keine andere Verbindung bearbeitet werden.\\
+Ein \textbf{timeout} (Server wartet auf Nachricht von Client für $n$ Sekunden, danach schliesst er die Verbindung) ist hierzu eine (naive) Möglichkeit, Resourcen freizumachen.
+
+\subsection{Notizen zu den Übungen}
+\subsection*{Übungen 5.3}
+Sobald ein Server-Socket über Java gestartet wurde, können sich Clients zu diesem Server verbinden.\\
+Dabei spiel es keine Rolle, ob der Server \code{accept()} zur Annahme neuer Verbindungen aufgerufen hat - sowohl die Clients als auch bereits gesendete Nachrichten werden vom OS bis zu einer gewissen Grenze gepuffert.\\
+Sobald der Server dann \code{accept()} aufruft, wird ein Client aus dem Puffer genommen und die von ihm gesendeten Daten können gelesen werden (s. Skript FOPT5/6, S. 48).
+
+\section{Sequenzielle und parallele Server}
+
+Bei der Benutzung eines \textbf{TCP}-Servers wird nach der Annahme einer Verbindung nur von dieser Verbindung gelesen; die nächste Verbindung muss warten, bis die Verbindung geschlossen wird.\\
+$\rightarrow$ Die Problematik kann umgangen werden, indem man für eine eingehende Verbindung einen neuen Thread startet, der mit dieser Verbindung arbeitet.\\
+
+\noindent
+$\rightarrow$ Möglichkeiten hierzu: \textbf{sequenzielle} durch \textbf{parallele} Implementeirungen ersetzen.\\
+
+\subsection*{Statische Parallelität}
+Fixe Anzahl von Threads (``Verbindungen``) die von einem Server genutzt werden können.\\
+
+$\rightarrow$ \textbf{Statische Parallelität} kann über ein Feld von Threads realisiert werden, oder einen \textbf{ThreadPool}\footnote{
+``Thread Pools``: \url{https://docs.oracle.com/javase/tutorial/essential/concurrency/pools.html} - abgerufen 31.01.2024
+}, bei dem \code{corePoolSize} $=$ \code{maxPoolSize} gilt (s.a.~\cite[146]{Oec22}).
+
+
+\subsection*{Dynamische Parallelität}
+Die Anzahl der Threads wachsen mit den eingehenden Verbingungen.\\
+
+$\rightarrow$ Risiko eines DDoS ist erhöht, da viele Verbindungen einen Server beschäftigen können; je mehr Verbindungen angenommen werden, desto mehr Thread-Objekte werden erstellt, bis die Auslastung des Rechners zu groß wird.
+
+\subsection*{Mischform}
+Fixe Anzahl von Threads, aber Anzahl wird erhöht, wenn die Auslastung hoch ist.\\
+
+\noindent
+Eine \textbf{Mischform} kann leicht realisiert werden, indem wieder ein \textbf{ThreadPool} verwendet wird, bei dem \code{maximumPoolSize} $>$ \code{corePoolSize} gilt und die \code{BlockingQueue}\footnote{ ``Interface BlockingQueue<E>``: \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/BlockingQueue.html} - abgerufen 31.01.2024; s.a.~\cite[146]{Oec22}} eine begrenzte Anzahl von Plätzen hat (darf nicht beliebig anwachsen).
