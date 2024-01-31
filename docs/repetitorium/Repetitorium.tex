@@ -28,6 +28,10 @@
 \usepackage{multicol}% Zweispaltiger Index
 \usepackage[threshold=0]{csquotes}
 
+\usepackage{caption}
+\captionsetup{font=small}
+\captionsetup{labelfont=bf}
+
 \newtheorem{theorem}{Theorem}
 \newcommand{\textgreek}[1]{\begingroup\fontencoding{LGR}\selectfont#1\endgroup}
 
@@ -96,6 +100,7 @@
 \NewDocumentCommand{\staticcode}{v}{%
 	\underline{\texttt{\textcolor{blue}{#1}}}%
 }
+
 
 
 \usepackage{textcomp} 			% Celsius-Darstellung
