@@ -80,10 +80,10 @@ Der \textbf{JavaFX Application Thread} ist auch zuständig für die Ereignisbeha
 Mit der Methode \staticcode{javafx.application.Platform.runLater()}) lassen sich Aktionen am \textbf{JavaFX Application Thread} \textit{anmelden} bzw. in dessen \textit{Warteschlange} einreihen (Parameter vom Typ \code{Runnable}).\\
 
 \subsection*{Regel 1}
-Die Durchführung der Ereignisbehandlung sollte in \underline{möglichst kurzer Zeit} abgeschlossen sein, auf \code{sleep()} und \code{wait()} sollte möglichst verzichtet werden.
+Die Durchführung der Ereignisbehandlung sollte in \ul{möglichst kurzer Zeit} abgeschlossen sein, auf \code{sleep()} und \code{wait()} sollte möglichst verzichtet werden.
 
 \subsection*{Regel 2}
-Der Zugriff auf grafische Elemente der Oberfläche darf \underline{ausschließlich} durch den \textbf{JavaFX Application Thread} erfolgen.\\
+Der Zugriff auf grafische Elemente der Oberfläche darf \ul{ausschließlich} durch den \textbf{JavaFX Application Thread} erfolgen.\\
 Wenn ein anderer Thread auf die Oberfläche zugreifen möchte, beauftragt der dazu den \textbf{JavaFX Application Thread} durch den Aufruf der Methode \code{Platform.runLater()}.\\
 Der Auftrag muss in Form eines \code{Runnable}-Objektes übergeben werden.\\
 
