@@ -9,7 +9,7 @@
 
 \documentclass[envcountsame,envcountchap, deutsch]{i-studis}
 
-\let\thempfootnote\thefootnote
+\usepackage{footnote}
 \usepackage[LGR,T1]{fontenc}
 \usepackage{float}
 \usepackage{python}
@@ -27,13 +27,18 @@
 \usepackage{makeidx}         	% Index
 \usepackage{multicol}% Zweispaltiger Index
 \usepackage[threshold=0]{csquotes}
-
+\usepackage{soul}
 \usepackage{caption}
+
+
 \captionsetup{font=small}
 \captionsetup{labelfont=bf}
 
 \newtheorem{theorem}{Theorem}
 \newcommand{\textgreek}[1]{\begingroup\fontencoding{LGR}\selectfont#1\endgroup}
+
+\BeforeBeginEnvironment{tcolorbox}{\savenotes}
+\AfterEndEnvironment{tcolorbox}{\spewnotes}
 
 %\usepackage[bottom]{footmisc}	% Erzeugung von Fu�noten
 
@@ -98,7 +103,7 @@
 	\texttt{\textcolor{blue}{#1}}%
 }
 \NewDocumentCommand{\staticcode}{v}{%
-	\underline{\texttt{\textcolor{blue}{#1}}}%
+	\ul{\texttt{\textcolor{blue}{#1}}}%
 }
 
 
@@ -188,6 +193,7 @@
 \input{chapters/fopt4/mvp}
 \input{chapters/fopt5/verteilte anwendungen in java}
 \input{chapters/fopt5/sockets}
+\input{chapters/fopt5/rmi}
 %\input{chapters/Anhang/index}
 
 %\input{chapters/ZusammenfassungAusblick}

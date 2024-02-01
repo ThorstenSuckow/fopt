@@ -347,8 +347,8 @@ Bei \textbf{Pipes} werden Nachrichten in eindimensionalen Feldern (bspw.~\code{b
 \noindent
 Das Senden bei Pipes erfolgt i.d.R. als unteilbare Aktion.
 \begin{itemize}
-    \item Wenn die Nachricht größer ist als der \underline{im Puffer verbleibende Platz}, wird gewartet, bis der Platz frei ist - dann wird \textbf{auf einen Schlag} in den Puffer kopiert
-    \item Ist die Nachricht länger als \underline{die Größe des Puffers}, wird die Nachricht geteilt und in Portionen gesendet - dadurch kann es vorkommen, dass Nachrichtenteile durchgemischt werden; sind die Nachrichtenteile nicht größer als die Pufferlänge, befinden sie sich komplett im Puffer;  umgekehrt ist es möglich, dass Stücke von Nachrichtenteilen ``durchgemischt`` werden (vgl.~\cite[117 f.]{Oec22}).
+    \item Wenn die Nachricht größer ist als der \ul{im Puffer verbleibende Platz}, wird gewartet, bis der Platz frei ist - dann wird \textbf{auf einen Schlag} in den Puffer kopiert
+    \item Ist die Nachricht länger als \ul{die Größe des Puffers}, wird die Nachricht geteilt und in Portionen gesendet - dadurch kann es vorkommen, dass Nachrichtenteile durchgemischt werden; sind die Nachrichtenteile nicht größer als die Pufferlänge, befinden sie sich komplett im Puffer;  umgekehrt ist es möglich, dass Stücke von Nachrichtenteilen ``durchgemischt`` werden (vgl.~\cite[117 f.]{Oec22}).
 \end{itemize}
 
 Beim Empfangen wird nur so lange gewartet, bis der Puffer nicht mehr leer ist:
@@ -661,7 +661,7 @@ Anfordern von Betriebsmittel auf einen Schlag (s. \textbf{Semaphorgruppe}), dami
 
 \noindent
 Betriebsmittel gemäß einer vorgegebenen Reihenfolge anfordern, damit keine Verklemmungen entstehen können.\\
-Bspw. durch Nummerierung der Betriebsmittel in \underline{aufsteigender Reihenfolge}, so dass ein Thread nur Betriebsmittel des Typs $s$ anfordern darf, wenn er keine Betriebsmittel des Typs $s$ oder $t > s$ hält\footnote{
+Bspw. durch Nummerierung der Betriebsmittel in \ul{aufsteigender Reihenfolge}, so dass ein Thread nur Betriebsmittel des Typs $s$ anfordern darf, wenn er keine Betriebsmittel des Typs $s$ oder $t > s$ hält\footnote{
     dann werden ihm nur Betriebsmittel vom Typ $t < s$ zugeteilt.
 }).\\
 Umsetzung beim Philosophenproblem: Alle Philosophen bis auf einen fordern zunächst links, dann rechts an, und einer in umgekehrter Richtung (man erhält dann immer eine verklemmungsfreie Lösung, vgl.~\cite[197]{Oec22}).\\

@@ -85,7 +85,7 @@ Die \code{Runnable}-Schnittstelle ist ein \textbf{Functional Interface}\footnote
 \end{minted}\\
 
 Das \textbf{Pausieren von Threads} kann mittels der statischen Methode\footnote{
-    statisch, weil der \underline{gerade aktive Thread} ``schlafen`` gelegt wird.
+    statisch, weil der \ul{gerade aktive Thread} ``schlafen`` gelegt wird.
 }
 \begin{center}
 \staticcode{+sleep(milis:long):void} \code{throws java.lang.InterruptedException}
@@ -265,7 +265,7 @@ Die alternative (richtige) Imeplementierung berücksichtigt sowohl das \textit{I
     }
 \end{minted}\\
 
-Es ist zu berücksichtigen, dass \code{interrupt()} \underline{kein sofortiges Ende} des Ziel-Threads bedingt: Der Thread läuft so lange weiter, wie es seine \code{run()}-Methode bedingt (vgl.~\cite[44 f.]{Oec22}):
+Es ist zu berücksichtigen, dass \code{interrupt()} \ul{kein sofortiges Ende} des Ziel-Threads bedingt: Der Thread läuft so lange weiter, wie es seine \code{run()}-Methode bedingt (vgl.~\cite[44 f.]{Oec22}):
 
 
 \begin{minted}[mathescape,
@@ -335,7 +335,7 @@ Werden Objekte von mehreren Threads genutzt und dabei verändert, helfen \code{s
 
 \noindent
 \textbf{Aktives Warten} wurde im vorhergehenden Abschnitt bereits kurz erwähnt.
-\code{wait} und \code{notify} ermöglichen Implementierungen \underline{ohne} auf \textit{aktives warten} zurückgreifen zu müssen: Die Methoden werden auf ein Objekt angewendet, das der aufrufende Thread zum Zeitpunkt des Aufrufs durch \code{synchronized} gesperrt hat.
+\code{wait} und \code{notify} ermöglichen Implementierungen \ul{ohne} auf \textit{aktives warten} zurückgreifen zu müssen: Die Methoden werden auf ein Objekt angewendet, das der aufrufende Thread zum Zeitpunkt des Aufrufs durch \code{synchronized} gesperrt hat.
 
 \begin{tcolorbox}
     Der Thread, der \code{wait} / \code{notify} auf ein Objekt aufruft, muss auch die Sperre des Objektes halten, ansonsten wird eine \code{java.lang.IllegalMonitorStateException} geworfen\footnote{
@@ -348,7 +348,7 @@ Werden Objekte von mehreren Threads genutzt und dabei verändert, helfen \code{s
 \end{center}
 \noindent
 blockiert den aufrufenden Thread und fügt ihn in die Warteschlange des Objektes ein, das von dem Thread gesperrt wurde.\\
-\underline{Danach wird die Sperre des Objektes aufgehoben}.
+\ul{Danach wird die Sperre des Objektes aufgehoben}.
 
 \begin{center}
     \code{+java.lang.Object::notify():void throws InterruptedException}
@@ -362,7 +362,7 @@ Der Thread, der aus der Warteschlange kommt, wird an der Stelle weiter ausgefüh
     \code{+java.lang.Object::notifyAll():void throws InterruptedException}
 \end{center}
 \noindent
-weckt \underline{alle} Threads auf, die sich in der Warteschlange befinden, und die erneut die Wartebedingungen überprüfen können.\\
+weckt \ul{alle} Threads auf, die sich in der Warteschlange befinden, und die erneut die Wartebedingungen überprüfen können.\\
 Die Reihenfolge, in der wartende Threads mittels \code{notify()}/\code{notifyAll()} aus der Warteschlange entfernt werden, ist nicht festgelegt.
 
 \newpage
@@ -434,7 +434,7 @@ Mit der Methode
 \end{center}
 
 \noindent
-werden \underline{alle} in der Warteschlange eines Objektes befindlichen Threads geweckt.
+werden \ul{alle} in der Warteschlange eines Objektes befindlichen Threads geweckt.
 \noindent
 Der aufrufende Thread muss Besitzer der Sperre sein, ansonsten wird eine \code{IllegalMonitorStateException} geworfen.\\
 
@@ -513,7 +513,7 @@ Dieser Thread läuft als \code{Hintergrund-Thread} bzw. \textbf{Daemon Thread}.\
 Ein Java-Programm ist beendet, wenn alle Threads beendet sind - dazu gehört der \textit{Main}-Thread wie auch alle \textbf{Vordergrund-Threads} (auch: \code{User Threads}) - Hintergrund-Threads werden hierbei nicht beachtet.\\
 
 \noindent
-Threads können von dem Entwickler \underline{vor dem Start des Threads} zu \textit{Daemon Threads} gemacht werden (\code{+java.lang.Thread::setDaemon(on: boolean): void}) - ohne expliziten Status hat ein Thread denjenigen Status, wie der Thread, aus dem er erzeugt wird.
+Threads können von dem Entwickler \ul{vor dem Start des Threads} zu \textit{Daemon Threads} gemacht werden (\code{+java.lang.Thread::setDaemon(on: boolean): void}) - ohne expliziten Status hat ein Thread denjenigen Status, wie der Thread, aus dem er erzeugt wird.
 
 \noindent
 $\rightarrow$ Der Thread, der die \code{main}-Methode eines Java-Programms ausführt, ist ein Vordergrund-Threads.
