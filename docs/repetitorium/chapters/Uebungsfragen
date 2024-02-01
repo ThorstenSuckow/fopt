@@ -1,0 +1,4 @@
+Wie lässt sich ein paralleler TCP Server realisieren? Gehen Sie kurz auf die Eigenschaften der von Ihnen aufgeführten Lösungen ein.
+(Statische Parallelität, Dynamische Parallelität, Mischformen)
+
+Was ist datestromorientierte und datagram-orientierte Communication oim Zusammenhang mit Sockets? Welche Zusammenhänge zur parallelen Programmierung kennen Sie? (Message Queue, Pipes
