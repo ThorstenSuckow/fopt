@@ -38,7 +38,7 @@ $\rightarrow$ Ein \textbf{Skeleton} besitzt die Struktur eines \textbf{TCP}-Serv
 \end{figure}
 
 \begin{tcolorbox}
-    Struktur einer RMI Anwendung\footnote{vgl. im folgenden \cite[162 ff.]{HM05}; \textbf{Stubs} und \textbf{Skeletons} werden in unserem Fall automatisch generiert.}:\\
+    Struktur einer RMI Anwendung\footnote{vgl. im folgenden \cite[162 ff.]{HM05}; \textbf{Stubs} und \textbf{Skeletons} werden automatisch generiert.}:\\
 
 
     \noindent
@@ -78,6 +78,60 @@ $\rightarrow$ Ein \textbf{Skeleton} besitzt die Struktur eines \textbf{TCP}-Serv
 \begin{figure}
     \centering
     \includegraphics[scale=0.35]{chapters/fopt5/img/rmi/tv}
-    \caption{Eine Illustration der im Lehrbuch verwendeten RMI-Metapher. Ein Client will ein entferntes Objekt (TV) bedienen. Hierzu verwendet er Methodenaufrufe, die vom Stub (Fernbedienung) weitergeleitet werden. Die Methoden werden vom Skeleton (Fensehantennen) an das Objekt auf dem Server (TV) weitergeleitet. (Quelle: eigene)}
+    \caption{Eine Illustration der im Lehrbuch verwendeten RMI-Metapher. Ein Client will ein entferntes Objekt (TV) bedienen. Hierzu verwendet er Methodenaufrufe, die vom Stub (Fernbedienung) weitergeleitet werden. Die Methoden werden vom Skeleton (Fensehantennen) an das Objekt auf dem Server weitergeleitet. Dieses Objekt sind in dem Beispiel die Knöpfe an dem Fernseher, die die gleichen Bedienfunktionen (``Schnittstelle``) wie die Fernbedienung haben. (Quelle: eigene)}
     \label{fig:tv}
 \end{figure}
+
+\noindent
+Die \textbf{Transparenz} kommt für den Entwickler dadurch zustande, dass er nur Client und Server, nicht aber Stub und Skeleton programmieren muss.\\
+$\rightarrow$ \textbf{Stub} wird automatisch erzeugt, das \texbf{Skeleton}-Objekt ist ein Programmteil, der in der \textbf{RMI}-Implementierung dabei ist und für alle Anwendungen verwendet werden kann.\\
+
+\noindent
+Die Entwicklung einer \textbf{RMI}-Anwendung erfolgt i.d.R. in folgenden Schritten\footnote{
+s.a. ``An Overview of RMI Applications``: \url{https://docs.oracle.com/javase/tutorial/rmi/overview.html} - abgerufen 1.2.2024
+}:
+
+\begin{enumerate}
+    \item \textbf{Schnittstelle definieren}\\
+    \noindent
+    Die Schnittstelle zwischen Client & Server in Abhängigkeit von der Anwendung, die realisiert werden soll.\\
+    \noindent
+    Die Schnittstelle führt alle Methoden auf, die über \textbf{RMI} aufgerufen werden sollen.\\
+    \noindent
+    Die Schnittstelle muss aus \code{java.rmi.Remote} abgeleitet werden.\\
+    \noindent
+    Alle Methoden der Schnittstelle müssen mit \code{throws RemoteException} gekennzeichnet werden\footnote{
+    s.a. ``2.4.1 The java.rmi.Remote Interface``: \url{https://docs.oracle.com/javase/8/docs/platform/rmi/spec/rmi-objmodel5.html#a3459} - abgerufen 1.2.2024
+    }.
+
+    \item \textbf{Schnittstelle implementieren}\\
+    \noindent
+    Es wird eine Klasse geschrieben, die die im ersten Schritt definierte Schnittstelle implementiert.\\
+    \noindent
+    Einem Objekt davon muss \ul{von aussen über RMI} nutzbar sein - es muss exportiert werden können.
+    Dazu kann die implementierende Klasse von \code{UnicastRemoteObject} abgeleitet werden.\\
+    Es muss ein expliziter Konstruktor existieren, der mit \code{throws RemoteException} gekennzeichnet wird. \\
+    $\rightarrow$ Es muss mindestens ein expliziter Standard-Konstruktor existieren, der diese Bedingung erfüllt\footnote{
+    ansonsten wird vom Compiler ein Standard-Konstruktor zur Verfügung gestellt.
+    Da dieser aber keine checked Exception in Form einer \textit{RemoteException} wirft, kommt es zu einem Compilerfehler.
+    }
+
+    \item \textbf{Server programmieren}\\
+    \noindent
+    Man erzeugt eines oder mehrere Objekte der in Schritt 2 implementierten Klasse und meldet diese unter einem beliebigen Namen bei der \textbf{RMI-Registry} an.
+
+    \item \textbf{Client programmieren}\\
+    \noindent
+    Über die \textbf{RMI-Registry} (Serveradresse und Port müssen dem Client bekannt sein) beschafft sich der Client die in Schritt 3 registrieren Objekte, die als \textbf{Stub} an ihn weitergeleitet werden.\\
+    \noindent
+    Der Stub kann unter Berücksichtigung der in Schritt 1 definierten Schnittstelle so verwendet werden, als wäre es ein lokales Objekt\footnote{
+    ``lokal`` im Sinne von gleicher Prozess / gleicher Adressraum.
+    }.\\
+    \noindent
+    Die Methodenaufrufe werden dann letztendlich auf dem durch das in Schritt 2 definierte \textbf{RMI-Objekt} auf dem Server ausgeführt (Client $\rightarrow$ Stub $\rightarrow$ Skeleton $\rightarrow$ Server).
+
+    \item \textbf{Anwendung übersetzen und ausführen}\\
+    \noindent
+    Alle Dateien werden kompiliert.
+    Vor dem Starten des Programms ist darauf zu achten, dass auf dem Server die \textbf{RMI-Registry} gestartet wird - was aber auch aus dem Programm heraus geschehen kann.
+\end{enumerate}
