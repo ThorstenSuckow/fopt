@@ -1,4 +1,8 @@
+Wofür steht RMI in Java und was zeichnet es aus? Welche charakteristischen Eigenschaften besitzt es im Hinblick auf Client-Server-Kommunikation?
+
 Wie lässt sich ein paralleler TCP Server realisieren? Gehen Sie kurz auf die Eigenschaften der von Ihnen aufgeführten Lösungen ein.
 (Statische Parallelität, Dynamische Parallelität, Mischformen)
 
 Was ist datestromorientierte und datagram-orientierte Communication oim Zusammenhang mit Sockets? Welche Zusammenhänge zur parallelen Programmierung kennen Sie? (Message Queue, Pipes
+
+Realisieren sie ein RMI-Programm, bei dem die Anfrage eines Clients und somit der Auftrag an ein RI-Objekt in einen Thread ausgelagert wird.

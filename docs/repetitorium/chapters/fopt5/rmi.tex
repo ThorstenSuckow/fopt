@@ -16,7 +16,7 @@ Wenn man eine verteilte Java-Anwendung entwickeln soll, bei der Kommunikationspr
 \begin{figure}
     \centering
     \includegraphics[scale=0.5]{chapters/fopt5/img/rmi/processcall}
-    \caption{Zwei unterschiedliche Objekte in unterschidlichen Aufrufsituationen. Im oberen Beispiel befinden sich die Objekte im selben Adressraum, im unteren Beispiel in unterschiedlichen Adressräumen - diese Situation kommt bei der Nutzung von RMI vor (Quelle: in Anlehnung an \cite[311 f., Abbildung 6.1 und 6.2]{Oec22})}
+    \caption{Zwei unterschiedliche Objekte in unterschiedlichen Aufrufsituationen. Im oberen Beispiel befinden sich die Objekte im selben Adressraum, im unteren Beispiel in unterschiedlichen Adressräumen - diese Situation kommt bei der Nutzung von RMI vor (Quelle: in Anlehnung an \cite[311 f., Abbildung 6.1 und 6.2]{Oec22})}
     \label{fig:processcall}
 \end{figure}
 
@@ -281,3 +281,87 @@ Folgendes Beispiel stellt die Verwendung in vereinfachter Form nochmal dar:
         }
     }
 \end{minted}\\
+
+\subsection{RMI-Registry}
+
+\code{java.rmi.Naming} stellt die Methode \staticcode{bind()} zur Verfügung - wenn die Methode aufgerufen wird, und der Name schon vergeben (``gebunden``) ist, wird eine \code{AlreadyBoundException} geworfen; für ein \textit{rebinding} müsste die \textbf{RMI-Registry} neugestartet werden; aus dem Grund kann man \staticcode{rebind()} verwenden.\\
+Man sollte natürlich auch darauf achten, einen Server, der herunterfährt, auch mittels \staticcode{unbind()} zu deregistrieren, also aus der Registry zu entfernen.\\
+
+\begin{tcolorbox}
+    \code{bind()}, \code{rebind()} und \code{unbind()}, ruft der Server auf, der sich auf dem gleichen Rechner befinden muss wie die \textbf{Registry}.\\
+    \noindent
+    \code{lookup()} und \code{list()} ruft i.d.R. der Client auf, der auf einem beliebigen Rechner laufen kann.
+\end{tcolorbox}
+
+\noindent
+Eine weitere statische Methode ist \staticcode{list():String[]}, die einem ein Feld mit allen Einträgen der Registry zurückliefert.\\
+
+\noindent
+Die Kommunikation zwischen \ul{Client und Server}, \ul{Client und Registry} sowie \ul{Server und Registry} findet über \textbf{TCP-Sockets} statt.\\
+
+\noindent
+Die \textbf{Registry} startet standardmäßig auf Port $1099$.\\
+
+\noindent
+Ein Server startet auf einer beliebigen freien Portnummer; während der Registrierung werden einem Objekt weitere Informationen zugeordnet, wie Portnummer und eine \textit{Objekt-Id-Kennung}, damit man das Objekt erreichen kann.\\
+Wenn der Client mittels \staticcode{java.rmi.Naming.lookup(name:String)} einen Eintrag aus der Registry anfordert, enthält das zurückgegebene Objekt diese Informationen, und der Client kann diese Informationen zur Verbindungsherstellung nutzen.\\
+
+\begin{tcolorbox}
+    Ein Server kann mehrere Objekte beherbergen, die alle unter ein und derselben Portnummer erreichbar sind (vgl.~\cite[324]{Oec22}).
+\end{tcolorbox}
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.5]{chapters/fopt5/img/rmi/registry}
+    \caption{Ein Client fragt den Eintrag der Registry für ``service`` ab und erhält über den Port des Client-Rechners $c_1$ die Erreichbarkeitsinformationen, die u.a. aus einer Portnummer $x$ und einer Objekt-Kennung bestehen.
+    Antworten auf seine Anfragen werden daraufhin an seinen Port $c_2$ gesendet. (Quelle: in Anlehnung an \cite[324, Bild 6.5]{Oec22})}
+    \label{fig:registry}
+\end{figure}
+
+Die \textbf{Registry} lässt sich auch aus dem Programm heraus starten\footnote{
+``Class LocateRegistry``: \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.rmi/java/rmi/registry/LocateRegistry.html} - abgerufen 2.2.2024
+}:
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    frame=lines,
+    framesep=2mm]{java}
+    java.rmi.registry.LocateRegistry.createRegistry(port:int):Registry
+\end{minted}\\
+
+Der zurückgegebene Typ implementiert \code{java.rmi.registry.Registry} und besitzt dieselben Methoden wie \code{java.rmi.Naming}\footnote{was aber nicht heißt, dass \textit{Naming} auch \textit{Registry} implementiert - die Methoden von \textit{Naming} sind allesamt statisch.
+}.\\
+$\rightarrow$ Entweder wird die Registry nur in einem Server gestartet, oder weitere Registries müssen eigene, unterschiedliche Portnummern enthalten.
+
+\subsection*{Eigene Notizen}
+
+Länger andauernde Aufträge an ein Remote-Objekt sollten über Threads realisiert werden.\\
+
+\noindent
+Muss eine UI während / infolgedessen aktualisiert werden, sollte diese UI-Aktualisierung über \code{javafx.application.Platform.runLater()} stattfinden (\textbf{JavaFX Application Thread}).
+
+
+\section{Parallelität bei RMI-Methodenaufrufen}
+
+Ein \textbf{Skeleton} ist ein paralleler \textbf{TCP-Server} (vgl.\cite[329]{, Oec22}).\\
+
+\begin{tcolorbox}
+    Identität und Gleichheit von zwei \textbf{Stubs} (Rückgabewert von \code{Naming.lookup(...)}) führt zu \code{false}, wenn ein Stub für ein und denselben Namen angefordert wird, \code{equals()} hingegen zu \code{true}.\\
+
+    $\rightarrow$ \textbf{Stub-Objekte} sind dann nicht ``identisch``, aber wenn sie auf dasselbe \textbf{RMI-Objekt} zeigen, werden sie als ``gleich`` betrachtet.
+\end{tcolorbox}
+
+\noindent
+Wird ein \textbf{Stub} angefordert, der eine asynchrone Operation ausführt, und dieser Stub wird in einen Thread ausgelagert, verhält sich der Stub \textit{intelligent}:
+
+\begin{itemize}
+    \item wenn mehrere Threads erzeugt werden, und ``parallel`` gearbeitet wird, werden die Operationen auch parallel ausgeführt, und zwar indem mehrere Verbindungen aufgebaut werden (dadurch werden auf Server-Seite mehrere Threads erzeugt).
+    \item wird auf Client-Seite keine parallele Ausführung durch die Erzeugung von Threads erzwungen, findet die Abarbeitung der Operation(en) sequentiell statt, es wird dann auch nur eine Verbindung dafür aufgebaut.
+    \item ein einzelner Stub ist also auch dazu in der Lage, parallele Aufrufe auf dem Server zu erzeugen
+\end{itemize}
+
+\begin{tcolorbox}
+    Methodenaufrufe auf ein RMI-Objekt finden parallel statt durch mehrere Clients, beim Zugriff auf gemeinsame Daten muss entsprechend synchronisiert werden,
+\end{tcolorbox}
