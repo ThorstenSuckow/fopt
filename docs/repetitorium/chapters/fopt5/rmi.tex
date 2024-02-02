@@ -92,7 +92,7 @@ s.a. ``An Overview of RMI Applications``: \url{https://docs.oracle.com/javase/tu
 }:
 
 \begin{enumerate}
-    \item \textbf{Schnittstelle definieren}\\
+    \item\label{itm:intdef} \textbf{Schnittstelle definieren}\\
     \noindent
     Die Schnittstelle zwischen Client & Server in Abhängigkeit von der Anwendung, die realisiert werden soll.\\
     \noindent
@@ -101,7 +101,7 @@ s.a. ``An Overview of RMI Applications``: \url{https://docs.oracle.com/javase/tu
     Die Schnittstelle muss aus \code{java.rmi.Remote} abgeleitet werden.\\
     \noindent
     Alle Methoden der Schnittstelle müssen mit \code{throws RemoteException} gekennzeichnet werden\footnote{
-    s.a. ``2.4.1 The java.rmi.Remote Interface``: \url{https://docs.oracle.com/javase/8/docs/platform/rmi/spec/rmi-objmodel5.html#a3459} - abgerufen 1.2.2024
+    s.a. ``2.4.1 The java.rmi.Remote Interface``: \url{https://docs.oracle.com/en/java/javase/21/docs/specs/rmi/objmodel.html#the-java.rmi.remote-interface} - abgerufen 1.2.2024
     }.
 
     \item \textbf{Schnittstelle implementieren}\\
@@ -135,3 +135,149 @@ s.a. ``An Overview of RMI Applications``: \url{https://docs.oracle.com/javase/tu
     Alle Dateien werden kompiliert.
     Vor dem Starten des Programms ist darauf zu achten, dass auf dem Server die \textbf{RMI-Registry} gestartet wird - was aber auch aus dem Programm heraus geschehen kann.
 \end{enumerate}
+
+\section{Einführendes RMI-Beispiel}
+
+Auch bei RMI-Implementierungen bei denen mehrere Clients gleichzeitig auf eine Objektinstanz zugreifen, ist (ggfl. nach Anwendung) \code{synchronized} nötig, um ein Objekt für den gleichzeitigen Zugriff zu sperren.\\
+
+\noindent
+Sobald über \staticcode{java.rmi.Naming.rebind()} bzw. \staticcode{bind()}\footnote{
+textit{bind()} wirft eine \textit{AlreadyBoundException}, falls in der RMI-Registry bereits ein Eintrag mit dem Namen existiert, \textit{rebind()} hingegen ersetzt einen ggf. breits existierenden Eintrag mit gleichem Namen.
+} der Server gestartet wurde, wird ein Thread gestartet, der den Skeleton repräsentiert, auf eingehende TCP-Verbindungen wartet.\\
+
+\noindent
+der Client frag vom Server über
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    frame=lines,
+    framesep=2mm]{java}
+    java.rmi.Naming.lookup("rmi://serveradresse/bindingname");
+\end{minted}\\
+
+das Objekt ab, auf das er zugreifen möchte, und bekommt dann ein Objekt vom Typ \code{java.rmi.Remote} zurück.\\
+Das Objekt muss noch zu dem Typen gecasted werden, der in ``Schnittstelle definieren`` in Punkt~\ref{itm:intdef} (s. vorheriger Abschnitt) implementiert wurde, um entsprechende Methoden der implementierten Schnittstelle aufrufen zu können - \ul{das über }\code{lookup()}\ul{ zurückgegebene Objekt ist das \textbf{Stub-Objekt}}.\\
+
+\noindent
+Bevor der Server auf dem entsprechenden Rechner gestartet wird, muss auf diesem Rechner über die Konsole noch \code{rmiregistry} aufgerufen werden, damit die \textbf{Registry} zur Verfügung steht, sofern das nicht wie im folgenden Beispiel über das Programm geschieht.\\
+
+Im Folgenden ein Beispiel für ein komplettes RMI-Programm, das einen einfachen Echo-Server\footnote{
+``Echo Protocol``: \url{https://en.wikipedia.org/wiki/Echo_Protocol} - abgerufen 2.2.2024
+} implementiert.
+Die RMI-Registry wird hierbei ebenfalls über das Programm gestartet.
+\begin{minted}[mathescape,
+linenos,
+numbersep=5pt,
+gobble=2,
+fontsize=\small,
+frame=lines,
+framesep=2mm]{java}
+    public class RMIDemo {
+
+        interface Echo extends Remote {
+            String echo(String msg) throws RemoteException;
+        }
+
+        static class EchoImpl extends UnicastRemoteObject implements Echo {
+
+            public EchoImpl() throws RemoteException{}
+
+            @Override
+            public String echo(String msg) throws RemoteException {
+                return msg;
+            }
+        }
+
+        public static void main(String[] args) {
+
+            if (args.length == 0) {
+                // Server
+                try {
+                    Registry registry = LocateRegistry.createRegistry(1099);
+                    registry.rebind("echo", new EchoImpl());
+                } catch (RemoteException e) {
+                    System.err.println("[registry] " + e);
+                }
+                //Thread is started, it's okay to leave main() at this point.
+                return;
+            }
+
+            // client
+            try {
+                Remote stub = Naming.lookup("rmi://localhost:1099/echo");
+                Echo echo = (Echo) stub;
+                System.out.println(echo.echo(args[0]));
+            } catch (NotBoundException | MalformedURLException | RemoteException e) {
+                System.err.println("[client] " + e);
+            }
+        }
+    }
+\end{minted}\\
+
+\begin{tcolorbox}
+    RMI-Methodenaufrufe sind blocking, auch wenn der Rückgabetyp für die aufgerufene Methoden mit \code{void}-deklariert wurde.\\
+
+    \blockquote[{``3.1 Stubs and Skeletons``: \url{https://docs.oracle.com/en/java/javase/21/docs/specs/rmi/arch.html} - abgerufen 2.2.2024 (Hervorherbungen eigene)}]{
+        When a stub's method is invoked, it does the following:
+        \begin{itemize}
+            \item initiates a connection with the remote JVM containing the remote object,
+            \item marshals (writes and transmits) the parameters to the remote JVM,
+            \item \textbf{waits for the result of the method invocation},
+            \item \textbf{unmarshals (reads) the return value or exception returned}, and
+            \item returns the value to the caller.
+        \end{itemize}
+
+    }
+\end{tcolorbox}
+
+\subsection{RMI-Client mit grafischer Benutzeroberfläche}
+
+In dem Beispiel \cite[320, Listing 6.5]{Oec22} wird bei jedem Buttonclick ein neuer Thread gestartet.
+Die gestarteten Threads können unterschiedlich schnell ablaufen, und somit zu unerwarteten Ergebnissen führen:
+
+\blockquote[{\cite[323]{Oec22}}]{
+[...], aber man wird vermutlich davon ausgehen, dasss der angezeigte Zählerwert immer derjenige ist, der aus der eigenen zuletzt angestoßenen Aktion resultiert.
+    Aber dies muss nicht in jedem Fall so sein.
+}
+
+Als Lösung könnte man die ankommenden Aufträge durch einen einzigen Thread ausführen lassen, indem die Aktionen {bspw.} in eine Warteschlange eingereiht werden (vgl.~\cite[323]{Oec22}).
+
+\newpage
+In dem o.a. Listing wird das Functional Interface \Code{Consumer}\footnote{
+`´Interface Consumer<T>``: \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Consumer.html} - abgerufen 2.2.2024
+} verwendet.
+Folgendes Beispiel stellt die Verwendung in vereinfachter Form nochmal dar:
+
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    fontsize=\small,
+    frame=lines,
+    framesep=2mm]{java}
+    public class ConsumerDemo {
+        interface Supplier<T> {
+            T execute();
+        }
+
+        public <T> void asyncCall(Supplier<T> s, Consumer<T> c) {
+            startThread(s, c);
+        }
+
+        public <T> void startThread(Supplier<T> s, Consumer<T> c) {
+            Thread t = new Thread(() -> c.accept(s.execute()));
+            t.start();
+        }
+
+        public static void main(String[] args) {
+            ConsumerDemo cd = new ConsumerDemo();
+            cd.asyncCall(
+                () -> Math.random() * 100,
+                (r) -> System.out.println("Done: " + r)
+            );
+        }
+    }
+\end{minted}\\
