@@ -16,7 +16,7 @@ Wenn man eine verteilte Java-Anwendung entwickeln soll, bei der Kommunikationspr
 \begin{figure}
     \centering
     \includegraphics[scale=0.5]{chapters/fopt5/img/rmi/processcall}
-    \caption{Zwei unterschiedliche Objekte in unterschidlichen Aufrufsituationen. Im oberen Beispiel befinden sich die Objekte im selben Adressraum, im unteren Beispiel in unterschiedlichen Adressräumen - diese Situation kommt bei der Nutzung von RMI vor (Quelle: in Anlehnung an \cite[311 f., Abbildung 6.1 und 6.2]{Oec22})}
+    \caption{Zwei unterschiedliche Objekte in unterschiedlichen Aufrufsituationen. Im oberen Beispiel befinden sich die Objekte im selben Adressraum, im unteren Beispiel in unterschiedlichen Adressräumen - diese Situation kommt bei der Nutzung von RMI vor (Quelle: in Anlehnung an \cite[311 f., Abbildung 6.1 und 6.2]{Oec22})}
     \label{fig:processcall}
 \end{figure}
 
@@ -92,7 +92,7 @@ s.a. ``An Overview of RMI Applications``: \url{https://docs.oracle.com/javase/tu
 }:
 
 \begin{enumerate}
-    \item \textbf{Schnittstelle definieren}\\
+    \item\label{itm:intdef} \textbf{Schnittstelle definieren}\\
     \noindent
     Die Schnittstelle zwischen Client & Server in Abhängigkeit von der Anwendung, die realisiert werden soll.\\
     \noindent
@@ -101,7 +101,7 @@ s.a. ``An Overview of RMI Applications``: \url{https://docs.oracle.com/javase/tu
     Die Schnittstelle muss aus \code{java.rmi.Remote} abgeleitet werden.\\
     \noindent
     Alle Methoden der Schnittstelle müssen mit \code{throws RemoteException} gekennzeichnet werden\footnote{
-    s.a. ``2.4.1 The java.rmi.Remote Interface``: \url{https://docs.oracle.com/javase/8/docs/platform/rmi/spec/rmi-objmodel5.html#a3459} - abgerufen 1.2.2024
+    s.a. ``2.4.1 The java.rmi.Remote Interface``: \url{https://docs.oracle.com/en/java/javase/21/docs/specs/rmi/objmodel.html#the-java.rmi.remote-interface} - abgerufen 1.2.2024
     }.
 
     \item \textbf{Schnittstelle implementieren}\\
@@ -135,3 +135,349 @@ s.a. ``An Overview of RMI Applications``: \url{https://docs.oracle.com/javase/tu
     Alle Dateien werden kompiliert.
     Vor dem Starten des Programms ist darauf zu achten, dass auf dem Server die \textbf{RMI-Registry} gestartet wird - was aber auch aus dem Programm heraus geschehen kann.
 \end{enumerate}
+
+\section{Einführendes RMI-Beispiel}
+
+Auch bei RMI-Implementierungen bei denen mehrere Clients gleichzeitig auf eine Objektinstanz zugreifen, ist (ggfl. nach Anwendung) \code{synchronized} nötig, um ein Objekt für den gleichzeitigen Zugriff zu sperren.\\
+
+\noindent
+Sobald über \staticcode{java.rmi.Naming.rebind()} bzw. \staticcode{bind()}\footnote{
+textit{bind()} wirft eine \textit{AlreadyBoundException}, falls in der RMI-Registry bereits ein Eintrag mit dem Namen existiert, \textit{rebind()} hingegen ersetzt einen ggf. breits existierenden Eintrag mit gleichem Namen.
+} der Server gestartet wurde, wird ein Thread gestartet, der den Skeleton repräsentiert, auf eingehende TCP-Verbindungen wartet.\\
+
+\noindent
+der Client frag vom Server über
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    frame=lines,
+    framesep=2mm]{java}
+    java.rmi.Naming.lookup("rmi://serveradresse/bindingname");
+\end{minted}\\
+
+das Objekt ab, auf das er zugreifen möchte, und bekommt dann ein Objekt vom Typ \code{java.rmi.Remote} zurück.\\
+Das Objekt muss noch zu dem Typen gecasted werden, der in ``Schnittstelle definieren`` in Punkt~\ref{itm:intdef} (s. vorheriger Abschnitt) implementiert wurde, um entsprechende Methoden der implementierten Schnittstelle aufrufen zu können - \ul{das über }\code{lookup()}\ul{ zurückgegebene Objekt ist das \textbf{Stub-Objekt}}.\\
+
+\noindent
+Bevor der Server auf dem entsprechenden Rechner gestartet wird, muss auf diesem Rechner über die Konsole noch \code{rmiregistry} aufgerufen werden, damit die \textbf{Registry} zur Verfügung steht, sofern das nicht wie im folgenden Beispiel über das Programm geschieht.\\
+
+Im Folgenden ein Beispiel für ein komplettes RMI-Programm, das einen einfachen Echo-Server\footnote{
+``Echo Protocol``: \url{https://en.wikipedia.org/wiki/Echo_Protocol} - abgerufen 2.2.2024
+} implementiert.
+Die RMI-Registry wird hierbei ebenfalls über das Programm gestartet.
+\begin{minted}[mathescape,
+linenos,
+numbersep=5pt,
+gobble=2,
+fontsize=\small,
+frame=lines,
+framesep=2mm]{java}
+    public class RMIDemo {
+
+        interface Echo extends Remote {
+            String echo(String msg) throws RemoteException;
+        }
+
+        static class EchoImpl extends UnicastRemoteObject implements Echo {
+
+            public EchoImpl() throws RemoteException{}
+
+            @Override
+            public String echo(String msg) throws RemoteException {
+                return msg;
+            }
+        }
+
+        public static void main(String[] args) {
+
+            if (args.length == 0) {
+                // Server
+                try {
+                    Registry registry = LocateRegistry.createRegistry(1099);
+                    registry.rebind("echo", new EchoImpl());
+                } catch (RemoteException e) {
+                    System.err.println("[registry] " + e);
+                }
+                //Thread is started, it's okay to leave main() at this point.
+                return;
+            }
+
+            // client
+            try {
+                Remote stub = Naming.lookup("rmi://localhost:1099/echo");
+                Echo echo = (Echo) stub;
+                System.out.println(echo.echo(args[0]));
+            } catch (NotBoundException | MalformedURLException | RemoteException e) {
+                System.err.println("[client] " + e);
+            }
+        }
+    }
+\end{minted}\\
+
+\begin{tcolorbox}
+    RMI-Methodenaufrufe sind blocking, auch wenn der Rückgabetyp für die aufgerufene Methoden mit \code{void}-deklariert wurde.\\
+
+    \blockquote[{``3.1 Stubs and Skeletons``: \url{https://docs.oracle.com/en/java/javase/21/docs/specs/rmi/arch.html} - abgerufen 2.2.2024 (Hervorherbungen eigene)}]{
+        When a stub's method is invoked, it does the following:
+        \begin{itemize}
+            \item initiates a connection with the remote JVM containing the remote object,
+            \item marshals (writes and transmits) the parameters to the remote JVM,
+            \item \textbf{waits for the result of the method invocation},
+            \item \textbf{unmarshals (reads) the return value or exception returned}, and
+            \item returns the value to the caller.
+        \end{itemize}
+
+    }
+\end{tcolorbox}
+
+\subsection{RMI-Client mit grafischer Benutzeroberfläche}
+
+In dem Beispiel \cite[320, Listing 6.5]{Oec22} wird bei jedem Buttonclick ein neuer Thread gestartet.
+Die gestarteten Threads können unterschiedlich schnell ablaufen, und somit zu unerwarteten Ergebnissen führen:
+
+\blockquote[{\cite[323]{Oec22}}]{
+[...], aber man wird vermutlich davon ausgehen, dasss der angezeigte Zählerwert immer derjenige ist, der aus der eigenen zuletzt angestoßenen Aktion resultiert.
+    Aber dies muss nicht in jedem Fall so sein.
+}
+
+Als Lösung könnte man die ankommenden Aufträge durch einen einzigen Thread ausführen lassen, indem die Aktionen {bspw.} in eine Warteschlange eingereiht werden (vgl.~\cite[323]{Oec22}).
+
+\newpage
+In dem o.a. Listing wird das Functional Interface \Code{Consumer}\footnote{
+`´Interface Consumer<T>``: \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Consumer.html} - abgerufen 2.2.2024
+} verwendet.
+Folgendes Beispiel stellt die Verwendung in vereinfachter Form nochmal dar:
+
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    fontsize=\small,
+    frame=lines,
+    framesep=2mm]{java}
+    public class ConsumerDemo {
+        interface Supplier<T> {
+            T execute();
+        }
+
+        public <T> void asyncCall(Supplier<T> s, Consumer<T> c) {
+            startThread(s, c);
+        }
+
+        public <T> void startThread(Supplier<T> s, Consumer<T> c) {
+            Thread t = new Thread(() -> c.accept(s.execute()));
+            t.start();
+        }
+
+        public static void main(String[] args) {
+            ConsumerDemo cd = new ConsumerDemo();
+            cd.asyncCall(
+                () -> Math.random() * 100,
+                (r) -> System.out.println("Done: " + r)
+            );
+        }
+    }
+\end{minted}\\
+
+\subsection{RMI-Registry}
+
+\code{java.rmi.Naming} stellt die Methode \staticcode{bind()} zur Verfügung - wenn die Methode aufgerufen wird, und der Name schon vergeben (``gebunden``) ist, wird eine \code{AlreadyBoundException} geworfen; für ein \textit{rebinding} müsste die \textbf{RMI-Registry} neugestartet werden; aus dem Grund kann man \staticcode{rebind()} verwenden.\\
+Man sollte natürlich auch darauf achten, einen Server, der herunterfährt, auch mittels \staticcode{unbind()} zu deregistrieren, also aus der Registry zu entfernen.\\
+
+\begin{tcolorbox}
+    \code{bind()}, \code{rebind()} und \code{unbind()}, ruft der Server auf, der sich auf dem gleichen Rechner befinden muss wie die \textbf{Registry}.\\
+    \noindent
+    \code{lookup()} und \code{list()} ruft i.d.R. der Client auf, der auf einem beliebigen Rechner laufen kann.
+\end{tcolorbox}
+
+\noindent
+Eine weitere statische Methode ist \staticcode{list():String[]}, die einem ein Feld mit allen Einträgen der Registry zurückliefert.\\
+
+\noindent
+Die Kommunikation zwischen \ul{Client und Server}, \ul{Client und Registry} sowie \ul{Server und Registry} findet über \textbf{TCP-Sockets} statt.\\
+
+\noindent
+Die \textbf{Registry} startet standardmäßig auf Port $1099$.\\
+
+\noindent
+Ein Server startet auf einer beliebigen freien Portnummer; während der Registrierung werden einem Objekt weitere Informationen zugeordnet, wie Portnummer und eine \textit{Objekt-Id-Kennung}, damit man das Objekt erreichen kann.\\
+Wenn der Client mittels \staticcode{java.rmi.Naming.lookup(name:String)} einen Eintrag aus der Registry anfordert, enthält das zurückgegebene Objekt diese Informationen, und der Client kann diese Informationen zur Verbindungsherstellung nutzen.\\
+
+\begin{tcolorbox}
+    Ein Server kann mehrere Objekte beherbergen, die alle unter ein und derselben Portnummer erreichbar sind (vgl.~\cite[324]{Oec22}).
+\end{tcolorbox}
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.5]{chapters/fopt5/img/rmi/registry}
+    \caption{Ein Client fragt den Eintrag der Registry für ``service`` ab und erhält über den Port des Client-Rechners $c_1$ die Erreichbarkeitsinformationen, die u.a. aus einer Portnummer $x$ und einer Objekt-Kennung bestehen.
+    Antworten auf seine Anfragen werden daraufhin an seinen Port $c_2$ gesendet. (Quelle: in Anlehnung an \cite[324, Bild 6.5]{Oec22})}
+    \label{fig:registry}
+\end{figure}
+
+Die \textbf{Registry} lässt sich auch aus dem Programm heraus starten\footnote{
+``Class LocateRegistry``: \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.rmi/java/rmi/registry/LocateRegistry.html} - abgerufen 2.2.2024
+}:
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    frame=lines,
+    framesep=2mm]{java}
+    java.rmi.registry.LocateRegistry.createRegistry(port:int):Registry
+\end{minted}\\
+
+Der zurückgegebene Typ implementiert \code{java.rmi.registry.Registry} und besitzt dieselben Methoden wie \code{java.rmi.Naming}\footnote{was aber nicht heißt, dass \textit{Naming} auch \textit{Registry} implementiert - die Methoden von \textit{Naming} sind allesamt statisch.
+}.\\
+$\rightarrow$ Entweder wird die Registry nur in einem Server gestartet, oder weitere Registries müssen eigene, unterschiedliche Portnummern enthalten.
+
+\subsection*{Eigene Notizen}
+
+Länger andauernde Aufträge an ein Remote-Objekt sollten über Threads realisiert werden.\\
+
+\noindent
+Muss eine UI während / infolgedessen aktualisiert werden, sollte diese UI-Aktualisierung über \code{javafx.application.Platform.runLater()} stattfinden (\textbf{JavaFX Application Thread}).
+
+
+\section{Parallelität bei RMI-Methodenaufrufen}
+
+Ein \textbf{Skeleton} ist ein paralleler \textbf{TCP-Server} (vgl.\cite[329]{, Oec22}).\\
+
+\begin{tcolorbox}
+    Identität und Gleichheit von zwei \textbf{Stubs}:\\
+    \noindent
+    Rückgabewert von \code{Naming.lookup(...)} führt bei Objektvergleich mittel $==$zu \code{false}, wenn ein Stub für ein und denselben Namen zweimal angefordert wird, \code{equals()} hingegen zu \code{true}.\\
+
+    $\rightarrow$ \textbf{Stub-Objekte} sind in diesem Fall nicht ``identisch``, aber wenn sie auf dasselbe \textbf{RMI-Objekt} zeigen, werden sie als ``gleich`` betrachtet.\\
+
+    ``Zwei Stub-Objekte sind genau dann gleich, wenn sie eine Referenz auf dasselbe Objekt in der Ferne repräsentieren.`` (\cite[347]{Oec22})
+\end{tcolorbox}\\
+
+\noindent
+Wird ein \textbf{Stub} angefordert, der eine asynchrone Operation ausführt, und dieser Stub wird in einen Thread ausgelagert, verhält sich der Stub \textit{intelligent}:
+
+\begin{itemize}
+    \item wenn mehrere Threads erzeugt werden, und ``parallel`` gearbeitet wird, werden die Operationen auch parallel ausgeführt, und zwar indem mehrere Verbindungen aufgebaut werden (dadurch werden auf Server-Seite mehrere Threads erzeugt).
+    \item wird auf Client-Seite keine parallele Ausführung durch die Erzeugung von Threads erzwungen, findet die Abarbeitung der Operation(en) sequentiell statt, es wird dann auch nur eine Verbindung dafür aufgebaut.
+    \item ein einzelner Stub ist also auch dazu in der Lage, parallele Aufrufe auf dem Server zu erzeugen
+\end{itemize}\\
+
+
+\begin{tcolorbox}
+    Methodenaufrufe auf ein RMI-Objekt finden parallel statt durch mehrere Clients - beim Zugriff auf gemeinsame Daten muss entsprechend synchronisiert werden\footnote{
+        s.a. ``3.2 Thread Usage in Remote Method Invocations``: Die Spezifikationen scheinen hier keinen Hinweis darauf zu geben, dass es eine Garantie für die Threads gibt. Steht das im Widerspruch zu der Aussage im Buch (\cite[330]{Oec22})? \url{https://docs.oracle.com/en/java/javase/21/docs/specs/rmi/arch.html#thread-usage-in-remote-method-invocations} - abgerufen 2.2.2024
+    }.
+\end{tcolorbox}
+
+\section{Wertübergabe für Parameter und Rückgabewerte}
+
+Bei \textbf{RMO} können Objektparameter oder Objektrückgabewerte als \textbf{Wert} oder \textbf{Referenz} übergeben werden.\\
+
+\noindent
+Bei der Übergabe als Wert wird eine Kopie des Objektes erzeugt, und zwar rekursiv bei gleichzeitiger Vermeidung von Zyklen.\\
+
+\noindent
+Diese Kopie wird dann auf dem Server in der entsprechenden Methode aufgerufen:
+
+\begin{tcolorbox}
+    Damit ein Objekt auf einen Server übertragen werden kann, muss es \code{java.io.Serializable} implementieren.
+\end{tcolorbox}
+
+\begin{itemize}
+    \item wird das Objekt auf dem Server geändert, ändert sich nur \ul{dieses} Objekt auf dem Server, nicht aber das auf dem Client.
+    \item \ul{als Rückgabewert} kann das geänderte Objekt aber vom Client verwendet werden
+\end{itemize}
+
+Datenstrukturen werden unter Verwendung von \code{java.io.Serializable} serialisiert {bzw.} deserialisiert; Objekte, die als ``Foge von Bytes`` serialisiert werden sollen, müssen dabei \code{java.io.Serializable} implementieren  - das gilt auch für die Objekte, die mit dem zu serialisierenden Objekt assoziiert sind (vgl.~\cite[332]{Oec22}).\\
+
+\noindent
+Bei \textbf{RMI} findet die Serialisierung automatisch statt; möchte man {bspw.} ein Objekt serialisieren und in eine Datei schreiben, muss man die Logik zum Speichern/Lesen des Objektes selber implementieren\footnote{
+auch wenn das Beispiel nicht viel Code enthält, sollte klar sein, dass das (De)Serialisieren bei RMI automatisch geschieht und bei Abfrage des Rückgabewerts/ Übergabeparameters bereits erfolgt ist, ohne dass zusätzliche Methoden aufgerufen werden müssen.
+}, wie folgendes Beispiel zeigt:\\
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    frame=lines,
+    framesep=2mm]{java}
+
+    // schreiben
+    FileOutputStream fos = new FileOutputStream(fileName);
+    ObjectOutputStream output = new ObjectOutputStream(fos);
+    // hier findet das serialisieren statt
+    output.writeObject(obj);
+    output.flush();
+
+    //lesen
+    FileInputStream fis = new FileInputStream(fileName);
+    ObjectInputStream input = new ObjectInputStream(fis);
+    // hier findet das de-serialisieren statt
+    ConcreteObject obj = (ConcreteObject)input.readObject();
+\end{minted}\\
+
+\noindent
+Im Wesentliche wird bei der Serialisierung der Zustand eines Objektes gespeichert, was vor allem durch die aktuellen Werte der Attribute des Objektes beschrieben wird.\\
+
+\noindent
+Attribute, die bei der Serialisierung nicht berücksichtigt werden sollen, können durch den Feld-Modifizierer \code{transient} entsprechend gekennzeichnet werden\footnote{
+vgl. ``8.3.1.3. transient Fields`` \url{https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.3.1.3} - abgerufen 2.2.2024
+}
+
+
+\begin{tcolorbox}
+    Ein Objekt wird als Wert übergeben, wenn es serialisierbar ist und nicht exportiert ist.
+\end{tcolorbox}
+
+
+\section{Referenzübergabe für Parameter und Rückgabewerte}
+
+Bei \textbf{RMI} werden Parameter und Rückgabewerte entweder als Wert oder als Referenz übergeben.\\
+
+\noindent
+Als \textbf{Wert} i.d.R. nur, wenn eine Klasse \code{Serializable} implementiert, ansonsten hat die \textbf{Referenzübergabe} Vorrang, falls ein Objekt einer Klasse \textbf{exportiert} ist (bspw. weil seine Klasse von \code{UnicastRemoteObject} abgeleitet ist).\\
+
+
+
+\begin{tcolorbox}
+    RMI-Objekte implementieren die \code{Remote}-Schnittstelle und sind aus \code{UnicastRemoteObject} abgeleitet.
+\end{tcolorbox}\\
+
+\noindent
+Für ein Objekt, das bei \textbf{RMI} als Referenz übergeben wird, wird ein \textbf{Stub} erzeugt, hierzu muss aber nicht extra das betreffende Objekt in einer Registry registriert sein - der Server erhält das \code{Stub}-Objekt nicht über die Registry!\\
+
+\noindent
+Eine Übergabe als Referenz ist bspw. dann sinnvoll/ notwendig, wenn der Server auf dem Client Daten ändern muss\footnote{als Beispiel die in Abschnitt 6.5 des Buches vorgestellte Chat-Anwendung - der Server ruft die \textbf{print}-Methode der Clients auf, Clients aktualisieren daraufhin ihr UI mit dem Übergabeparameter... (vgl.~\cite[Listing 6.22, Listing 6.24]{Oec22})}.\\
+
+\noindent
+Damit eine Übergabe als Referenz funktioniert, muss die zu übergebende Objektsinstanz vom Typ \code{Remote }sein.\\
+
+\noindent
+Werden \code{UnicastRemoteObjekte} genutzt, erstellen diese zur \textbf{TCP}-Kommunikation Threads.
+Deshalb sollte darauf geachtet werden, dass diese Threads beendet sind, bspw. durch einen Aufruf von \code{System.exit(0)}, wenn es zu einem ``kontrollierten`` Programmende kommt\footnote{s. \cite[352]{Oec22}; außerdem ``Shutdown Sequence``: \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Runtime.html#shutdown} - abgerufen 2.2.2024
+}.\\
+
+\begin{tcolorbox}
+    \item Ein Objekt, das eine \textbf{RMI}-Schnittstelle implementiert und von \code{UnicastRemotObject} abgeleitet ist und \textbf{serialisierbar} ist, wird trotzdem als \textbf{Referenz} übergeben.\\
+
+    \noindent
+    \textbf{Referenzübergabe} hat Vorrang vor \textbf{Wertübergabe}.
+\end{tcolorbox}
+
+\subsection*{Eigene Notizen}
+
+\noindent
+Eine \code{ArrayList} nutzt in ihren Methoden bei Objekten \code{equals} zum Vergleich der enthaltenen Elemente\footnote{
+    s. \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/ArrayList.html#equals(java.lang.Object)} - abgerufen 2.2.2024
+}.\\
+
+\noindent
+Über einen \code{Iterator} können bedenkenlos Objekte entfernt werden, ohne, dass es zu einer \code{ConcurrentModificationExcepion} kommt\footnote{ein Iterator kennt \textit{remove()}, aber kein \textit{add()}. S. \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Iterator.html#remove()} - abgerufen 2.2.2024}.\\
+
+
+\noindent
+Chatbeispiel: Dem Abmelden von Clients sollte genug Zeit eingeräumt werden - funktioniert das Abmelden nicht richtig, entfernt der Server die fehlerhaften Clients allerdings ohnehin wegen der abgefangenen Exception - s. \cite[345, Listing 6.22]{Oec22}.
