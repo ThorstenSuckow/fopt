@@ -348,10 +348,14 @@ Muss eine UI während / infolgedessen aktualisiert werden, sollte diese UI-Aktua
 Ein \textbf{Skeleton} ist ein paralleler \textbf{TCP-Server} (vgl.\cite[329]{, Oec22}).\\
 
 \begin{tcolorbox}
-    Identität und Gleichheit von zwei \textbf{Stubs} (Rückgabewert von \code{Naming.lookup(...)}) führt zu \code{false}, wenn ein Stub für ein und denselben Namen angefordert wird, \code{equals()} hingegen zu \code{true}.\\
+    Identität und Gleichheit von zwei \textbf{Stubs}:\\
+    \noindent
+    Rückgabewert von \code{Naming.lookup(...)} führt bei Objektvergleich mittel $==$zu \code{false}, wenn ein Stub für ein und denselben Namen zweimal angefordert wird, \code{equals()} hingegen zu \code{true}.\\
 
-    $\rightarrow$ \textbf{Stub-Objekte} sind dann nicht ``identisch``, aber wenn sie auf dasselbe \textbf{RMI-Objekt} zeigen, werden sie als ``gleich`` betrachtet.
-\end{tcolorbox}
+    $\rightarrow$ \textbf{Stub-Objekte} sind in diesem Fall nicht ``identisch``, aber wenn sie auf dasselbe \textbf{RMI-Objekt} zeigen, werden sie als ``gleich`` betrachtet.\\
+
+    ``Zwei Stub-Objekte sind genau dann gleich, wenn sie eine Referenz auf dasselbe Objekt in der Ferne repräsentieren.`` (\cite[347]{Oec22})
+\end{tcolorbox}\\
 
 \noindent
 Wird ein \textbf{Stub} angefordert, der eine asynchrone Operation ausführt, und dieser Stub wird in einen Thread ausgelagert, verhält sich der Stub \textit{intelligent}:
@@ -360,8 +364,120 @@ Wird ein \textbf{Stub} angefordert, der eine asynchrone Operation ausführt, und
     \item wenn mehrere Threads erzeugt werden, und ``parallel`` gearbeitet wird, werden die Operationen auch parallel ausgeführt, und zwar indem mehrere Verbindungen aufgebaut werden (dadurch werden auf Server-Seite mehrere Threads erzeugt).
     \item wird auf Client-Seite keine parallele Ausführung durch die Erzeugung von Threads erzwungen, findet die Abarbeitung der Operation(en) sequentiell statt, es wird dann auch nur eine Verbindung dafür aufgebaut.
     \item ein einzelner Stub ist also auch dazu in der Lage, parallele Aufrufe auf dem Server zu erzeugen
-\end{itemize}
+\end{itemize}\\
+
 
 \begin{tcolorbox}
-    Methodenaufrufe auf ein RMI-Objekt finden parallel statt durch mehrere Clients, beim Zugriff auf gemeinsame Daten muss entsprechend synchronisiert werden,
+    Methodenaufrufe auf ein RMI-Objekt finden parallel statt durch mehrere Clients - beim Zugriff auf gemeinsame Daten muss entsprechend synchronisiert werden\footnote{
+        s.a. ``3.2 Thread Usage in Remote Method Invocations``: Die Spezifikationen scheinen hier keinen Hinweis darauf zu geben, dass es eine Garantie für die Threads gibt. Steht das im Widerspruch zu der Aussage im Buch (\cite[330]{Oec22})? \url{https://docs.oracle.com/en/java/javase/21/docs/specs/rmi/arch.html#thread-usage-in-remote-method-invocations} - abgerufen 2.2.2024
+    }.
 \end{tcolorbox}
+
+\section{Wertübergabe für Parameter und Rückgabewerte}
+
+Bei \textbf{RMO} können Objektparameter oder Objektrückgabewerte als \textbf{Wert} oder \textbf{Referenz} übergeben werden.\\
+
+\noindent
+Bei der Übergabe als Wert wird eine Kopie des Objektes erzeugt, und zwar rekursiv bei gleichzeitiger Vermeidung von Zyklen.\\
+
+\noindent
+Diese Kopie wird dann auf dem Server in der entsprechenden Methode aufgerufen:
+
+\begin{tcolorbox}
+    Damit ein Objekt auf einen Server übertragen werden kann, muss es \code{java.io.Serializable} implementieren.
+\end{tcolorbox}
+
+\begin{itemize}
+    \item wird das Objekt auf dem Server geändert, ändert sich nur \ul{dieses} Objekt auf dem Server, nicht aber das auf dem Client.
+    \item \ul{als Rückgabewert} kann das geänderte Objekt aber vom Client verwendet werden
+\end{itemize}
+
+Datenstrukturen werden unter Verwendung von \code{java.io.Serializable} serialisiert {bzw.} deserialisiert; Objekte, die als ``Foge von Bytes`` serialisiert werden sollen, müssen dabei \code{java.io.Serializable} implementieren  - das gilt auch für die Objekte, die mit dem zu serialisierenden Objekt assoziiert sind (vgl.~\cite[332]{Oec22}).\\
+
+\noindent
+Bei \textbf{RMI} findet die Serialisierung automatisch statt; möchte man {bspw.} ein Objekt serialisieren und in eine Datei schreiben, muss man die Logik zum Speichern/Lesen des Objektes selber implementieren\footnote{
+auch wenn das Beispiel nicht viel Code enthält, sollte klar sein, dass das (De)Serialisieren bei RMI automatisch geschieht und bei Abfrage des Rückgabewerts/ Übergabeparameters bereits erfolgt ist, ohne dass zusätzliche Methoden aufgerufen werden müssen.
+}, wie folgendes Beispiel zeigt:\\
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    frame=lines,
+    framesep=2mm]{java}
+
+    // schreiben
+    FileOutputStream fos = new FileOutputStream(fileName);
+    ObjectOutputStream output = new ObjectOutputStream(fos);
+    // hier findet das serialisieren statt
+    output.writeObject(obj);
+    output.flush();
+
+    //lesen
+    FileInputStream fis = new FileInputStream(fileName);
+    ObjectInputStream input = new ObjectInputStream(fis);
+    // hier findet das de-serialisieren statt
+    ConcreteObject obj = (ConcreteObject)input.readObject();
+\end{minted}\\
+
+\noindent
+Im Wesentliche wird bei der Serialisierung der Zustand eines Objektes gespeichert, was vor allem durch die aktuellen Werte der Attribute des Objektes beschrieben wird.\\
+
+\noindent
+Attribute, die bei der Serialisierung nicht berücksichtigt werden sollen, können durch den Feld-Modifizierer \code{transient} entsprechend gekennzeichnet werden\footnote{
+vgl. ``8.3.1.3. transient Fields`` \url{https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.3.1.3} - abgerufen 2.2.2024
+}
+
+
+\begin{tcolorbox}
+    Ein Objekt wird als Wert übergeben, wenn es serialisierbar ist und nicht exportiert ist.
+\end{tcolorbox}
+
+
+\section{Referenzübergabe für Parameter und Rückgabewerte}
+
+Bei \textbf{RMI} werden Parameter und Rückgabewerte entweder als Wert oder als Referenz übergeben.\\
+
+\noindent
+Als \textbf{Wert} i.d.R. nur, wenn eine Klasse \code{Serializable} implementiert, ansonsten hat die \textbf{Referenzübergabe} Vorrang, falls ein Objekt einer Klasse \textbf{exportiert} ist (bspw. weil seine Klasse von \code{UnicastRemoteObject} abgeleitet ist).\\
+
+
+
+\begin{tcolorbox}
+    RMI-Objekte implementieren die \code{Remote}-Schnittstelle und sind aus \code{UnicastRemoteObject} abgeleitet.
+\end{tcolorbox}\\
+
+\noindent
+Für ein Objekt, das bei \textbf{RMI} als Referenz übergeben wird, wird ein \textbf{Stub} erzeugt, hierzu muss aber nicht extra das betreffende Objekt in einer Registry registriert sein - der Server erhält das \code{Stub}-Objekt nicht über die Registry!\\
+
+\noindent
+Eine Übergabe als Referenz ist bspw. dann sinnvoll/ notwendig, wenn der Server auf dem Client Daten ändern muss\footnote{als Beispiel die in Abschnitt 6.5 des Buches vorgestellte Chat-Anwendung - der Server ruft die \textbf{print}-Methode der Clients auf, Clients aktualisieren daraufhin ihr UI mit dem Übergabeparameter... (vgl.~\cite[Listing 6.22, Listing 6.24]{Oec22})}.\\
+
+\noindent
+Damit eine Übergabe als Referenz funktioniert, muss die zu übergebende Objektsinstanz vom Typ \code{Remote }sein.\\
+
+\noindent
+Werden \code{UnicastRemoteObjekte} genutzt, erstellen diese zur \textbf{TCP}-Kommunikation Threads.
+Deshalb sollte darauf geachtet werden, dass diese Threads beendet sind, bspw. durch einen Aufruf von \code{System.exit(0)}, wenn es zu einem ``kontrollierten`` Programmende kommt\footnote{s. \cite[352]{Oec22}; außerdem ``Shutdown Sequence``: \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Runtime.html#shutdown} - abgerufen 2.2.2024
+}.\\
+
+\begin{tcolorbox}
+    \item Ein Objekt, das eine \textbf{RMI}-Schnittstelle implementiert und von \code{UnicastRemotObject} abgeleitet ist und \textbf{serialisierbar} ist, wird trotzdem als \textbf{Referenz} übergeben.\\
+
+    \noindent
+    \textbf{Referenzübergabe} hat Vorrang vor \textbf{Wertübergabe}.
+\end{tcolorbox}
+
+\subsection*{Eigene Notizen}
+
+\noindent
+Eine \code{ArrayList} nutzt in ihren Methoden bei Objekten \code{equals} zum Vergleich der enthaltenen Elemente\footnote{
+    s. \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/ArrayList.html#equals(java.lang.Object)} - abgerufen 2.2.2024
+}.\\
+
+\noindent
+Über einen \code{Iterator} können bedenkenlos Objekte entfernt werden, ohne, dass es zu einer \code{ConcurrentModificationExcepion} kommt\footnote{ein Iterator kennt \textit{remove()}, aber kein \textit{add()}. S. \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Iterator.html#remove()} - abgerufen 2.2.2024}.\\
+
+
+\noindent
+Chatbeispiel: Dem Abmelden von Clients sollte genug Zeit eingeräumt werden - funktioniert das Abmelden nicht richtig, entfernt der Server die fehlerhaften Clients allerdings ohnehin wegen der abgefangenen Exception - s. \cite[345, Listing 6.22]{Oec22}.

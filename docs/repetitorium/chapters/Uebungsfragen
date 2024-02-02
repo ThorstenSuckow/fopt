@@ -6,3 +6,7 @@ Wie lässt sich ein paralleler TCP Server realisieren? Gehen Sie kurz auf die Ei
 Was ist datestromorientierte und datagram-orientierte Communication oim Zusammenhang mit Sockets? Welche Zusammenhänge zur parallelen Programmierung kennen Sie? (Message Queue, Pipes
 
 Realisieren sie ein RMI-Programm, bei dem die Anfrage eines Clients und somit der Auftrag an ein RI-Objekt in einen Thread ausgelagert wird.
+
+Schreiben Sie ein RMI-Programm, bei dem mittels Call-bei-Reference Wertübergabe und -rückgabe realisiert ist.
+
+Schreiben Sie ein Beispiel für das Entfernen von Elementen mit Hilfe eines Iterators.
