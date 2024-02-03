@@ -12,3 +12,5 @@ Schreiben Sie ein RMI-Programm, bei dem mittels Call-bei-Reference Wertübergabe
 Schreiben Sie ein Beispiel für das Entfernen von Elementen mit Hilfe eines Iterators.
 
 Zu welcher Schicht ist das HTTP-Protokoll zuzuordnen, und was zeichnet es aus?
+
+Erläutern sie das Sperren von Datensätzen mittels Cookies, und wieso es die Nutzung von synchronized nicht überflüssig macht.
