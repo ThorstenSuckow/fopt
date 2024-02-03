@@ -9,6 +9,7 @@ Wenn man eine verteilte Java-Anwendung entwickeln soll, bei der Kommunikationspr
 
 \noindent
 \textbf{Remote Method Invocation} (RMI) stellt eine Schnittstelle zur Nutzung der Internetprotokolle \textbf{TCP} und \textbf{UDP} bereit.\\
+Für RMI ist ein Protokoll auf Schicht 5 definiert, das Daten, deren Reihenfolge und Codierung bei Methodenaufrufen und Methodenrückkehr festlegt (vgl.\cite[402]{Oec22}).
 
 \noindent
 \textbf{RMI} verfolgt den Ansatz, OOP auch für die Kommunikation zwischen verteilten Anwendungen zu realisieren, wobei der Aspekt der Verteilung für die Entwickler weitestgehend transparent bleibt
@@ -371,6 +372,12 @@ Wird ein \textbf{Stub} angefordert, der eine asynchrone Operation ausführt, und
     Methodenaufrufe auf ein RMI-Objekt finden parallel statt durch mehrere Clients - beim Zugriff auf gemeinsame Daten muss entsprechend synchronisiert werden\footnote{
         s.a. ``3.2 Thread Usage in Remote Method Invocations``: Die Spezifikationen scheinen hier keinen Hinweis darauf zu geben, dass es eine Garantie für die Threads gibt. Steht das im Widerspruch zu der Aussage im Buch (\cite[330]{Oec22})? \url{https://docs.oracle.com/en/java/javase/21/docs/specs/rmi/arch.html#thread-usage-in-remote-method-invocations} - abgerufen 2.2.2024
     }.
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=red!20,color=white,title=Anmerkung]
+    Die Spezifikationen unter ``3.2 Thread Usage in Remote Method Invocations``\footnote{
+        \url{https://docs.oracle.com/en/java/javase/21/docs/specs/rmi/arch.html#thread-usage-in-remote-method-invocations} - abgerufen 2.2.2024
+    } geben keinen Hinweis darauf, dass es eine Garantie für die Threads gibt, im Gegensatz zu~\cite[330]{Oec22}.
 \end{tcolorbox}
 
 \section{Wertübergabe für Parameter und Rückgabewerte}
