@@ -374,6 +374,12 @@ Wird ein \textbf{Stub} angefordert, der eine asynchrone Operation ausführt, und
     }.
 \end{tcolorbox}
 
+\begin{tcolorbox}[colback=red!20,color=white,title=Anmerkung]
+    Die Spezifikationen unter ``3.2 Thread Usage in Remote Method Invocations``\footnote{
+        \url{https://docs.oracle.com/en/java/javase/21/docs/specs/rmi/arch.html#thread-usage-in-remote-method-invocations} - abgerufen 2.2.2024
+    } geben keinen Hinweis darauf, dass es eine Garantie für die Threads gibt, im Gegensatz zu~\cite[330]{Oec22}.
+\end{tcolorbox}
+
 \section{Wertübergabe für Parameter und Rückgabewerte}
 
 Bei \textbf{RMO} können Objektparameter oder Objektrückgabewerte als \textbf{Wert} oder \textbf{Referenz} übergeben werden.\\
