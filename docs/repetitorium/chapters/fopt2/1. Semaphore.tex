@@ -1,0 +1,252 @@
+\subsection{Semaphore}
+
+Der \textbf{Semaphor} (plural: \textbf{Semaphore}; engl. \textit{semaphore}) repräsentiert ein klassisches Synchronisationskonzept.\\
+
+\noindent
+Das abstrakte Konzept dahinter: Ein Semaphor hat einen Wert des Typs \code{int}, der nie $<\ 0$ werden kann.\\
+Die Methoden \code{p()} (nl.: \textit{passeeren}, auch engl. \textit{down} oder \textit{acquire}) bzw. \code{v()} (nl. \textit{frijgeven}, auch engl. \textit{up} oder \textit{release}) dienen zum Herunter- bzw. Hochzählen des Attributs.\\
+
+\noindent
+Ein Thread wird \textbf{blockiert}, wenn bei seinem Aufruf von \code{p()} der Attributwert negativ werden würde.
+
+\subsection{Einfache Semaphore für den gegenseitigen Ausschluss}
+
+Semaphore werden häufig zur Realisierung des gegenseitigen Ausschlusses realisiert $\rightarrow$ ein Programmstück kann nur von einem Thread gleichzeitig ausgeführt werden.\\
+
+\noindent
+Hierzu werden sogenannte \textbf{Mutex Semaphors} (\textit{Mutex} = \textit{Mutual Exclusion}) verwendet:\\
+Der Semaphor wird hierzu mit dem Wert $1$ initialisiert - ruft ein Thread $t_1$ \code{p()} auf und zählt dabei den Wert des Semaphors herunter, müssen ankommende Threads $t$ warten, bis der Wert durch die Freigabe von $t_1$ wieder erhöht und so der kritische Bereich\footnote{
+    \textit{kritischer Bereich}: das Programmstück, das zu einem Zeitpunkt nur von höchstens einem Thread ausgeführt werden darf (vgl.~\cite[102]{Oec22}).
+} wieder freigegeben wird\footnote{ein \textit{binärer Semaphor} kann nur die Werte $0$ und $1$ bzw. $true$ und $false$ annehmen. In \textit{v()} kann vor dem \textit{notify()} überprüft werden, ob der Semaphor gerade das Objekt gesperrt hat}.\\
+
+\noindent
+In dem folgenden Beispiel wird \underlien{ein} Semaphor für 3 verschiedene Objekte desselben Typs verwendet.\\
+Der Semaphor stellt sicher, dass nur jeweils ein Thread das Programmstück in \code{enter()} (über die $3$ verschiedenen Objekte verteilt) ausführen kann. \\
+
+\newpage
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    fontsize=\small,
+    frame=lines,
+    framesep=2mm]{java}
+    public class MutexSemaphorDemo {
+
+        static class MutexSemaphor {
+            private int n = 1;
+            public synchronized void p() {
+                while (n < 1) {
+                    try {
+                        wait();
+                    } catch (InterruptedException ignored) {}
+                }
+                n--;
+            }
+
+            public synchronized void v() {
+                n++;
+                notify();
+            }
+        }
+
+        static class Waiter extends Thread{
+            MutexSemaphor sem;
+            String name;
+            public Waiter(MutexSemaphor s, String n) {
+                sem = s;
+                name = n;
+                start();
+            }
+
+            public void enter() {
+                    String currentThread = Thread.currentThread().getName();
+                    sem.p();
+                    System.out.println(currentThread + " enters [" + name + "]!");
+                    try {
+                        Thread.currentThread().sleep((int) (Math.random() * 100));
+                    } catch (InterruptedException ignored) {}
+                    System.out.println(currentThread + " exits [" + name + "]");
+                    sem.v();
+            }
+        }
+
+        public static void main(String[] args) throws InterruptedException {
+            MutexSemaphor sem = new MutexSemaphor();
+            Waiter waiter1 = new Waiter(sem, "w1");
+            Waiter waiter2 = new Waiter(sem, "w2");
+            Waiter waiter3 = new Waiter(sem, "w3");
+            Thread t1 = new Thread(waiter1::enter);
+            Thread t2 = new Thread(waiter2::enter);
+            Thread t3 = new Thread(waiter3::enter);
+
+            t1.start();t2.start();t3.start();
+            t1.join();t2.join();t3.join();
+        }
+    }
+\end{minted}\\
+
+\newpage
+Eine mögliche Ausgabe für das Programm ist:\\
+
+\noindent
+\begin{minted}[mathescape,
+    numbersep=5pt,
+    gobble=2,
+    frame=none,
+    framesep=2mm]{bash}
+    Thread-3 enters critical section of [w1]!
+    Thread-3 exits [w1]
+    Thread-4 enters critical section of [w2]!
+    Thread-4 exits [w2]
+    Thread-5 enters critical section of [w3]!
+    Thread-5 exits [w3]
+\end{minted}\\
+
+\noindent
+Wäre \code{enter()} hingegen bloß \code{synchronized} und es würde kein Semaphor verwendet, würden die Threads jeweils parallel \code{enter()} ausführen, die Ausgabe lautet dann in etwa:
+
+
+\begin{minted}[mathescape,
+    numbersep=5pt,
+    gobble=2,
+    frame=none,
+    framesep=2mm]{bash}
+    Thread-3 enters critical section of [w1]!
+    Thread-4 enters critical section of [w2]!
+    Thread-5 enters critical section of [w3]!
+    Thread-4 exits [w2]
+    Thread-3 exits [w1]
+    Thread-5 exits [w3]
+\end{minted}\\
+
+\subsection{Semaphore zur Herstellung vorgegebener Ausführungsreihenfolgen}
+
+Neben gegenseitigem Ausschluss können Semaphore auch eingesetzt werden, um die \textbf{Ausführungsreihenfolge} von Threads festzulegen\footnote{ausführliches Beispiel in~\cite[104]{Oec22}}.
+
+\subsection{Additive Semaphore}
+\textbf{Additive Semaphore} erlauben es aufrufenden Threads, den Wert eines Semaphors um ein gewisses $\Delta\ (\geq\ 1)$ herunterzuzählen.\\
+
+\noindent
+Dabei ändert sich die Wartebedingung des Semaphors von
+
+\begin{minted}[mathescape,
+    numbersep=5pt,
+    gobble=2,
+    frame=none,
+    framesep=2mm]{java}
+    while (n == 0) {
+        //...
+    }
+\end{minted}\\
+
+zu
+
+\begin{minted}[mathescape,
+    numbersep=5pt,
+    gobble=2,
+    frame=none,
+    framesep=2mm]{java}
+    while (n - x < 0) {
+        //...
+    }
+\end{minted}\\
+
+\noindent
+Durch die parametrisierte Wertebedingung ist es nötig, wartende Threads mittels \code{notifyAll()} aus der Warteschlange zu holen: Erstens kann es mehrere Threads geben, bei denen insgesamt $\sum_{i=1}^{n} \Delta_i\ \geq\ 0$ sein kann (es dürfen dann mehrere Threads parallel in den kritischen Bereich); zweitens kann die Wartebedingung basierend auf dem $x$ für Threads unterschiedlich sein - sollte nur \code{notify} verwendet werden kann es passieren, dass ein Thread direkt danach wieder in die Warteschlange kommt - und infolgedessen kein anderer Thread mehr in den kritischen Bereich, und kein Aufruf von \code{v()} mehr stattfindet.\\
+
+\noindent
+Es sollte selbstverständlich sein, dass in einer Implementierung der Wert des Semaphors \textbf{auf einen Schlag} (durch Subtraktion / Addition) verändert wird, ansonsten kann es zu einer \textbf{Verklemmungssituation} kommen, wenn der Wert Stückweise inkrementiert/dekrementiert wird (vgl.~\cite[109]{Oec22}).
+
+\subsection{Semaphorgruppen}
+
+Die grundlegende Eigenschaft von additiven Semaphore, den Wert eines Semaphores auf einen Schlag zu ändern, ist Motivation für die Einführung von \textbf{Semaphorgruppen}.\\
+
+\noindent
+Semaphorgruppen werden nicht als Felder von Semaphore angelegt, sondern eine Semaphorgruppe enthält ein Feld von Werten, auf dem operiert wird.\\
+
+\noindent
+Jeder Eintrag in dem Feld repräsentiert ein Mitglied der Semaphorgruppe.
+
+
+\noindent
+Auf die Implementierung von \code{p()}/\code{v()} wird hierbei verzichtet - stattdessen gibt es eine Methode mit einer Signatur ähnlich zu
+
+\begin{minted}[mathescape,
+    numbersep=5pt,
+    gobble=2,
+    frame=none,
+    framesep=2mm]{java}
+    public synchronized void changeValues(int[] deltas)
+\end{minted}\\
+
+\noindent
+Die Methode schiebt so lange einen Thread in eine Warteschlange, bis die Wartebedingung nicht mehr erfüllt ist - hierbei wird dann jeder Index von der Semaphore wie folgt überprüft:
+
+
+\begin{minted}[mathescape,
+    numbersep=5pt,
+    gobble=2,
+    frame=none,
+    framesep=2mm]{java}
+    if (values[i] + delta[i] < 0) {
+        return false
+    }
+\end{minted}\\
+
+\noindent
+Änderungen werden dann nur durchgeführt, wenn nach der Änderung die Werte aller Semaphore der Gruppe nicht negativ sind (vgl.~\cite[109]{Oec22}).\\
+
+\noindent
+Wie bei additiven Semaphore ist es nötig, Threads über \code{notifyAll()} aus der Warteschlange zu holen - ansonsten kann es auch hier vorkommen, dass ein Thread, der weiterlaufen könnte, nicht geweckt wird.\\
+
+\noindent
+Das folgende Beispiel zeigt eine Implementierung einer einfachen Semaphorgruppe (vgl.~\cite[110, Listing 3.5]{Oec22}).
+Auf die Überprüfung der Argumente in den Methoden (Eingabelänge == Argumentlänge) wurde verzichtet.
+
+\newpage
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    fontsize=\small,
+    frame=lines,
+    framesep=2mm]{java}
+    class SemaphoreGroup {
+        int[] values;
+        public SemaphoreGroup (int n) {
+            values = new int[n];
+            for (int i = 0; i < n; i++) {
+                values[i] = 1;
+            }
+        }
+
+        public synchronized void change(int[] set) {
+
+            while (!canChange(set)) {
+                try {
+                    wait();
+                } catch (InterruptedException ignored) {}
+            }
+
+            changeValues(set);
+            notifyAll();
+        }
+
+        private void changeValues(int[] set) {
+            for (int i = 0; i < set.length; i++) {
+                values[i] =  values[i] + set[i];
+            }
+        }
+
+        private boolean canChange(int[] set) {
+            for (int i = 0; i < set.length; i++) {
+                if (values[i] + set[i] < 0) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+    }
+\end{minted}

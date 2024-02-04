@@ -51,7 +51,93 @@ Das Skript FOPT2 bezieht sich auf folgende Inhalte im Buch:
 \newpage
 
 
-\input{chapters/fopt2/1. Fortgeschrittene Synchronisationskonzepte}
+\section{Fortgeschrittene Synchronisationskonzepte in Java}
+
+
+\include{chapters/fopt2/1. Semaphore}
+
+
+\subsection{Notizen zu den Übungen}
+
+Abfragen auf Listen/Felder von Threads, die sich derzeitig in der Warteschlange befinden, sollte von außen immer \code{synchronized} erfolgen.
+Außerdem sollte eine Kopie der Listen zurückgegeben werden, um Manipulation an der tatsächlichen Liste zu verhindern.\\
+
+\noindent
+Bei Exceptions, die nicht abgefangen werden, sorgt \code{finally} für ein Ausführen des durch \textit{finally} eingeleiteten Anweisungsblock auch im Fall einer Exception\footnote{
+    Java Language Specification - 14.20.2. Execution of try-finally and try-catch-finally : \url{https://docs.oracle.com/javase/specs/jls/se21/html/jls-14.html#jls-14.20.2} - abgerufen 26.01.2024
+}, wie folgendes Beispiel zeigt:
+
+\newpage
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    fontsize=\small,
+    frame=lines,
+    framesep=2mm]{java}
+    public class TryCatchDemo {
+
+        public String m1(boolean exc) {
+            try {
+
+                System.out.println("try 1.");
+
+                if (exc) {
+                    throw new Exception();
+                }
+                System.out.println("try 2.");
+
+                return "foo";
+
+            } catch (Exception e) {
+
+                return "Exception.";
+
+            } finally {
+                return "finally.";
+            }
+        }
+
+        public static void main(String[] args) {
+           TryCatchDemo demo = new TryCatchDemo();
+           System.out.println(demo.m1(false));
+           System.out.println();
+           System.out.println(demo.m1(true));
+        }
+
+    }
+\end{minted}\\
+
+\noindent
+Die Ausgabe des Programms lautet:
+
+
+\noindent
+\begin{minted}[mathescape,
+    numbersep=5pt,
+    gobble=2,
+    frame=none,
+    framesep=2mm]{bash}
+    try 1.
+    try 2.
+    finally.
+    foo
+
+    try 1.
+    finally.
+    Exception.
+\end{minted}\\
+
+\newpage
+
+\include{chapters/fopt2/2. Message Queues}
+
+
+\include{chapters/fopt2/3. Concurrent Klassenbibliothek}
+
+\include{chapters/fopt2/4. Verklemmungen}
+
+
 
 
 \newpage
