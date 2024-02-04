@@ -1,0 +1,127 @@
+\subsection{Concurrent Klassenbibliothek aus Java 5}
+
+Vor Java 5 gab es im Wesentlichen zur Realisierung von Parallelität nur die Klasse \code{Thread}, zur Realisierung von \textbf{Synchronisation} im Wesentlichen nur \code{synchronized, wai(), notify() und notifyAll()}.\\
+
+\noindent
+Seit Java 5 gibt es drei weitere Packages, die Klassen und Schnittstellen anbieten, die mit Synchronisation und Parallelität zu tun haben:
+
+
+
+\begin{minted}[mathescape,
+    numbersep=5pt,
+    gobble=2,
+    frame=none,
+    framesep=2mm]{java}
+    java.util.concurrent
+    java.util.concurrent.atomic
+    java.util.concurrent.locks
+\end{minted}\\
+
+\noindent
+Die \code{concurrent}-Klassenbibliothek lässt sich in 5 Themenbereiche aufteilen:
+
+\subsection*{Executor- und ExecutorService}
+Mit Hilfe der Schnittstellen \code{Executor} und \code{ExecutorService} kann man Aufträge erteilen, die asynchron ausgeführt werden.\\
+
+\noindent
+\code{ExecutorService} enthält Methoden, mit denen man das Ergebnis erteilter Aufträge über ein \code{Future}-Objekt (später) abholen kann.\\
+
+\noindent
+Eine wichtige Klassen, die die \code{ExecutorSchnittstelle} implementiert, ist die Klasse \code{ThreadPool}: Mit ihr kann es es sich sparen, selbst Threads erzeugen und starten zu müssen (s. a. \cite[146]{Oec22}).\\
+
+\subsection*{Locks und Conditions}
+\code{Lock}s und \code{Condition}s sind eine Alternative für \code{synchronized}, \code{wait()},\code{notify()} und \code{notifyAll()}.\\
+
+\noindent
+\code{Lock} stellt \code{lock()} und \code{unlock()}\footnote{
+    \textit{unlock()} sollte stets in einem \textit{finally}-Block aufgerufen werden (vgl.~\cite[150]{Oec22})
+} zum Sperren/Entsperren eines Objektes zur Verfügung.
+
+\noindent
+\code{Condition}s sind Objekte, die man sich von einem \code{Lock}-Objekt geben lassen kann und die mit diesem \code{Lock}-Objekt assoziiert sind.\\
+Auf \code{Condition}s kann man mit \code{await()} warten\\
+\$rightarrow\ wie bei \code{wait()} sorgt \code{await()} dafür, dass der Thread dabei blockiert wird und die Sperre auf den mit der \code{Condition} assoziierten \code{Lock} freigegeben wird.\\
+\code{signal()} bzw. \code{signalAll()} sorgen dafür, dass durch eine \code{Condition} blockierte Threads geweckt werden.\\
+
+\noindent
+Man kann sich zu eine \code{Lock} beliebig viele \code{Condition}s geben lassen, was eine sehr fein granulierte Modellierung der Bedingung(en) ermöglicht.\\
+
+\subsection*{Atomic-Klassen}
+Die \code{Atomic}-Klassen bieten eine Objekthülle für verschiedene Datentypen (\code{Boolean}, \code{Integer}, \code{Long}\ldots) und ermöglichen einen Thread-sicheren lesenden/schreibenden Zugriff auf die umhüllten Werte.\\
+
+\noindent
+Mit den \code{Atomic}-Klassen lassen sich auch \code{lock-free} Synchronisation realisieren, die zwar eine Form des aktiven Wertes darstellen, unter Umständen aber effizienter sein können, als eine durch eine Sperre erfolgte Umschaltung auf einen andern Thread.\\
+
+\subsection*{Synchronisationsklassen}
+Zu den \textbf{Synchronisationsklassen} zählen die Klassen
+\begin{itemize}
+    \item \code{Semaphore}: Hier entspricht \code{acquire()} dem \code{p()} und \code{release()} dem \code{v()}.
+    \item \code{CountdownLatch}: Zähler, der heruntergezählt wird; Threads warten mittels \code{await()}, bis der Zähler $0$ wird.
+    \item \code{CyclicBarrier}: $n$ Threads warten gegenseitig aufeinander.
+    \item \code{Exchanger}: Ähnlich \code{CyclicBarrier}, nur warten zwei Threads aufeinander und tauschen parametrisiert (\code{Exchanger<V>}) Daten untereinander aus.
+\end{itemize}\\
+
+\subsection*{Queues}
+\code{Queue}-Klassen ermöglichen den \code{synchronisierten} Datenaustausch zwischen Thread nach dem Erzeuger-Verbraucher-Prinzip: Ein Objekt in eine volle Warteschlange zu legen wird so lange blockiert, bis die Warteschlange nicht mehr voll ist; entsprechend wird der Versuch blockiert, aus einer leeren Warteschlange etwas zu entnehmen (vgl.~\cite[164]{Oec22}).
+
+\subsection{Das Fork-Join-Framework von Java 7}
+
+Die \code{concurrent}-Bibliothek wurde in Java 7 um das \textbf{Fork-Join-Framework} erweitert.\\
+
+\noindent
+Eine zentrale Klasse davon ist \code{ForkJoinPool}, der wie der \code{ThreadPoolExecutor} ein \code{ThreadPool} realisiert und \code{ExecutorService} implementiert.\\
+
+\noindent
+\$rightarrow\ dieser \code{ThreadPool} ist speziell für baumartige Berechnungen gedacht.
+
+\begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
+    Ein Objekt von \code{RecursiveTask} / \code{RecursiveAction} stellt einen Knoten des Berechnungsbaumes dar.
+\end{tcolorbox}\\
+
+\noindent
+Der Konstruktor von \code{ForkJoinPool} erlaubt auch Übergabe eines \code{int}-Wertes, mit dem man den Parallelitätsgrad angeben kann\footnote{default entspricht der Anzahl der Prozessoren}.\\
+
+\noindent
+Aufträge werden durch Objekte der generischen Klasse \code{ForkJoinTask} repräsentiert, wobei der Typparameter der Typ des Resultats ist.\\
+
+\noindent
+\code{RecursiveAction}/\code{RecursiveTask} sind aus \code{ForkJoinTask} abgeleitet: \code{RecursiveAction} ist für Aufträge ohne Resultat gedacht (bspw. sortieren), \code{RecursiveTask} für Aufträge mit Ergebnis.\\
+
+\noindent
+Ein Thread eines \code{ForkJoinPools} kann weitere Aufträge bearbeiten, sobald er mit \code{join()} auf das Ende eines anderen Auftrages wartet - er ist durch das Warten also nicht blockiert; dadurch kann ein \code{ForkJoinPool} auch mit wenigen Threads baumartig verzweigte Berechnungen durchführen - das ist mit einem normalen \code{ThreadPool} nicht möglich (vgl.~\cite[168]{Oec22})\footnote{
+    ebenda wird dies als der wesentliche Unterschied zwischen \textit{ForkJoinPool} und \textit{ThreadPoolExecutor} bezeichnet.
+}.\\
+
+\noindent
+Alle Threads des \code{ForkJoinPool}s sind \textbf{Daemon}-Threads.\\
+
+\noindent
+Vorgehen bei der Implementierung - \textbf{Divide \& Conquer}: Prüfen, ob Berechnung klein genug, um direkt zu bearbeiten, falls nein, neue \code{ForkJoinTasks} erzeugen und durch \code{fork()} dem \textbf{ThreadPool} übergeben, mit \code{join()} auf auf die Bearbeitung warten und dann Teilergebnisse zu Gesamtergebnis kombinieren.\\
+
+\noindent
+Das folgende Beispiel ist \cite[168, Listing 3.25]{Oec22} entnommen und beinhaltet die Implementierung von \code{compute()}\footnote{
+    Class RecursiveTask<V> - compute(): \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/RecursiveTask.html#compute()} - abgerufen 27.01.2024
+} zur Berechnung der Fakultät:
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    fontsize=\small,
+    frame=lines,
+    framesep=2mm]{java}
+    class RecursiveTaskImpl extends RecursiveTask<Integer> {
+        private int n;
+        public RecursiveTaskImpl(int n) {
+            this.n = n;
+        }
+        public Integer compute() {
+            if (n == 0) {
+                return 1;
+            }
+            RecursiveTaskImpl t = new RecursiveTaskImpl(n - 1);
+            t.fork();
+            int r = t.join();
+            return n * r;
+        }
+    }
+\end{minted}\\

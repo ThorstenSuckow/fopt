@@ -1,4 +1,4 @@
-\chapter{Verteilte Anwendungen mit Sockets}
+\section{Verteilte Anwendungen mit Sockets}
 
 Eigenständige \codebf{Client-Server-Anwendungen} können auf 3 verschiedene Arten umgesetzt werden:
 
@@ -20,23 +20,25 @@ Sie ist zuständig für die Übertragung einzelner Bits und wird deshalb auch \t
 
 \subsection*{Schicht 2 - DataLink Layer}
 
+\noindent
 Wie Schicht 1 ist auch diese Schicht zuständig für die Übertragung von Datenblöcken zwischen zwei direkt miteinander verbundenen Rechnern.\\
 
+\noindent
 Die Schicht hat die Aufgabe, einzelne Bits zu einem Datenblock in einem bestimmten Format zusammenzufassen.\\
 $\rightarrow$ bestimmte Informationen wie z.B. Adressen haben eine bestimmte Struktur und Bitlänge und stehen an bestimmten Stellen in einem Datenblock.\\
 
 \noindent
 Bei lokalen Netzen wie {bspw.} Ethernet hat die \textbf{Leitungsschicht} durch das gemeinsame Medium noch weitere Funktionen: Sie garantiert, dass immer nur höchstens eine Station sendet, außerdem werden durch sie die angeschlossenen Rechner korrekt adressiert\footnote{
 ``Bei einer Punkt-zu-Punkt-Leitung kann eine empfangene Station davon ausgehen, dass die ankommenden Daten für sie bestimmt sind, bei einem gemeinsamen Medium dagegen nicht.``~\cite[257]{Oec22}
-}
+}.
 
-\begin{tcolorbox}
+\begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
     Schicht 1 und 2 werden über Hardware ({bspw.} Ethernet-Adapter) und entsprechende Treiber im Betriebssystem realisiert.
 \end{tcolorbox}
 
 \noindent
 Die beiden Funktionen (eine Station sendet, korrekte Adressierung) werden als \textbf{Medium Access Control} (\textit{MAC}) bezeichnet und bilden eine Teilschicht innerhalb der Leitungsschicht (\textit{DataLink Layer}).\\
-Die entsprechenden Adressen heissen deshalb \textit{MAC-Adresssen}.
+Die entsprechenden Adressen heißen deshalb \textit{MAC-Adressen}.
 
 \subsection*{Schicht 3}
 Schicht 3 ist die \textbf{Vermittlungsschicht} (\textbf{Network Layer}), hier befindet sich das \textbf{IP-Protokoll}, über das Rechner verbunden werden, die an verschiedene Netze mit unterschiedlichen Netztechnologien angeschlossen sind.\\
@@ -51,13 +53,12 @@ Die Schicht sorgt für eine einheitliche, strukturierte und weltweit eindeutige 
 \noindent
 Es kann durchaus vorkommen, dass Datenpakete verlorengehen, oder verzögert und/oder in unterschiedlicher Reihenfolge beim Empfänger eintreffen.
 
-
-\begin{tcolorbox}
+\begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
     Schicht 3 und 4 sind i.d.R. Teil des Betriebssystemkerns.
 \end{tcolorbox}
 
 \subsection*{Schicht 4}
-Schicht 4 ergänzt die Adressierung in Schicht 3 um \textit{Konktaktpunkte} durch \textbf{Portnummern}, und wird \textbf{Transportschicht} (\textbf{Transport Layer}) genannt.\\
+Schicht 4 ergänzt die Adressierung in Schicht 3 um \textit{Kontaktpunkte} durch \textbf{Portnummern}, und wird \textbf{Transportschicht} (\textbf{Transport Layer}) genannt.\\
 
 \noindent
 Zwei verbreitete Transportprotokolle sind \textbf{UDP} und \textbf{TCP};
@@ -67,7 +68,7 @@ Zwei verbreitete Transportprotokolle sind \textbf{UDP} und \textbf{TCP};
     Es ist genauso   \textit{verbindungslos} und \textit{unzuverlässig}\footnote{
     es sind Verluste und Reihenfolgevertauschungen möglich.
     } wie das IP-Protokoll.
-    \item \textbf{TCP} (\textit{Transmission Control Protocol}) behebt die Nachteile des IP-Protokolls: Die Empfänger müssen den Nachrichtenerhalt bestätigen\footnote{ \textbf{ACK},
+    \item \textbf{TCP} (\textit{Transmission Control Protocol}) behebt die Nachteile des IP-Protokolls: Die Empfänger müssen den Nachrichtenerhalt bestätigen\footnote{ ``\textit{ACK}``,
     was wiederum von Sender-Seite überwacht wird; s.a. ``Transmission Control Protocol``: \url{https://en.wikipedia.org/wiki/Transmission_Control_Protocol} - abgerufen 30.01.2024
     }, ansonsten wird die Nachricht nochmals gesendet.
 \end{itemize}
@@ -78,8 +79,7 @@ Schicht 5 ist die \textbf{Anwendungsschicht}\footnote{
     Im Buch werden 5 Schichten aufgeführt, das \textbf{OSI-Modell} hat in der \textit{Anwendungsorientierten Schicht} noch zwei zusätzliche Schichten, die \textbf{Session-Layer} und die \textbf{Presentation-Layer} (\url{https://en.wikipedia.org/wiki/OSI_model} - abgerufen 3.2.2024)
 } (\textbf{Application Layer}), in ihr wird die Kommunikation der Anwendung abgewickelt (bspw. \textit{www}, \textit{email}, \textit{Videokonferenzen}).
 
-
-\begin{tcolorbox}
+\begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
     Schicht 5 wird über Anwendungsprozesse realisiert.
 \end{tcolorbox}
 
@@ -119,9 +119,9 @@ Bei der Übertragung von Daten besitzt IP die Eigenschaften, dass Daten in unter
 \noindent
 Ein \textbf{Datagramm}\footnote{
 Kunstwort abgeleitet aus\textit{Telegramm} (vgl.~\cite[260]{Oec22})
-} bezeichnet eine Dateneinheit, die in ein IP-Paket gepackt und über das Netz verschickt wird.\\
+} bezeichnet eine Dateneinheit, die in ein IP-Paket gepackt und über das Netz verschickt wird.
 
-\begin{tcolorbox}
+\begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
 \textbf{UDP} ist Nachrichtenorientiert.
 \end{tcolorbox}
 

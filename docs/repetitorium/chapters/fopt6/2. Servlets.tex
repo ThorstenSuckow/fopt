@@ -1,45 +1,39 @@
-\usepackage{lstmisc}\section{Einführende Servlet-Beispiele}
+\section{Einführende Servlet-Beispiele}
 
 \subsection{Allgemeine Vorgehensweise}
 
-Zur Erstellung eines Servlets muss die Klasse von \code{jakarta.servlet.http.HttpServlet}\footnote{
+Zur Erstellung eines Servlets muss die Klasse von \begin{center}\code{jakarta.servlet.http.HttpServlet}\footnote{
     Das Buch verwendet bereits die Klassen aus dem \textit{Jakarta EE}, die Skripte benutzen noch die \textit{javax.*}-Namensräume
 }\footnote{
     ``Class HttpServlet``: \url{https://jakarta.ee/specifications/servlet/6.0/apidocs/jakarta.servlet/jakarta/servlet/http/httpservlet} - abgerufen 3.2.2024
-}\\
+}\end{center} abgeleitet werden.\\
 
 \noindent
-Die Methoden \code{#doGet} sowie \code{#doPost} sind in der Basisklasse vorimplementiert und liefern per Default einen $405$ Status Code\footnote{
+Die Methoden \begin{center}\code{#doGet(request:HttpServletRequest, response:HttpServletResponse):void}\end{center} sowie \begin{center}\code{#doPost(request:HttpServletRequest, response:HttpServletResponse):void}\end{center} sind in der Basisklasse vorimplementiert und liefern per Default einen $405$ Status Code\footnote{
     ``405 Method Not Allowed``: \url{https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/405} - abgerufen 3.2.2024
 }, sofern die Methoden in einer abgeleiteten Klasse nicht sinnvoll überschrieben sind\footnote{
 die Methode \textit{service} in der \textit{HttpServlet}-Klasse funktioniert als Dispatcher und leitet - basierend auf der ermittelten Request-Methode (\textbf{GET}, \textbf{POST}, \textbf{PUT}...) an die entsprechende \textit{doX}-Methode weiter.
 }:
-
-\begin{minted}[]{text}
-doGet(request: HttpServletRequest, reponse: HttpServletResponse): void
-
-doPost(request: HttpServletRequest, reponse: HttpServletResponse): void
-\end{minted}\\
 
 \noindent
 Die Methoden \code{init()} (Servlet wird vom Servlet-Container aktiviert) / \code{destroy()} (Servlet wird vom Servlet-Container deaktiviert) können ebenfalls noch überschrieben werden.\\
 
 \noindent
 \code{init()} wird beim Hochfahren des Webservers, der Installation der Web-Anwendung oder beim Aufruf des Servlets aufgerufen.
-\code{destory()} wird aufgerufen, bevor das Servlet ``vernichtet`` wird, also beim Herunterfahren des Webservers oder beim Undeployment\footnote{
+\code{destroy()} wird aufgerufen, bevor das Servlet ``vernichtet`` wird, also beim Herunterfahren des Webservers oder beim Undeployment\footnote{
 generell kann in dem Context zwischen \textit{Deployment, Redeployment, Undeployment} unterschieden werden.
 } der Web-Anwendung. \\
 
 \noindent
-Der Pfad, unter dem ein Servlet letztendlich auf dem Webserver erreichbar ist, kann mit Hilfe der Annotation \code{@WebServlet} angegeben werden, bspw. \code{@WebServlet(``/hello-world``)} wobei der String mit einem ``/`` beginnen muss\footnote{
+Der Pfad, unter dem ein Servlet letztendlich auf dem Webserver erreichbar ist, kann mit Hilfe der Annotation \code{@WebServlet} angegeben werden, bspw. \begin{center}\code{@WebServlet(``/hello-world``)}\end{center} wobei der String mit einem ``/`` beginnen muss\footnote{
     ``Annotation Type WebServlet``: \url{https://jakarta.ee/specifications/servlet/6.0/apidocs/jakarta.servlet/jakarta/servlet/annotation/webservlet} - abgerufen 3.2.2024
 }.\\
 
 \noindent
-Ein Servlet benötigt keine \code{main}-Methode, die \code{do...}-Methoden werden automatische aufgerufen (durch den sogenannten \textbf{Servlet-Container} des Webservers).
+Ein Servlet benötigt keine \code{main}-Methode, die \code{do...()}-Methoden werden automatische aufgerufen (durch den sogenannten \textbf{Servlet-Container} des Webservers).
 
-\begin{tcolorbox}
-    Es ist ohne Weiteres möglich, die do-Methoden untereinander aufzurufen, bspw. kann \code{doPost} die Methode \code{doGet} aufrufen - vorausgesetzt, die Parameter (\code{HttpServletRequest} und \code{HttpServletResponse}) werden korrekt übergeben.
+\begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
+    Es ist ohne Weiteres möglich, die \code{do...()}-Methoden untereinander aufzurufen, bspw. kann \code{doPost()} die Methode \code{doGet()} aufrufen - vorausgesetzt, die Parameter (\code{HttpServletRequest} und \code{HttpServletResponse}) werden korrekt übergeben.
 \end{tcolorbox}\\
 
 \noindent
@@ -47,13 +41,13 @@ Der Parameter \code{HttpServletResponse} stellt einen \code{java.io.PrintWriter}
 mittels \textit{getWriter()}. S. ``getWriter``: \url{https://jakarta.ee/specifications/servlet/6.0/apidocs/jakarta.servlet/jakarta/servlet/servletresponse#getWriter()} - abgerufen 3.2.2024
 } zur Verfügung, mit dem man den \code{OutputStream} (ASCII) der Response verändern kann.
 
-\begin{tcolorbox}
+\begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
     Man sollte stets daran denken, über das \code{HttpServletResponse}-Argument auch den \textbf{Content-Type} der Response zu setzen, bspw.
     \begin{minted}[mathescape,
-        linenos,
+
         numbersep=5pt,
         gobble=2,
-        frame=lines,
+        frame=none,
         framesep=2mm]{java}
     response.setContentType("text/html");
     \end{minted}\\
@@ -65,10 +59,10 @@ Das Verzeichnis \textit{WEB-INF}, das dortdrin liegt, ist von außen nicht errei
 
 
 \noindent
-Der Parameter \code{HttpServletRequest} besitzt eine Methode \code{getParameter(name:String)} über den man an \textbf{GET}- / \textbf{POST-Parameter} kommt.\\
+Der Parameter \code{HttpServletRequest} besitzt eine Methode \begin{center}\code{getParameter(name:String): String}\end{center} über den man an \textbf{GET}- / \textbf{POST-Parameter} kommt.\\
 
 \noindent
-Mit \code{getParameterNames()} kommt man an alle Parameternamen des Requests - da unter einem Parameternamen mehrere Werte vorhanden sein können  (bspw. \code{Post name=1} und \code{/foo?name=2}) kann man mit \code{getParameterValues(name: String)} auf ein Feld dieser Werte zugreifen (\code{String[]}).\\
+Mit \code{getParameterNames()} kommt man an alle Parameternamen des Requests - da unter einem Parameternamen mehrere Werte vorhanden sein können  (bspw. \code{Post name=1} und \code{/foo?name=2}) kann man mit \begin{center}\code{getParameterValues(name: String): String[]}\end{center} auf ein Feld dieser Werte zugreifen.\\
 
 \noindent
 Darüberhinaus bietet \code{HttpServletRequest} noch die Methoden \code{getHeader()}, \code{getMethod()}, \code{getRemoteHost()}...\\
@@ -79,19 +73,20 @@ Die Methoden \code{setStatus()} und \code{setHeader()} stehen im \code{HttpServl
 \noindent
 Ein Servlet wird beim (Re)deployment des Servers instanziiert, dieses Objekt wird  dann benutzt, um alle Anfragen zu bearbeiten, bis der Server neu deployed wird -  dass Objekt wird dann neu initialisiert.
 
-\begin{tcolorbox}
+\begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
     \code{loadOnStartup=1} in \code{@WebServlet} sorgt dafür, dass das Servlet beim (Re)deploy initialisiert wird ($[0, .., n]$ sind als Werte erlaubt, mit denen die Startreihenfolge angegeben wird)\footnote{
         s. ``loadOnStartup``: \url{https://jakarta.ee/specifications/servlet/6.0/apidocs/jakarta.servlet/jakarta/servlet/annotation/webservlet#loadOnStartup()} - abgerufen 3.2.2024
     }.\\
     $-1$ ist default, und führt keine Initialisierung während des Starts durch.
+    Das Servlet wird dann i.d.R. beim Aufruf initialisiert.
 \end{tcolorbox}
 
 
 \section{Parallelität bei Servlets}
 
-Bei der Bearbeitung von Anfragen eines Servlets ist implizit Parallelität im Spiel - jede Http-Anfrage wird in einem eigenen Thread ausgeführt.\\
+Bei der Bearbeitung von Anfragen eines Servlets ist implizit Parallelität im Spiel - jede HTTP-Anfrage wird in einem eigenen Thread ausgeführt.
 
-\begin{tcolorbox}
+\begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
 Alle Anfragen arbeiten mit demselben Servlet-Objekt $\rightarrow$ pro Servlet-Klasse wird i.d.R. nur ein Objekt erzeugen.
 \end{tcolorbox}
 
@@ -100,18 +95,18 @@ Alle Anfragen arbeiten mit demselben Servlet-Objekt $\rightarrow$ pro Servlet-Kl
 
 Von unterschiedlichen Servlets kann auf ein und dasselbe Objekt zugegriffen werden, wenn es vorher über den \code{ServletContext} registriert wurde.\\
 \code{getServletContext()} steht in \code{HttpServlet} zur Verfügung und liefert den \code{ServletContext}, in dem das Servlet läuft.\\
-Über \code{getAttribute():Object} bzw. \code{setAttribute(name:String, object:Object)} können Objekte unter einem bestimmten Namen im \code{ServletContext} registriert werden.\\
+Über \code{getAttribute():Object} bzw.\\ \code{setAttribute(name:String, object:Object):void} können Objekte unter einem bestimmten Namen im \code{ServletContext} registriert werden.\\
 
 \noindent
-Die über \code{loadOnStartup} definierte Reihenfolge kann entscheiden bei dem zugriff auf ein im \code{ServletContext} enthaltenes Attribut sein.\\
+Die über \code{loadOnStartup} definierte Reihenfolge kann entscheiden beim Zugriff auf ein im \code{ServletContext} enthaltenes Attribut sein.\\
 Wird ein Servlet mit \code{loadOnStartup=1} konfiguriert, und wird dort auf ein Attribut des \code{ServletContext} zugegriffen (bspw. in der \code{init()}), dessen Servlet\footnote{
 lies: Das Servlet, dass das Attribut im \textit{ServletContext} registriert
-} noch nicht geladen wurde, kann es zu einem unerwarteten Fehler kommen.\\
+} noch nicht initialisiert wurde, kann es zu einem unerwarteten Fehler kommen.\\
 
 \noindent
 Neben der Registrierung eines Attributes über die \code{init()}-Methode im Servlet ist es auch möglich, über einen \code{ServletContextListener}\footnote{
     ``Interface ServletContextListener``: \url{https://jakarta.ee/specifications/servlet/6.0/apidocs/jakarta.servlet/jakarta/servlet/servletcontextlistener} - abgerufen 3.2.2024
-} und der Annotattion \code{@WebListener}\footnote{
+} und der Annotation \code{@WebListener}\footnote{
 ``Annotation Type WebListener``: \url{https://jakarta.ee/specifications/servlet/6.0/apidocs/jakarta.servlet/jakarta/servlet/annotation/weblistener} - abgerufen 3.2.2024
 } ein ``globales Objekt`` zu registrieren (sobald der \code{ServletContext} zur Verfügung steht; die Informationen hierüber enthält man in der Methode \code{contextInitialized()} des \code{ServletContextListener}).\\
 
@@ -122,22 +117,22 @@ Neben der Registrierung eines Attributes über die \code{init()}-Methode im Serv
 
 \section{Sessions und Cookies}
 
-Da HTTP zustandslos ist, kann man einen Zustand mit Hilfe einer \textbf{Session} speichern, die den jeweiligen benutzern einer Web-Anwendung eindeutig zugeordnet werden können\footnote{
+Da HTTP zustandslos ist, kann man einen Zustand mit Hilfe einer \textbf{Session} speichern, die den jeweiligen Benutzern einer Web-Anwendung eindeutig zugeordnet werden können\footnote{
 Identifizierung mittels der IP ist nicht möglich, da mehrere Rechner in einem Netz hinter der gleichen IP angeschlossen sein können, bspw. bei der Verwendung eines Proxies (Adressumsetzung auf Schicht 5) oder bei der Verwendung von \textbf{NAT} (Network Address Translation, \textit{Adressenabbildung}), bei der die öffentliche IP des Routers Antworten auf Anfragen an die angeschlossenen Clients weiterleitet (Schicht 3) (vgl.~\cite[425]{Oec22}).
 }.\\
 
 \noindent
 \code{HttpServletRequest} bietet hierzu die Methode \code{getSession()}, die, sofern keine Session (Typ: \code{HttpSession}\footnote{
 ``Interface HttpSession``: \url{https://jakarta.ee/specifications/servlet/6.0/apidocs/jakarta.servlet/jakarta/servlet/http/httpsession} - abgerufen 3.2.2024
-}) existiert, eine neue erzeugt (falls Parameter \code{create:boolean} \code{true} ist oder die Methode ohne Parameter aufgerufen wurde; \code{false} erzeugt keine neue Session und liefert \code{null} zurück, falls keine existiert).\\
+}) existiert, eine neue erzeugt (falls Parameter \code{create:boolean} den Wert \code{true} besitzt oder die Methode ohne Parameter aufgerufen wurde; \code{false} erzeugt keine neue Session und liefert \code{null} zurück, falls keine existiert).\\
 
 \noindent
-Über \code{setAttribute()} / \code{getAttribute()} \ code{removeAttribute()} von \code{HttpSession} lassen sich Sitzungsdaten ändern.\\
+Über \code{setAttribute()} / \code{getAttribute()} \code{removeAttribute()} (definiert in\\ \code{HttpSession}) lassen sich Sitzungsdaten ändern.\\
 
 \noindent
-Die Methode \code{invalidate()} von \code{HttpSession} löscht explizit eine Session, alternativ kann man mittels \code{setMaxInactiveInterval} angeben, wie lange die Sitzung maximal inaktiv sein darf, bevor sie gelöscht wird, damit der Speicher des Servers nicht unnötig hoch ausgelastet wird.\\
+Die Methode \code{invalidate()} von \code{HttpSession} löscht explizit eine Session, alternativ kann man mittels \code{setMaxInactiveInterval} angeben, wie lange die Sitzung maximal inaktiv sein darf, bevor sie gelöscht wird, damit der Speicher des Servers nicht unnötig hoch ausgelastet wird.
 
-\begin{tcolorbox}
+\begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
 Auch Sitzungsdaten müssen synchronisiert werden, da ein Anwender parallel mehrere Tabs offen haben kann.\\
 \end{tcolorbox}
 
@@ -145,32 +140,32 @@ Auch Sitzungsdaten müssen synchronisiert werden, da ein Anwender parallel mehre
 Es existieren wie für \textbf{ServletContext} auch Listener für \textbf{Sessions}:\\
 Der \code{HttpSessionListener}\footnote{
     ``Interface HttpSessionListener``: \url{https://jakarta.ee/specifications/servlet/6.0/apidocs/jakarta.servlet/jakarta/servlet/http/httpsessionlistener} - abgerufen 3.2.2024
-} erlaubt mittels \code{sessionCreated} / \code{sessionDestroyed}\footnote{``Receives notification that a session is about to be invalidated.`` (\url{https://jakarta.ee/specifications/servlet/6.0/apidocs/jakarta.servlet/jakarta/servlet/http/httpsessionlistener#sessionDestroyed(jakarta.servlet.http.HttpSessionEvent)} - abgerufen 3.2.2024)} das Überwachen einzelner Sessions (die Methoden erhalten ein Argument vom Typ \code{HttpSessionEvent}, dessen Methode \code{getSession()} erlaubt den Zugriff auf die \textbf{Session}); der Listener kann wieder mit \code{@WebListener} annotiert werden.\\
+} erlaubt mittels \code{sessionCreated()} / \code{sessionDestroyed()}\footnote{``Receives notification that a session is about to be invalidated.`` (\url{https://jakarta.ee/specifications/servlet/6.0/apidocs/jakarta.servlet/jakarta/servlet/http/httpsessionlistener#sessionDestroyed(jakarta.servlet.http.HttpSessionEvent)} - abgerufen 3.2.2024)} das Überwachen einzelner Sessions (die Methoden erhalten ein Argument vom Typ \code{HttpSessionEvent}, dessen Methode \code{getSession()} erlaubt den Zugriff auf die \textbf{Session}); der Listener kann wieder mit \code{@WebListener} annotiert werden.
 
-\begin{tcolorbox}
+\begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
 Es können mehrere Listener gleichen Typs parallel existieren.
 \end{tcolorbox}\\
 
 \noindent
-Wie beim  \code{ServletContextAttributeListener} gibt es auch den \code{HttpSessionAttributeListener}\footnote{``Interface HttpSessionAttributeListener``: \url{https://jakarta.ee/specifications/servlet/6.0/apidocs/jakarta.servlet/jakarta/servlet/http/httpsessionattributelistener} - abgerufen 3.2.2024
-} zum Überwachen von Attributänderungen der Sitzungsdaten )\code{attributeAdded}, \code{attributeReplaces}, \code{attributeRemoved}\\
+Wie beim  \code{ServletContextAttributeListener} gibt es auch den\\ \code{HttpSessionAttributeListener}\footnote{``Interface HttpSessionAttributeListener``: \url{https://jakarta.ee/specifications/servlet/6.0/apidocs/jakarta.servlet/jakarta/servlet/http/httpsessionattributelistener} - abgerufen 3.2.2024
+} zum Überwachen von Attributänderungen der Sitzungsdaten: \code{attributeAdded()}, \code{attributeReplaces()}, \code{attributeRemoved()}\\
 
 \noindent
-Session werden in der Regel über \textbf{Cookies} realisiert, deren Kennung \textbf{JSESSIONID} auf dem Client gespeichert ist und bei Anfragen im \textbf{Cookie-Header} mitgesendet werden.\\
+Session werden in der Regel über \textbf{Cookies} realisiert, deren Kennung\\ \textbf{JSESSIONID} auf dem Client gespeichert ist und bei Anfragen im \textbf{Cookie-Header} mitgesendet werden.\\
 $\rightarrow$ Die Anforderung zur Speicherung der Cookie-Daten kommt \ul{über den Response} im Header \code{Set-Cookie}\footnote{
     `´Set-Cookie``: \url{https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie}
 } (die Kennung lässt sich auch über die Methode \code{getId()} von \code{HttpSession} erfragen).\\
 
 \noindent
-Sitzungsdaten werden i.d.R. im Speicher des Webservers in einer Art \code{HashMap} gespeichert; jede Sitzungs-Id hat ein Sitzungs-Objekt zugeordnet, in die die Attribut-Werte-Paare gespeichert sind.\\
+Sitzungsdaten werden i.d.R. im Speicher des Webservers in einer Art \code{HashMap} gespeichert; jede Sitzungs-Id hat ein Sitzungs-Objekt zugeordnet, in der die Attribut-Werte-Paare gespeichert sind.\\
 
 $\rightarrow$ Beim Aufruf \code{getSession()} wird geprüft, ob der \code{Cookie}-Header\footnote{
     ``Cookie``: \url{https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cookie} - abgerufen 3.2.2024
 } vorhanden ist.
-Die Sitzungs-Id wird dann verwendet, um ind er Tabelle nach einem assoziierten Sitzungsobjekt zu schauen - soll eine neue Sitzung erzeugt werden, wird dies entsprechend automatisch in der Response im \code{Set-Cookie}-Header vermerkt.\\
+Die Sitzungs-Id wird dann verwendet, um in d r Tabelle nach einem assoziierten Sitzungsobjekt zu schauen - soll eine neue Sitzung erzeugt werden, wird dies entsprechend automatisch in der Response im \code{Set-Cookie}-Header vermerkt.\\
 
 \noindent
-Bei horizontaler skalierung können Sitzungsobjekte i.d.R nicht geteilt werden unter den beteiligten Webservern - hier eignet sich eine zentrale Speicherung der Sitzungsdaten, bspw. in einer Datenbank (vgl.~\cite[433]{Oec22}).
+Bei horizontaler Skalierung können Sitzungsobjekte i.d.R nicht geteilt werden unter den beteiligten Webservern - hier eignet sich eine zentrale Speicherung der Sitzungsdaten, bspw. in einer Datenbank (vgl.~\cite[433]{Oec22}).
 
 \subsection{Direkter Zugriff auf Cookies}
 Die Servlet-Klassenbibliothek erlaubt auch einen direkten Zugriff auf Cookies.\\
@@ -178,10 +173,10 @@ Die Servlet-Klassenbibliothek erlaubt auch einen direkten Zugriff auf Cookies.\\
 \noindent
 $\rightarrow$ die Klasse \code{Cookie}\footnote{
 ``Class Cookie``: \url{https://jakarta.ee/specifications/servlet/6.0/apidocs/jakarta.servlet/jakarta/servlet/http/cookie} - abgerufen 3.2.2024
-} mit dem Konstruktor \code{Cookie(name: String, value: String)} erlaubt das direkte Erzeugen von Cookie-Objekten, die dann mittels \code{addCookie} (der Klasse \code{HttpServletResponse}) bzw. \code{getCookies: Cookie[]} (der Klasse \code{HttpServletRequest}) ausgelesen werden können.\\
+} mit dem Konstruktor \code{Cookie(name: String, value: String)} erlaubt das direkte Erzeugen von Cookie-Objekten, die dann mittels \code{addCookie(cookie: Cookie): void} (der Klasse \code{HttpServletResponse}) bzw. \code{getCookies(): Cookie[]} (der Klasse \code{HttpServletRequest}) ausgelesen werden können.\\
 
 \noindent
-Cookies, die die Lebensdauer einer Browsersitzung überdauern sollen, sollten mittels \code{setMaxAge(expiry:int)}\footnote{
+Cookies, die die Lebensdauer einer Browsersitzung überdauern sollen, sollten mittels \code{setMaxAge(expiry:int):void}\footnote{
     ``Sets the maximum age in seconds for this Cookie.`` (\url{https://jakarta.ee/specifications/servlet/6.0/apidocs/jakarta.servlet/jakarta/servlet/http/cookie#setMaxAge(int)} - abgerufen 3.2.2024)
 } konfiguriert werden (die Browsereinstellungen des Nutzers haben hier aber Vorrang).
 
@@ -192,7 +187,7 @@ Threads in Servlets können die Antwortzeiten einer Anfrage verzögern, da pro S
 Länger andauernde Aufträge sollten deshalb mit den Benutzern assoziiert sein, diese ausgelöst haben, und in Sessions referenziert werden.\\
 
 \noindent
-Zur Überprüfung des Fortschritts eines Auftrages kann dann eine Seite aufgerufen werden, die die Sitzungsdaten ausliest und mit ihrer Hilfe des Fortschritts des Threads überprüft (bspw. \code{isAlive()} der Klasse \code{Thread}]).\\
+Zur Überprüfung des Fortschritts eines Auftrages kann dann eine Seite aufgerufen werden, die die Sitzungsdaten ausliest und mit ihrer Hilfe des Fortschritts des Threads überprüft (bspw. \code{isAlive()} der Klasse \code{Thread}).\\
 
 \noindent
 Sperren auf Objekte über Cookies können verhindern, dass mehrere Nutzer gleichzeitig Daten in unbeabsichtigter Weise ändern - für jede Sperre wird eine Session {bzw.} ein Cookie erzeugt und an den Browser des Anwenders gesendet, womit die Daten als gesperrt markiert sind - beginnt ein neuer Nutzer mit der Bearbeitung, werden seine Änderungen nur akzeptiert, wenn die Sitzungsdaten übereinstimmen - wird ein Datensatz zum Bearbeiten geöffnet, für den die Sperrfrist überschritten ist, kann dann individuell entschieden werden, ob eine neue Sperre gesetzt werden soll.\\

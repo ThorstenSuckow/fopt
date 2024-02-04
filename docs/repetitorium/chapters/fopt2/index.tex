@@ -1,0 +1,143 @@
+
+\chapter{FOPT2 - Fortgeschrittene Synchronisationskonzepte in Java (Parallele Programmierung 2)}
+
+\section{Lehrstoff}
+
+Das Skript FOPT2 bezieht sich auf folgende Inhalte im Buch:
+
+\begin{tcolorbox}[colback=white!20,color=white]
+    \begin{enumerate}
+        \setcounter{enumi}{8}
+        \item \textbf{Semaphore}
+        \begin{itemize}
+            \item[] Kapitel 3
+            \item[] Abschnitt 3.1
+        \end{itemize}
+
+        \item \textbf{Message Queues und Pipes}
+        \begin{itemize}
+            \item[] Abschnitt 3.2
+            \item[] Abschnitt 3.3
+        \end{itemize}
+
+        \item \textbf{Weitere Synchronisationsprobleme und deren Lösung}
+        \begin{itemize}
+            \item[] Abschnitt 3.4
+            \item[] Abschnitt 3.5
+            \item[] Abschnitt 3.6
+        \end{itemize}
+
+        \item \textbf{Die concurrent Klassenbibliothek}
+        \begin{itemize}
+            \item[] Abschnitt 3.7
+        \end{itemize}
+
+        \item \textbf{Das Fork-Join-Framework}
+        \begin{itemize}
+            \item[] Abschnitt 3.8
+            \item[] optional: 3.9, 3.10
+        \end{itemize}
+
+        \item \textbf{Verklemmungen}
+        \begin{itemize}
+            \item[] Abschnitt 3.11
+            \item[] Abschnitt 3.12
+            \item[] Abschnitt 3.13
+        \end{itemize}
+
+    \end{enumerate}
+\end{tcolorbox}
+
+\newpage
+
+
+
+\include{chapters/fopt2/1. Semaphore}
+
+
+\subsection{Notizen zu den Übungen}
+
+Abfragen auf Listen/Felder von Threads, die sich derzeitig in der Warteschlange befinden, sollte von außen immer \code{synchronized} erfolgen.
+Außerdem sollte eine Kopie der Listen zurückgegeben werden, um Manipulation an der tatsächlichen Liste zu verhindern.\\
+
+\noindent
+Bei Exceptions, die nicht abgefangen werden, sorgt \code{finally} für ein Ausführen des durch \textit{finally} eingeleiteten Anweisungsblock auch im Fall einer Exception\footnote{
+    Java Language Specification - 14.20.2. Execution of try-finally and try-catch-finally : \url{https://docs.oracle.com/javase/specs/jls/se21/html/jls-14.html#jls-14.20.2} - abgerufen 26.01.2024
+}, wie folgendes Beispiel zeigt:
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    fontsize=\small,
+    frame=lines,
+    framesep=2mm]{java}
+    public class TryCatchDemo {
+
+        public String m1(boolean exc) {
+            try {
+
+                System.out.println("try 1.");
+
+                if (exc) {
+                    throw new Exception();
+                }
+                System.out.println("try 2.");
+
+                return "foo";
+
+            } catch (Exception e) {
+
+                return "Exception.";
+
+            } finally {
+                return "finally.";
+            }
+        }
+
+        public static void main(String[] args) {
+           TryCatchDemo demo = new TryCatchDemo();
+           System.out.println(demo.m1(false));
+           System.out.println();
+           System.out.println(demo.m1(true));
+        }
+
+    }
+\end{minted}\\
+
+\noindent
+Die Ausgabe des Programms lautet:
+
+
+\noindent
+\begin{minted}[mathescape,
+    numbersep=5pt,
+    gobble=2,
+    frame=none,
+    framesep=2mm]{bash}
+    try 1.
+    try 2.
+    finally.
+    foo
+
+    try 1.
+    finally.
+    Exception.
+\end{minted}\\
+
+\newpage
+
+\include{chapters/fopt2/2. Message Queues}
+
+
+\include{chapters/fopt2/3. Concurrent Klassenbibliothek}
+
+\include{chapters/fopt2/4. Verklemmungen}
+
+
+
+
+\newpage
+\section*{Notizen}
+
+\newpage

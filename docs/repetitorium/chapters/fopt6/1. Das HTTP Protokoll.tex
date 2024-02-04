@@ -1,4 +1,4 @@
-\usepackage{lstmisc}\chapter{Webbasierte Anwendungen mit Servlets und JSF}
+\section{Das HTTP-Protokoll}
 
 Bei webbasierten Anwendungen wird die Client-Seite durch einen Web-Browser realisiert, auf der Server-Seite wird ein Web-Server wie bspw. \textit{Apache Tomcat}\footnote{
     \url{https://tomcat.apache.org} - abgerufen 3.2.2024
@@ -8,7 +8,7 @@ Bei webbasierten Anwendungen wird die Client-Seite durch einen Web-Browser reali
 Der Web-Server liefert statische Dateien aus oder Seiten, die Programmcode enthalten, der auf dem Client ausgeführt wird (bspw. \textit{JavaScript}).\\
 
 \noindent
-Der Client kann auch über den Server ausgeführte Programme anfordern, die entsprechende Daten für den Client generieren, wie bspw. Servlets.\\
+Der Client kann auch über den Server ausgeführte Programme anfordern, die entsprechende Daten für den Client generieren, wie bspw. \textbf{Servlets}.\\
 
 \noindent
 Um mit einem Server zu kommunizieren, baut der Client über \textbf{TCP} eine Verbindung mit dem Server auf:\\
@@ -17,12 +17,16 @@ Bestandteilt der Anwendungsschicht - s. \url{https://en.wikipedia.org/wiki/HTTP}
 } werden dann Anfragen und Antworten zwischen Client und Server verhandelt; Antworten können über auf dem Server laufende Programme dynamisch generierte Seiteninhalte sein.\\
 
 \noindent
-\textbf{HTTP} (\textit{HyperTextTransferProtocol}) ist ein ASCII-Protokoll auf Schicht 5 und für die Vermittlung webbasierter Dienste gedacht.
+\textbf{HTTP} (\textit{HyperTextTransferProtocol})\footnote{
+    s. a. ``RFC 9110 HTTP Semantics``: \url{https://www.rfc-editor.org/rfc/rfc9110.html} - abgerufen 4.2.2024
+} ist ein ASCII-Protokoll auf Schicht 5 und für die Vermittlung webbasierter Dienste gedacht.
 
 \begin{figure}
     \centering
     \includegraphics[scale=0.5]{chapters/fopt6/img/clientserver}
-    \caption{Der Client erstellt über den Webbrowser eine TCP-Verbindung zu dem Webserver, wobei die Adressinformationen in der URL festgelegt sind. Der Webserver kann nun in seiner Antwort sowohl statische Ressourcen als auch dynamisch generierte Daten bereitstellen. Syntax und Semantik der Anfrage und Antwort ist über das HTTP-Protokoll definiert (Quelle: in Anlehnung an \cite[402, Bild 8.1]{Oec22})}
+    \caption{Der Client erstellt über den Webbrowser eine TCP-Verbindung zu dem Webserver, wobei die Adressinformationen in der URL festgelegt sind.
+    Der Webserver kann nun in seiner Antwort sowohl statische Ressourcen als auch dynamisch generierte Daten bereitstellen.
+    Syntax und Semantik der Anfrage und Antwort ist über das HTTP-Protokoll definiert (Quelle: in Anlehnung an \cite[402, Bild 8.1]{Oec22})}
     \label{fig:clientserver}
 \end{figure}
 
@@ -32,13 +36,13 @@ Bestandteilt der Anwendungsschicht - s. \url{https://en.wikipedia.org/wiki/HTTP}
 s. \url{https://en.wikipedia.org/wiki/URL} - abgerufen 3.2.2024
 }) wird über den Browser eine Ressource angefordert.
 
-
-\begin{tcolorbox}
+\begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
     Eine \textbf{URL} ist eine \textbf{URI} (\textit{Uniform Resource Identifier}\footnote{
         s. \url{https://en.wikipedia.org/wiki/Uniform_Resource_Identifier} - abgerufen 3.2.2024
     }) und enthält u.a. weitere Informationen zur Lokalisierung der Ressource - bspw. durch die Angabe des Protokolls, über das die Ressource beschafft werden soll\footnote{s. ``RFC 3986 - 1.1.3.  URI, URL, and URN``: \url{https://datatracker.ietf.org/doc/html/rfc3986#section-1.1.3} - abgerufen 3.2.2024}.
 \end{tcolorbox}
 
+\noindent
 Der an den Server übermittelte \textbf{GET}-Request besteht aus der Angabe der angeforderten Ressource und dem Protokoll, das verwendet wird:
 
 \begin{minted}[]{http}
@@ -50,7 +54,7 @@ $\rightarrow$ Ein \textbf{GET}-Request besteht aus beliebig vielen Zeilen.
 Mit einer Leerzeile wird das Ende des Request angezeigt.\\
 
 \noindent
-eine \textbf{HTTP-Response} enthält wieder Kopfdaten (\textbf{Header}) und den \textbf{Body}, der leer sein kann.\\
+Eine \textbf{HTTP-Response} enthält wieder Kopfdaten (\textbf{Header}) und den \textbf{Body}, der leer sein kann.\\
 Header und Body sind durch eine Leerzeile voneinander getrennt\footnote{
     s. \url{https://www.rfc-editor.org/rfc/rfc7230#section-3} - abgerufen 3.2.2024
 }.\\
@@ -63,7 +67,7 @@ Nutzt der Client hingegen \textbf{HTTP/1.1}, hält der Server genau diese Verbin
 Über diese Verbindung kann der Client weitere Daten anfordern.
 
 \begin{itemize}
-    \item Bei der Verwendung von \textbf{HTTP/1.1} muss außerdem in der zweiten Zeile der Anfrage der Zielhost stehen, damit ein Server, der {ggfl.} mehrere Domains hostet, die Anfrage an die richtige Domain weiterleitet\footnote{s. ``RFC 7320 - 5.4.  Host``: \url{https://www.rfc-editor.org/rfc/rfc7230#section-5.4} - abgerufen 3.2.2024}.
+    \item Bei der Verwendung von \textbf{HTTP/1.1} muss außerdem in der zweiten Zeile der Anfrage der Zielhost stehen, damit ein Server, der {ggf.} mehrere Domains hostet, die Anfrage an die richtige Domain weiterleitet\footnote{s. ``RFC 7320 - 5.4.  Host``: \url{https://www.rfc-editor.org/rfc/rfc7230#section-5.4} - abgerufen 3.2.2024}.
     \begin{minted}[]{http}
 GET /index.php HTTP/1.1
 Host: www.conjoon.org
@@ -83,10 +87,10 @@ s. ``<form>: The Form element``:\url{https://developer.mozilla.org/en-US/docs/We
 }.\\
 
 \noindent
-\textbf{radio}-inputs erhalten alle dasselbe \textit{name}-Attribut, um sie zu einer gruppe zusammenzuführen.\\
+\textbf{radio}-inputs erhalten alle dasselbe \textit{name}-Attribut, um sie zu einer Gruppe zusammenzuführen.\\
 
 \noindent
-Fehlt für eine \textbf{checkbox} die Selektion, wie sie bei der Übertragung der Formulardaten nicht mitverschickt.
+Fehlt für eine \textbf{checkbox} die Selektion, wird sie bei der Übertragung der Formulardaten nicht berücksichtigt.
 Ist das \textit{value}-Attribut für die Checkbox gesetzt und wurde die Checkbox selektiert, enthalten die Request-Daten den Inhalt von \textit{value}, ansonsten standardmäßig den Wert \textit{on}:
 
 \blockquote[{\url{https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox} - abgerufen 3.2.2024, Hervorherbungen ausgelassen}]{
