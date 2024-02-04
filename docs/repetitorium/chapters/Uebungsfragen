@@ -3,7 +3,7 @@ Wofür steht RMI in Java und was zeichnet es aus? Welche charakteristischen Eige
 Wie lässt sich ein paralleler TCP Server realisieren? Gehen Sie kurz auf die Eigenschaften der von Ihnen aufgeführten Lösungen ein.
 (Statische Parallelität, Dynamische Parallelität, Mischformen)
 
-Was ist datestromorientierte und datagram-orientierte Communication oim Zusammenhang mit Sockets? Welche Zusammenhänge zur parallelen Programmierung kennen Sie? (Message Queue, Pipes
+Was ist datenstromorientierte und datagram-orientierte Communication oim Zusammenhang mit Sockets? Welche Zusammenhänge zur parallelen Programmierung kennen Sie? (Message Queue, Pipes
 
 Realisieren sie ein RMI-Programm, bei dem die Anfrage eines Clients und somit der Auftrag an ein RI-Objekt in einen Thread ausgelagert wird.
 
@@ -14,3 +14,11 @@ Schreiben Sie ein Beispiel für das Entfernen von Elementen mit Hilfe eines Iter
 Zu welcher Schicht ist das HTTP-Protokoll zuzuordnen, und was zeichnet es aus?
 
 Erläutern sie das Sperren von Datensätzen mittels Cookies, und wieso es die Nutzung von synchronized nicht überflüssig macht.
+
+Schreiben Sie eine Anwendung, bei der ein modales Fenster auf die Eingabe eines Users wartet, und diese Eingabe dann an die öffnende Komponente weiterleitet.
+
+Erklären Sie mit eigenen Worten, was eine Fluent-Api ist, und implementieren Sie ein Beispiel anhand der JavaFX-Properties.
+
+Beschreiben Sie den Unterschied zwischen verzahnt und parallel arbeitenden TCP-Sockets.
+
+Wie kanne ine lokale Anwendung in eine verteilte Anwendung transformiert werden?

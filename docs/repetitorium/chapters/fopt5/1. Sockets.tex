@@ -174,7 +174,7 @@ Clients verwenden i.d.R. den parameterlosen Konstruktor, ein freier Port wird da
 \end{minted}\\
 
 \noindent
-Die Methode \code{receive} eines Scokets ist \texbf{blocking}, es wird so lange gewartet, bis eine Nachricht eintrifft, oder ein durch \code{setSoTimeout(int timeout)} angegebener Timeout eintritt.\\
+Die Methode \code{receive} eines Sockets ist \texbf{blocking}, es wird so lange gewartet, bis eine Nachricht eintrifft, oder ein durch \code{setSoTimeout(int timeout)} angegebener Timeout eintritt.\\
 
 \noindent
 Mit \textbf{try-with-resources}\footnote{
@@ -182,7 +182,7 @@ Mit \textbf{try-with-resources}\footnote{
 } kann ein Socket automatisch geschlossen werden.
 
 \begin{tcolorbox}
-Ein Objekt, dessen Klasse \textit{AutoCloseable} implementiert, kann als \textit{Resource} für das \textit{try-with-resource}-Statetement genutzt werden.
+Ein Objekt, dessen Klasse \textit{AutoCloseable} implementiert, kann als \textit{Resource} für das \textit{try-with-resource}-Statement genutzt werden.
 Das schliesst auch Objekte ein, deren Klasse \textit{Closeable} implementiert, da \textit{Closeable} von \textit{AutoCloseable} abgeleitet ist.\\
 
 \noindent
@@ -316,7 +316,7 @@ Das Ende eines Datenstroms wird durch den Rückgabewert \code{null} angezeigt (b
 Solange ein \textbf{TCP}-Server\footnote{
  wie bspw in \cite[288, Listing 5.8]{Oec22} implementiert
 } eine Verbindung mit einem Client aufrechterhält, kann keine andere Verbindung bearbeitet werden.\\
-Ein \textbf{timeout} (Server wartet auf Nachricht von Client für $n$ Sekunden, danach schliesst er die Verbindung) ist hierzu eine (naive) Möglichkeit, Resourcen freizumachen.
+Ein \textbf{timeout} (Server wartet auf Nachricht von Client für $n$ Sekunden, danach schliesst er die Verbindung) ist hierzu eine (naive) Möglichkeit, Ressourcen freizumachen.
 
 \subsection{Notizen zu den Übungen}
 \subsection*{Übungen 5.3}
@@ -330,7 +330,7 @@ Bei der Benutzung eines \textbf{TCP}-Servers wird nach der Annahme einer Verbind
 $\rightarrow$ Die Problematik kann umgangen werden, indem man für eine eingehende Verbindung einen neuen Thread startet, der mit dieser Verbindung arbeitet.\\
 
 \noindent
-$\rightarrow$ Möglichkeiten hierzu: \textbf{sequenzielle} durch \textbf{parallele} Implementeirungen ersetzen.\\
+$\rightarrow$ Möglichkeiten hierzu: \textbf{sequenzielle} durch \textbf{parallele} Implementierungen ersetzen.\\
 
 \subsection*{Statische Parallelität}
 Fixe Anzahl von Threads (``Verbindungen``) die von einem Server genutzt werden können.\\
@@ -341,7 +341,7 @@ $\rightarrow$ \textbf{Statische Parallelität} kann über ein Feld von Threads r
 
 
 \subsection*{Dynamische Parallelität}
-Die Anzahl der Threads wachsen mit den eingehenden Verbingungen.\\
+Die Anzahl der Threads wachsen mit den eingehenden Verbindungen.\\
 
 $\rightarrow$ Risiko eines DDoS ist erhöht, da viele Verbindungen einen Server beschäftigen können; je mehr Verbindungen angenommen werden, desto mehr Thread-Objekte werden erstellt, bis die Auslastung des Rechners zu groß wird.
 

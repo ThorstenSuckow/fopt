@@ -1,12 +1,12 @@
-\chapter{Grundlegende Synchronisationskonzepte in Java}
+\section{Grundlegende Synchronisationskonzepte in Java}
 
 Die Schlüsselwörter \code{synchronized}, \code{wait}, \code{notify} sowie \code{notifyAll} sind essentiell für die Umsetzung von Synchronisation mit Java.
 
-\section{Erzeugung und Start von Java-Threads}
+\subsection{Erzeugung und Start von Java-Threads}
 
 \begin{itemize}
     \item Klasse muss von \code{java.lang.Thread} erben oder
-    \item einer \code{Thread}-Klasse wird wird ein Objekt übergeben, welches das Interface \code{java.lang.Runnable} implementiert
+    \item einer \code{Thread}-Klasse wird ein Objekt übergeben, welches das Interface \code{java.lang.Runnable} implementiert
 \end{itemize}\\
 
 \begin{minted}[mathescape,
@@ -99,7 +99,7 @@ $\rightarrow$ Die Reihenfolge der auszuführenden Threads ist nicht fest vorgege
 wartenden Prozessen kann später über bestimmte Warteschlangenimplementierungen nach der Wiederuafnahme ihrer Tätigkeit Vorrang eingeräumt werden
 } als ``gleichberechtigt`` ansieht.
 
-\section{Probleme beim Zugriff auf gemeinsam genutzte Objekte}
+\subsection{Probleme beim Zugriff auf gemeinsam genutzte Objekte}
 
 \begin{tcolorbox}
    Wenn mehrere Threads lesend und mindestens ein Thread schreibend auf gemeinsame Daten zugreifen, dann müssen diese Zugriffe \textbf{synchronisiert} werden.
@@ -152,7 +152,7 @@ In Java sind Sperren \textbf{reentrant} (\textit{wiederbetretbar}):
     Ansonsten könnte es passieren, dass sich Threads selber ausschließen.
 \end{tcolorbox}\\
 
-\textbf{Konstruktoren} können nicht synchronisiert werden, aber man kann einen Anweisungsblock innerhalb eines Konstruktors synchroniseren.
+\textbf{Konstruktoren} können nicht synchronisiert werden, aber man kann einen Anweisungsblock innerhalb eines Konstruktors synchronisieren.
 
 \subsection*{Notwendigkeit von synchronized}
 
@@ -172,7 +172,7 @@ Die Verwendung von \code{volatile} führt dazu, das Zugriff auf die Daten immer 
 
 $\rightarrow$ für Variablen, die in \code{synchronized} Blöcken/Methoden stehen, geschieht dies automatische.
 
-\section{Ende von Java-Threads}
+\subsection{Ende von Java-Threads}
 
 Ein Thread ist \textbf{beendet}, wenn seine \code{run}- bzw. die \code{main}-Methode des Ursprungs-Threads beendet ist (vgl.~\cite[33]{Oec22}).\\
 
@@ -246,7 +246,7 @@ das interne flag wieder zurückgesetzt, die Schleife läuft weiter\footnote{
     }
 \end{minted}\\
 
-Die alternative (richtige) Imeplementierung berücksichtigt sowohl das \textit{Interrupt-Flag} als auch eine \code{InterruptedException} - in beiden Fällen wird die \code{while}-Schleife unterbrochen:
+Die alternative (richtige) Implementierung berücksichtigt sowohl das \textit{Interrupt-Flag} als auch eine \code{InterruptedException} - in beiden Fällen wird die \code{while}-Schleife unterbrochen:
 
 \begin{minted}[mathescape,
     linenos,
@@ -329,7 +329,7 @@ das Ende der Ausführung gewartet werden.
 \end{minted}\\
 
 
-\section{wait und notify}
+\subsection{wait und notify}
 
 Werden Objekte von mehreren Threads genutzt und dabei verändert, helfen \code{synchronized}-Methoden dabei, für ein Objekt einen konsistenten Zustand zu gewährleisten.\\
 
@@ -414,7 +414,7 @@ Im folgenden Beispiel wird ein Thread in die Warteschlange des \code{Waiter}-Obj
     }
 \end{minted}\\
 
-\code{wait} besitzt überladene Variantent, mit denen man einen Zeitraum angeben kann in dem gewartet wird - nach der angegebenen Zeitspanne wird der Thread aus der Warteschlange geholt.
+\code{wait} besitzt überladene Varianten, mit denen man einen Zeitraum angeben kann in dem gewartet wird - nach der angegebenen Zeitspanne wird der Thread aus der Warteschlange geholt.
 Wie bei join erwartet \code{wait} hier einen Wert in \textit{millisekunden}. \code{wait(0)} entspricht \code{wait()}.
 
 
@@ -422,7 +422,7 @@ Wie bei join erwartet \code{wait} hier einen Wert in \textit{millisekunden}. \co
     Es ist nicht garantiert, dass ein geweckter Thread die nächste Sperre setzt - das kann durch jeden anderen Thread passieren, der Zugriff auf die Methode anmeldet (vgl.~\cite[61]{Oec22}).
 \end{tcolorbox}\\
 
-\section{notifyAll}
+\subsection{notifyAll}
 
 Erst wenn in einer \code{synchronized}-Methode eine Rückgabe erfolgt, wird die Sperre auf das Objekt aufgehoben (es sei denn, die Sperre wurde bspw. durch ein \code{wait} vorher aufgehoben.)
 
@@ -443,7 +443,7 @@ Wenn in unterschiedlichen Methoden \code{wait()} genutzt wurde, um Threads in di
 Es ist also wichtig, dass die Wartebedingungen sinnvoll implementiert sind, ansonsten kann es zu unerwünschten Seiteneffekten kommen\footnote {
     in \cite[71 ff.]{Oec22} anhand des Erzeuger-Verbraucher-Problems beschrieben.
 }.\\
-Genberell sollte \code{notifyAll} dann verwendet werden, wenn sich Threads mit unterschiedlichen Wartebedingungen in einer Warteschlange befinden (also wenn es \textbf{mehrere Wartebedingungen} gibt), oder wenn sich der Zustand des Objektes so ändert, dass mehrere Threads ihre \textit{while-wait-Schleife} verlassen können (vgl.~\cite[73]{Oec22}).
+Generell sollte \code{notifyAll} dann verwendet werden, wenn sich Threads mit unterschiedlichen Wartebedingungen in einer Warteschlange befinden (also wenn es \textbf{mehrere Wartebedingungen} gibt), oder wenn sich der Zustand des Objektes so ändert, dass mehrere Threads ihre \textit{while-wait-Schleife} verlassen können (vgl.~\cite[73]{Oec22}).
 \end{tcolorbox}
 
 
@@ -501,7 +501,7 @@ Im folgenden Beispiel werden 3 Threads in die Warteschlange eines Objektes einge
 \end{minted}\\
 
 
-\section{Vordergrund- und Hintergrundthreads}
+\subsection{Vordergrund- und Hintergrundthreads}
 
 Es existiert ein Thread\footnote{
 der sog. \textbf{Reference Handler} mit der höchsten Thread-Priorität von $10$.
@@ -517,10 +517,10 @@ Threads können von dem Entwickler \ul{vor dem Start des Threads} zu \textit{Dae
 
 \noindent
 $\rightarrow$ Der Thread, der die \code{main}-Methode eines Java-Programms ausführt, ist ein Vordergrund-Threads.
-Der Status dieses Threads kann nachträglich nciht mehr geändert werden, da er schon läuft, wenn das Programm gestartet ist.\\
+Der Status dieses Threads kann nachträglich nicht mehr geändert werden, da er schon läuft, wenn das Programm gestartet ist.\\
 Alle durch ihn erzeugten Threads sind implizit auch Vordergrund-Threads.
 
-\section{Zusammenfassung}
+\subsection{Zusammenfassung}
 
 \textbf{Aktive Klassen} sind \textbf{Thread-Klassen} bzw. Klassen, die \code{Runnable} implementieren.\\
 

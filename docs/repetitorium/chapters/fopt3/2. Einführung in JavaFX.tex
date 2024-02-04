@@ -13,7 +13,7 @@ Strukturen dieser Anordnungen können als Baumstrukturen verstanden werden, mit 
 In JavaFX wird ein Fenster als \code{Stage} bezeichnet.\\
 
 \noindent
-Das erste Fenster einer ANwendung muss man nicht selbst erstellen, sondern existiert bereits und wird zur Verfügung gestellt.\\
+Das erste Fenster einer Anwendung muss man nicht selbst erstellen, sondern existiert bereits und wird zur Verfügung gestellt.\\
 
 \noindent
 Eine \code{Stage} beinhaltet keine UI Controls, sondern eine \code{Scene}, der dann weitere Elemente (i.d.R. zunächst ein ``Container``) hinzugefügt werden.\\
@@ -58,7 +58,7 @@ Gibt man bei der \code{Scene} keine Größenangabe an, versucht JavaFX, die Fens
 
 \subsection{Ereignisbehandlung}
 
-Nutzeraktionen werden ``Ereignisse`` genannt; die Behandlung solcher Ereignisse über Programmcode wird \textbf{Ereignisbehandlung} geannnt.\\
+Nutzeraktionen werden ``Ereignisse`` genannt; die Behandlung solcher Ereignisse über Programmcode wird \textbf{Ereignisbehandlung} genannt.\\
 
 \noindent
 So kann zum Beispiel ein \code{javafx.scene.control.Button} auf Mausereignisse reagieren, indem man
@@ -147,7 +147,7 @@ Spezielle Varianten der Properties sind die \code{ReadOnlyProperty}s - diese kö
 Properties können miteinander gekoppelt werden, um gegenseitige Zustandsänderungen zu bewirken.\\
 
 \noindent
-Die Kopplung (das \textbf{Binding}) kann \textbf{unidirektion} oder \textbf{bidirektional} erfolgen.\\
+Die Kopplung (das \textbf{Binding}) kann \textbf{unidirektional} oder \textbf{bidirektional} erfolgen.\\
 
 \noindent
 Bei \textbf{unidirektionalem} Binding bewirkt die Änderung des Wertes einer Property die Änderung des Wetes der anderen Property, aber nur in eine Richtung.\\
@@ -179,7 +179,7 @@ Collections in JavaFX erweitern die Collections von Java\footnote{
 In der Regel werden diese Collections von den Container-Elementen verwendet, die ein bestimmtes \textbf{Layout} realisieren.\\
 
 \noindent
-$\rightarrow$ für den Zugriff auf die Kindelemete eines Containers in JavaFX ruft man i.d.R. \code{getChildren} auf; der Rückgabewert ist die beobachtbare Liste.
+$\rightarrow$ für den Zugriff auf die Kindelemente eines Containers in JavaFX ruft man i.d.R. \code{getChildren} auf; der Rückgabewert ist die beobachtbare Liste.
 
 \begin{figure}
     \centering
@@ -216,7 +216,7 @@ Elemente, die keinen Nachfolger besitzen, können unter dem Begriff \textbf{Inte
 \code{Pane} selber realisiert kein Layout, Kindelemente werden absolut positioniert.\\
 
 \noindent
-Unterklassen von \code{Pane} hingegen realisieren verschiedene aouts, bspw.
+Unterklassen von \code{Pane} hingegen realisieren verschiedene Layouts, bspw.
 
 \begin{itemize}
     \item \code{VBox}

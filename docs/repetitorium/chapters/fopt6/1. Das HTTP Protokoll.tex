@@ -1,4 +1,4 @@
-\usepackage{lstmisc}\chapter{Webbasierte Anwendungen mit Servlets und JSF}
+\section{Das HTTP-Protokoll}
 
 Bei webbasierten Anwendungen wird die Client-Seite durch einen Web-Browser realisiert, auf der Server-Seite wird ein Web-Server wie bspw. \textit{Apache Tomcat}\footnote{
     \url{https://tomcat.apache.org} - abgerufen 3.2.2024
@@ -63,7 +63,7 @@ Nutzt der Client hingegen \textbf{HTTP/1.1}, hält der Server genau diese Verbin
 Über diese Verbindung kann der Client weitere Daten anfordern.
 
 \begin{itemize}
-    \item Bei der Verwendung von \textbf{HTTP/1.1} muss außerdem in der zweiten Zeile der Anfrage der Zielhost stehen, damit ein Server, der {ggfl.} mehrere Domains hostet, die Anfrage an die richtige Domain weiterleitet\footnote{s. ``RFC 7320 - 5.4.  Host``: \url{https://www.rfc-editor.org/rfc/rfc7230#section-5.4} - abgerufen 3.2.2024}.
+    \item Bei der Verwendung von \textbf{HTTP/1.1} muss außerdem in der zweiten Zeile der Anfrage der Zielhost stehen, damit ein Server, der {ggf..} mehrere Domains hostet, die Anfrage an die richtige Domain weiterleitet\footnote{s. ``RFC 7320 - 5.4.  Host``: \url{https://www.rfc-editor.org/rfc/rfc7230#section-5.4} - abgerufen 3.2.2024}.
     \begin{minted}[]{http}
 GET /index.php HTTP/1.1
 Host: www.conjoon.org
@@ -86,7 +86,7 @@ s. ``<form>: The Form element``:\url{https://developer.mozilla.org/en-US/docs/We
 \textbf{radio}-inputs erhalten alle dasselbe \textit{name}-Attribut, um sie zu einer gruppe zusammenzuführen.\\
 
 \noindent
-Fehlt für eine \textbf{checkbox} die Selektion, wie sie bei der Übertragung der Formulardaten nicht mitverschickt.
+Fehlt für eine \textbf{checkbox} die Selektion, wie sie bei der Übertragung der Formulardaten nicht berücksichtigt.
 Ist das \textit{value}-Attribut für die Checkbox gesetzt und wurde die Checkbox selektiert, enthalten die Request-Daten den Inhalt von \textit{value}, ansonsten standardmäßig den Wert \textit{on}:
 
 \blockquote[{\url{https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox} - abgerufen 3.2.2024, Hervorherbungen ausgelassen}]{

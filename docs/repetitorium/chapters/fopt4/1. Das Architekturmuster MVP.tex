@@ -6,7 +6,7 @@
 \textbf{Architekturmuster} besitzen wie \textbf{Entwurfsmuster} einen hohen Abstraktionsgrad.\\
 
 \textbf{Entwurfsmuster} werden i.d.R. zur Lösung kleiner Teilbereiche von Software eingesetzt, während \code{Arhictekturmuster} für die gesamte Software oder für größere Teile einer Software eingesetzt werden\footnote{vgl. Skript FOPT4, S. 1}.\\
-$\rightarrow$ Enturfsmuster beschreiben eher das Zusammenwirken von Klassen und Schnittstellen.
+$\rightarrow$ Entwurfsmuster beschreiben eher das Zusammenwirken von Klassen und Schnittstellen.
 Architekturmuster sind wie ein Bauplan für ganze Programmteile bzw. Teilbereiche einer Software zu verstehen.
 
 \noindent
@@ -15,7 +15,7 @@ zu den Vorteilen von Architekturmustern gehört:
 \begin{itemize}
     \item sie helfen, Anwendungen klarer zu strukturieren $\rightarrow$ Leitfaden zur Strukturierung
     \item erleichtert das systematische Testen (durch klare Strukturierung); Änderungen an der Software sind leichter durchführbar
-    \item hift, den Code anderer zu verstehen, wenn dieser nach einem bestimmten Muster strukturiert ist
+    \item hilft, den Code anderer zu verstehen, wenn dieser nach einem bestimmten Muster strukturiert ist
 \end{itemize}
 
 \subsection{Prinzip von MVP}
@@ -29,7 +29,7 @@ Das \textbf{Model} ist verantwortlich für
     \item die \textbf{Geschäftslogik}, die den logischen Kern der Anwendung darstellt
     \item die Bereitstellung und das Ändern relevanter Daten für die Anwendung
     \item die Wahrung von Konsistenzbedingungen
-    \item die Realisiserung von Persistierung
+    \item die Realisierung von Persistierung
 \end{itemize}
 
 Das Model ist unabhängig von Darstellungs- und Steuerungslogik.
@@ -63,14 +63,14 @@ Der Presenter kann einen Teil der Validierungslogik enthalten, bspw. zum Erkenne
 Alle Komponenten sind gut testbar:
 
 \begin{itemize}
-    \item Das \textbf{Model} hat keien Abhängigkeiten zu \textbf{Presenter} und \textbf{View}.
+    \item Das \textbf{Model} hat keine Abhängigkeiten zu \textbf{Presenter} und \textbf{View}.
     \item Der \textbf{Presenter} kann über \textit{Mock-Objekte} (für View & Models) getestet werden
     \item Die \textbf{View} erhält für den Presenter ein Mock-Objekt.
 \end{itemize}
 
 \section{Threads und JavaFX}
 
-Stage-Objekte dürfen nciht im \textbf{Main-Thread} erzeugt werden. \\
+Stage-Objekte dürfen nicht im \textbf{Main-Thread} erzeugt werden. \\
 Das primäre Stage-Objekt wird von der Platform vorgegeben, nachfolgenden Stage-Objekte und UI -Elemente müssen im \textbf{JavaFX Application Thread} erzeugt werden.\\
 
 \noindent
@@ -148,11 +148,11 @@ Um \code{Task} zu verwenden, leitet man eine eigene Klasse von \code{Task} ab un
 \end{minted}\\
 
 \noindent
-Eine Klasse muss von der abstrakten Klasse \code{Service} abbleiten und darin \code{createTask()} überschreiben, die das entsprechende Task-Objekt zurückliefert.\\
+Eine Klasse muss von der abstrakten Klasse \code{Service} ableiten und darin \code{createTask()} überschreiben, die das entsprechende Task-Objekt zurückliefert.\\
 
 \noindent
 Man kann dem Service einen \code{Executor} zuweisen, ansonsten wird ein neuer \code{Daemon}-Thread erzeugt und gestartet.\\
 
 \noindent
-Erneutes Starten des Service ist erst möglich, wenn der Service nicht mehr aktiv ist (\code{isRunning}), oder wenn zuvor \code{reset()} aufegrufen wurde.\\
+Erneutes Starten des Service ist erst möglich, wenn der Service nicht mehr aktiv ist (\code{isRunning}), oder wenn zuvor \code{reset()} aufgerufen wurde.\\
 Auch \code{restart()} ermöglicht einen Neustart (ruft intern \code{cancel()} $\rightarrow$ \code{reset()} $\rightarrow$ \code{start()} auf).

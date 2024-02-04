@@ -1,7 +1,7 @@
-\chapter{Fortgeschrittene Synchronisationskonzepte in Java}
+\section{Fortgeschrittene Synchronisationskonzepte in Java}
 
 
-\section{Semaphore}
+\subsection{Semaphore}
 
 Der \textbf{Semaphor} (engl. ``semaphore``) repräsentiert ein klassisches Synchronisationskonzept.\\
 
@@ -326,7 +326,7 @@ Die Ausgabe des Programms lautet:
 \end{minted}\\
 
 
-\section{Message Queues}\label{sec:messagequeues}
+\subsection{Message Queues}\label{sec:messagequeues}
 
 \subsection{Verallgemeinerung des Erzeuger-Verbraucher-Problems}
 
@@ -358,7 +358,7 @@ Beim Empfangen wird nur so lange gewartet, bis der Puffer nicht mehr leer ist:
     \item Es werden $n$ Daten aus dem Puffer gelesen - sind weniger als $n$ Daten im Puffer, werden auch nur soviele Daten gelesen (die Daten werden hierbei in ein Feld passender Länge kopiert).
 \end{itemize}
 
-\section{Das Philosophen-Problem}
+\subsection{Das Philosophen-Problem}
  Das \textbf{Philosophen-Problem}\footnote{
 Wikipedia - Dining Philosophers Problem: \url{https://en.wikipedia.org/wiki/Dining_philosophers_problem} - abgerufen 27.01.2024
 }
@@ -366,7 +366,7 @@ veranschaulicht die Entstehung von Verklemmungen: An einem runden Tisch sitzen 5
 
 \begin{figure}
     \centering
-    \includegraphics[scale=0.25]{chapters/3/img/philosopher}
+    \includegraphics[scale=0.25]{chapters/fopt2/img/philosopher}
     \caption{ Eine Illustration des Philosophen-Problems: Ein Philosoph benötigt jeweils die Gabel links und rechts von ihm zum Essen (Quelle: eigene)}
     \label{fig:philosopher}
 \end{figure}
@@ -406,7 +406,7 @@ Diese Verklemmungssituation läßt sich bspw. durch Semaphorgruppen lösen, wobe
 
 
 
-\section{Leser-Schreiber-Problem}
+\subsection{Leser-Schreiber-Problem}
 
 \textbf{Leser-Schreiber-Problem}: Es soll lesen erlaubt sein von beliebig vielen Threads, aber die Änderung des Objekts durch schreibende Zugriffe darf nur von einem Thread aus geschehen.\\
 
@@ -428,7 +428,7 @@ Die Strategien können nur dann sinnvoll eingesetzt werden, falls kein Thread un
 Kann eine gewisse Wartezeit für Leser/Schreiber nicht garantiert werden, bietet sich eine strengere Strategie an: Zugriffswünsche landen in einer Warteschlange, immer der zuerst eingefügte wird abgearbeitet (\textbf{FIFO}).
 
 
-\section{Schablonen zur Nutzung der Synchronisationsprimitive und Konsistenzbetrachtungen}
+\subsection{Schablonen zur Nutzung der Synchronisationsprimitive und Konsistenzbetrachtungen}
 
 Der \textbf{Zustand} eines Objektes wird durch die Werte seiner Attribute beschrieben.\\
 
@@ -471,12 +471,12 @@ Weiter stellt \cite{Oec22} 6 Schablonen vor, die für verschiedene Kategorien vo
 \end{itemize}
 
 
-\section{Concurrent Klassenbibliothek aus Java 5}
+\subsection{Concurrent Klassenbibliothek aus Java 5}
 
 Vor Java 5 gab es im wesentlichen zur Realisierung von Parallelität nur die Klasse \code{Thread}, zur Realisierung von \textbf{Synchronisation} im Wesentlichen nur \code{synchronized, wait, notify und notifyAll}.\\
 
 \noindent
-Seut Java 5 gibt es drei weitere Packages, die Klassen und Schnittstellen anbieten, die mit Synchronisation und Parallelität zu tun haben:
+Seit Java 5 gibt es drei weitere Packages, die Klassen und Schnittstellen anbieten, die mit Synchronisation und Parallelität zu tun haben:
 
 
 
@@ -520,7 +520,7 @@ Auf \code{Condition}s kann man mit \code{await()} warten\\
 Man kann sich zu eine \code{Lock} beliebig viele \code{Condition}s geben lassen, was eine sehr fein granulierte Modellierung der Bedingung(en) ermöglicht.\\
 
 \noindent
-Die \code{Atomic}-Klassen bieten eine Objekthülle für verschiedene Datentypen (\code{Boolean}, \code{Integer}, \code{Long}...) und ermöglichen einen Thread-safen lesenden/schreibenden Zugriff auf die umhüllten Werte.\\
+Die \code{Atomic}-Klassen bieten eine Objekthülle für verschiedene Datentypen (\code{Boolean}, \code{Integer}, \code{Long}...) und ermöglichen einen Thread-sicheren lesenden/schreibenden Zugriff auf die umhüllten Werte.\\
 
 \noindent
 Mit den \code{Atomic}-Klassen lassen sich auch \code{lock-free} Synchronisation realisieren, die zwar eine Form des aktiven Wertes darstellen, unter Umständen aber effizienter sein können, als eine durch eine Sperre erfolgte Umschaltung auf einen andern Thread.\\
@@ -537,7 +537,7 @@ Zu den \textbf{Synchronisationsklassen} zählen die Klassen
 \noindent
 \code{Queue}-Klassen ermöglichen den \code{synchronisierten} Datenaustausch zwischen Thread nach dem Erzeuger-Verbraucher-Prinzip: Ein Objekt in eine volle Warteschlange zu legen wird so lange blockiert, bis die Warteschlange nicht mehr voll ist; entsprechend wird der Versuch blockiert, aus einer leeren Warteschlange etwas zu entnehmen (vgl.~\cite[164]{Oec22}).
 
-\section{Das Fork-Join-Framework von Java 7}
+\subsection{Das Fork-Join-Framework von Java 7}
 
 Die \code{concurrent}-Bibliothek wurde in Java 7 um das \textbf{Fork-Join-Framework} erweitert.\\
 
@@ -569,7 +569,7 @@ ebenda wird dies als der wesentliche Unterschied zwischen \textit{ForkJoinPool} 
 Alle Threads des \code{ForkJoinPool}s sind \textbf{Daemon}-Threads.\\
 
 \noindent
-Vorgehen bei der Implementierung - \textbf{Divide & Conquer}: Prüfen, ob Berechnung klein genug, um direkt zu bearbeiten, falls nein,, neie \code{ForkJoinTasks} erzeugen und durch \code{fork()} dem \textbf{ThreadPool} übergeben, mit \code{join} auf auf die Bearbeitung warten und dann Teilergebnisse zu Gesamtergebnis kombinieren.
+Vorgehen bei der Implementierung - \textbf{Divide & Conquer}: Prüfen, ob Berechnung klein genug, um direkt zu bearbeiten, falls nein, neue \code{ForkJoinTasks} erzeugen und durch \code{fork()} dem \textbf{ThreadPool} übergeben, mit \code{join} auf auf die Bearbeitung warten und dann Teilergebnisse zu Gesamtergebnis kombinieren.
 
 Das folgende Beispiel ist \cite[168, Listing 3.25]{Oec22} entnommen und beinhaltet die Implementierung von \code{compute()}\footnote{
     Class RecursiveTask<V> - compute(): \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/RecursiveTask.html#compute()} - abgerufen 27.01.2024
@@ -602,7 +602,7 @@ Das folgende Beispiel ist \cite[168, Listing 3.25]{Oec22} entnommen und beinhalt
     }
 \end{minted}\\
 
-\section{Ursachen für Verklemmungen}\label{sec:deadlockreason}
+\subsection{Ursachen für Verklemmungen}\label{sec:deadlockreason}
 
 \begin{tcolorbox}
     Ein \textbf{Betriebsmittel} ist ein Objekt, auf das ein Thread unter Umständen warten muss, bevor er es benutzen kann; es kann auch ein Objekt sein, dessen Nutzung durch höchstens einen Thread zu einem Zeitpunkt über Semaphore oder Locks realisiert wird (vgl.~\cite[186]{Oec22}).
@@ -620,7 +620,7 @@ Folgende Bedingungen müssen erfüllt sein, damit es zu einer \textbf{Verklemmun
         \item Es gibt eine zyklische Kette von Threads, von denen jeder mindestens ein Betriebsmittel besitzt, das der nächste Thread in der Kette benötigt (s. Abbildung~\ref{fig:cyclic}).
          \begin{figure}
             \centering
-            \includegraphics[scale=0.25]{chapters/3/img/cyclic}
+            \includegraphics[scale=0.25]{chapters/fopt2/img/cyclic}
             \caption{Betriebsmittelgraph. Quelle: in Anlehnung an \cite[192, Bild 3.9]{Oec22}}
             \label{fig:cyclic}
         \end{figure}
@@ -628,7 +628,7 @@ Folgende Bedingungen müssen erfüllt sein, damit es zu einer \textbf{Verklemmun
 \end{enumerate}
 
 
-\section{Vermeidung von Verklemmungen}
+\subsection{Vermeidung von Verklemmungen}
 
 Wenn eine der im vorherigen Abschnitt~\ref{sec:deadlockreason} genannten Bedingungen nicht gilt, kann keine Verklemmung vorliegen.\\
 
@@ -645,8 +645,8 @@ vgl. im folgenden \cite[192 f.]{Oec22}.
 
 \begin{enumerate}
     \item Ein Thread darf nur Betriebsmittel anfordern, wenn er selbst keine Betriebsmittel besitzt (Nichterfüllung Punkt 3)
-    \item Anforderung von Betriebsmitteln in einer bestimmten Reihenfolge, so dass garantiert werden kann, dass keine zyklischen Wartebedingungen entstehen (Nichterfüllung Punkt 4)
-    \item Ein Trhead $t_1$ darf auf ein Betriebsmittel, dass $t_2$ gerade benutzt, nur warten, wenn bestimmte Beziehungen zwischen $t_1$ und $t_2$ gelten, damit keine zyklischen Wartebeziehungen entstehen (Nichterfüllung Punkt 4)
+    \item Anforderung von Betriebsmitteln in einer bestimmten Reihenfolge, sodass garantiert werden kann, dass keine zyklischen Wartebedingungen entstehen (Nichterfüllung Punkt 4)
+    \item Ein Thread $t_1$ darf auf ein Betriebsmittel, dass $t_2$ gerade benutzt, nur warten, wenn bestimmte Beziehungen zwischen $t_1$ und $t_2$ gelten, damit keine zyklischen Wartebeziehungen entstehen (Nichterfüllung Punkt 4)
     \item Eine Bedarfsanalyse untersucht bei der Anforderung von Betriebsmitteln, ob es im worst-case bei Erfüllung der Anforderung zu Verklemmungen kommen kann - wenn selbst im worst-case keine Verklemmung entstehen kann, wird die Anforderung erfüllt (Nichterfüllung Punkt 4)
 \end{enumerate}\\
 
