@@ -19,7 +19,7 @@ Das erste Fenster einer Anwendung muss man nicht selbst erstellen, sondern exist
 Eine \code{Stage} beinhaltet keine UI Controls, sondern eine \code{Scene}, der dann weitere Elemente (i.d.R. zunächst ein ``Container``) hinzugefügt werden.\\
 
 \noindent
-Üblicherweise erzeugt man eine JavaFX-Anwendung, indem man von \code{javafx.application.Application} erbt, die \code{start()}-Methode überschreibt und darin die der Methode übergebenen \code{Stage} eine \code{Scene} zuweist und dann mittels \code{show()} sichtbar macht:
+Üblicherweise erzeugt man eine JavaFX-Anwendung, indem man von \begin{center}\code{javafx.application.Application}\end{center} erbt, die \code{start()}-Methode überschreibt und darin die der Methode übergebenen \code{Stage} eine \code{Scene} zuweist und dann mittels \code{show()} sichtbar macht:
 
 \begin{minted}[mathescape,
     linenos,
@@ -44,9 +44,9 @@ Eine \code{Stage} beinhaltet keine UI Controls, sondern eine \code{Scene}, der d
         }
 
     }
-\end{minted}\\
+\end{minted}
 
-\begin{tcolorbox}
+\begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
     Die Methode \code{launch} ist blockierend, aus ihr kehrt man erst zurück, wenn die \textbf{PrimaryStage} geschlossen wurde.
 \end{tcolorbox}
 
@@ -63,18 +63,12 @@ Nutzeraktionen werden ``Ereignisse`` genannt; die Behandlung solcher Ereignisse 
 \noindent
 So kann zum Beispiel ein \code{javafx.scene.control.Button} auf Mausereignisse reagieren, indem man
 
-\begin{minted}[mathescape,
-    numbersep=5pt,
-    gobble=2,
-    frame=none,
-    framesep=2mm]{java}
-    setOnAction(EventHandler<ActionEvent> value)
-\end{minted}
+\begin{center}\code{+setOnAction(value: EventHandler<ActionEvent>):void}\end{center}
 
 implementiert. \code{value} enthält dann die Ereignisinformationen.
 
-\begin{tcolorbox}
-    Bei dem Typ des Parameters für die \code{setOnAction}-Methode handelt es sich um das \textit{Functional Interface}
+\begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
+    Bei dem Typ des Parameters für die \code{setOnAction()}-Methode handelt es sich um das \textit{Functional Interface}
      \begin{center}
      \code{java.fx.event.EventHandler<T extends Event>}
      \end{center}
@@ -100,7 +94,7 @@ implementiert. \code{value} enthält dann die Ereignisinformationen.
 Das allgemeine Prinzip der Ereignisbehandlung basiert auf dem Entwurfsmuster \textbf{Observer}: $\rightarrow$ es gibt \textbf{beobachtbare Objekte} und \textbf{Beobachter}.\\
 
 \noindent
-\textbf{Beobachter} melden sich bei \code{beobachtbaren Objekten} an und werden über Zustandsänderungen benachrichtigt.\\
+\textbf{Beobachter} melden sich bei \textbf{beobachtbaren Objekten} an und werden über Zustandsänderungen benachrichtigt.\\
 
 \noindent
 Die Benachrichtigung erfolgt über Schnittstellenmethoden, die die Beobachter implementieren; die Schnittstellen sind die Typen der Parameter, die ein beobachtbares Objekt bei der Registrierung eines Beobachters berücksichtigen - es können also nur solche Objekte als Beobachter angemeldet werden, deren Klasse die Schnittstelle implementiert.\\
@@ -117,7 +111,7 @@ Die Benachrichtigung erfolgt über Schnittstellenmethoden, die die Beobachter im
 
 
 \noindent
-Spezielle Varianten der Properties sind die \code{ReadOnlyProperty}s - diese können von \code{ReadOnlyWrapper}n zur Verfügung gestellt machen, um beobachtbare Properties öffentlich zu machen, aber deren Zustandsänderung von Außen zu untersagen.
+Spezielle Varianten der Properties sind die \code{ReadOnlyProperty}s - diese können von \code{ReadOnlyWrapper}n zur Verfügung gestellt machen, um beobachtbare Properties öffentlich zu machen, aber deren Zustandsänderung von außen zu untersagen, wie folgendes Beispiel demonstriert:
 
 \begin{minted}[mathescape,
     linenos,
@@ -155,7 +149,7 @@ Wird versucht, über die andere Richtung eine Wertzuweisung durchzuführen, wird
 Eine JavaFX-Property kann über \code{right.bind(left)} gekoppelt werden (lies: ``binde right an left``).\\
 
 \noindent
-Ein \textbf{bidirektionales} Binding bewirkt die Änderung der Properties in beide Richtungen, allerdings muss hier die Methode \code{bindBidirectional} genutzt werden: \code{right.bindBidirectional(left)} (bzw. \code{left.bindBidirectional(right)}).
+Ein \textbf{bidirektionales} Binding bewirkt die Änderung der Properties in beide Richtungen, allerdings muss hier die Methode \begin{center}\code{+bindBidirectional(other: Property<T>):void}\end{center} genutzt werden: \code{right.bindBidirectional(left)} (bzw. \code{left.bindBidirectional(right)}).
 
 
 \begin{figure}
@@ -252,7 +246,7 @@ Zu den Choice Buttons gehören bspw. \code{CheckBox}, \code{ToggleButton}, \code
 Zu den Command Buttons gehören u.a. \code{Button} und \code{Hyperlink}.\\
 
 \noindent
-Eine \code{CheckBox} kann in JavaFX drei Zustände besitzen: \code{true}, \code{false}, \code{undefined} (steuerbar über \code{setAllowIndeterminate}):
+Eine \code{CheckBox} kann in JavaFX drei Zustände besitzen: \code{true}, \code{false}, \code{undefined} (steuerbar über \code{setAllowIndeterminate()}):
 
 \blockquote[{Class CheckBox: \url{https://docs.oracle.com/javase/8/javafx/api/javafx/scene/control/CheckBox.html} - abgerufen 29.01.2024}]{
     A tri-state selection Control typically skinned as a box with a checkmark or tick mark when checked. A CheckBox control can be in one of three states:
@@ -315,7 +309,7 @@ Eine \code{ComboBox} nutzt intern eine \code{ListView} zur Anzeige der Inhalte. 
 Texteingabeelemente wie \code{TextField}, \code{TextArea} sind von der abstrakten Basisklasse \code{TextInputControl} abgeleitet.\\
 
 \noindent
-\code{TextField} erlaubt mittels \code{setOnAction} die Registrierung eines \code{EventHandler<ActionEvent>}.\\
+\code{TextField} erlaubt mittels \code{setOnAction()} die Registrierung eines \code{EventHandler<ActionEvent>}.\\
 Das Ereignis wird bspw. beim Betätigen der \textit{Return}-Taste ausgelöst:\\
 
 
@@ -391,11 +385,11 @@ Bereits die Basisklasse \code{Node} stellt Funktionen zur Ereignisbehandlung von
 \end{itemize}
 
 \noindent
-Der Parametertyp für diese Ereignisbehandlung ist wie bei \code{setOnAction} ein \code{EventHandler}, dessen generischer Typ auf \code{MouseEvent} festgelegt ist\footnote{
-    oder einer Unterklasse davon, bspw. \code{MouseDragEvent}
+Der Parametertyp für diese Ereignisbehandlung ist wie bei \code{setOnAction()} ein \code{EventHandler}, dessen generischer Typ auf \code{MouseEvent} festgelegt ist\footnote{
+    oder einer Unterklasse davon, bspw. \textit{MouseDragEvent}
 }.\\
 
 \noindent
-Zur Ereignisbehandlung von \textbf{click-Events} wird i.d.R. mithilfe eines \code{ActionListeners} reagiert, da solch ein Interaktionsereignis \uunderline{eine höhere Abstraktionsebene darstellt}, z.B. wird ein Button auch aktiviert, wenn er den Fokus hat und die \textbf{enter-Taste} gedrückt wird:  Action-Ereignis $\rightarrow$ aktivieren eines Elements (vgl.~\cite[220]{Oec22}).
+Zur Ereignisbehandlung von \textbf{click-Events} wird i.d.R. mithilfe eines \code{ActionListeners} reagiert, da solch ein Interaktionsereignis \uunderline{eine höhere Abstraktionsebene darstellt}, z.B. wird ein Button auch aktiviert, wenn er den Fokus hat und die \textbf{Enter-Taste} gedrückt wird:  Action-Ereignis $\rightarrow$ aktivieren eines Elements (vgl.~\cite[220]{Oec22}).
 
 

@@ -10,7 +10,7 @@ UML erlaubt die Modellierung unterschiedlicher Sichten auf ein Software-System, 
 \begin{itemize}
     \item die \textbf{funktionalen Anforderungen} durch \textbf{Use Cases}
     \item die \textbf{statische Struktur}, {bspw.} strukturierende Einheiten wie Klassen und Packages und deren Beziehungen zueinander über Klassen- und Komponentendiagramme
-    \item das dynamische VErhalten eines Systems, also zur Laufzeit, {bspw.} durch \textbf{Sequenzdiagramme}, \textbf{Aktivitätsdiagramme} und Diagramme für \textbf{endliche Automaten}
+    \item das dynamische Verhalten eines Systems, also zur Laufzeit, {bspw.} durch \textbf{Sequenzdiagramme}, \textbf{Aktivitätsdiagramme} und Diagramme für \textbf{endliche Automaten}
 \end{itemize}
 \noindent
 
@@ -28,13 +28,16 @@ Symbole für Sichtbarkeiten in einem Klassendiagramm:
     \item \code{public}: \code{+}
     \item \code{private}: \code{-}
     \item \code{protected}: \code{#}
+    \item \code{package}: \code{~}
 \end{itemize}\\
 
 \noindent
 Ein Klassendiagramm besteht aus 3 vertikal angeordneten Blöcken:\\
 
 \begin{enumerate}
-    \item Klassenname / Schnittstellenname
+    \item Klassenname / Schnittstellenname\footnote{
+        das Skript FOPT3 weist auf Seite 3 darauf hin, das in dem Kurs i.d.R. Klassendiagramme ohne Attribute und Methoden dargestellt werden. Das Rechteck, das Klasse / Schnittstelle repräsentiert, beinhaltet dann nur den Klassennamen.
+    }
         \begin{itemize}
             \item abstrakte Klassen werden kursiv geschrieben
             \item wenn es sich um ein Interface handelt, kann zur Kenntlichmachung ein \code{<<interface>>} über den Klassennamen gesetzt werden
@@ -54,9 +57,7 @@ Ein Klassendiagramm besteht aus 3 vertikal angeordneten Blöcken:\\
 \ul{Statische Attribute und Methoden werden unterstrichen.}\\
 
 \noindent
-Klassen und Schnittstellen, die zu einem \textbf{Package} gehören, können in einem Rechteck zusammengefasst werden, das mit dem Package-Namen beschriftet ist\footnote{
-Das Skript FOPT3 weist auf Seite 3 darauf hin, das in dem Kurs i.d.R. Klassendiagramme ohne Attribute und Methoden dargestellt werden. Das Rechteck beinhaltet dann nur den Klassennamen.
-}.
+Klassen und Schnittstellen, die zu einem \textbf{Package} gehören, können in einem Rechteck zusammengefasst werden, das mit dem Package-Namen beschriftet ist.
 
 \begin{figure}
     \centering
@@ -78,7 +79,7 @@ In der folgenden Abbildung~\ref{fig:association} referenziert im Beispiel b) ein
 Im Beispiel c) referenziert ein \code{Company}-Objekt genau ein \code{Employee}-Objekt.\\
 
 \noindent
-Werden mehrere \code{Employee}-Objekte zur Laufzeit erzeugt, kann man die deren Beziehungen zu den \code{Company}-Objekten ebenfalls durch Kardinalitäten ausdrücken:\\
+Werden mehrere \code{Employee}-Objekte zur Laufzeit erzeugt, kann man deren Beziehungen zu den \code{Company}-Objekten ebenfalls durch Kardinalitäten ausdrücken:\\
 \noindent
 Im Beispiel d) wird ein \code{Employee}-Objekt von mehreren \code{Company}-Objekten referenziert.\\
 \noindent
@@ -92,7 +93,7 @@ Im Beispiel e) wird ein \code{Employee}-Objekt immer von genau einem \code{Compa
 \end{figure}
 
 \noindent
-In dem folgenden Beispiel kann ein \code{Company}-Objekt mehrere \code{Employee}-Objekte referenzieren:
+In Abbildung~\ref{fig:multipleemployees} kann ein \code{Company}-Objekt mehrere \code{Employee}-Objekte referenzieren, das folgende Listing demonstriert eine Implementierung.\\
 
 \begin{figure}
     \centering
@@ -101,8 +102,6 @@ In dem folgenden Beispiel kann ein \code{Company}-Objekt mehrere \code{Employee}
     \label{fig:multipleemployees}
 \end{figure}
 
-Im Code lässt sich das bspw. folgendermaßen umsetzen:
-\newpage
 
 \begin{minted}[mathescape,
     linenos,
@@ -156,7 +155,7 @@ $\rightarrow$ Objektdiagramme sind nur zu einem bestimmten Zeitpunkt während de
 $\rightarrow$ In einem Klassendiagramm modelliert man die Aspekte, die bei einer bestimmten Betrachtung betont werden sollen.\\
 
 \noindent
-Es ist auch möglich, Assoziationen in beide Richtungen zu modellieren:
+Es ist auch möglich, Assoziationen in beide Richtungen zu modellieren, wie Abbildung~\ref{fig:bidirectionalassociation} zeigt. Das Nacholgende Listing demonstriert eine mögliche Implementierung.
 
 \begin{figure}
     \centering
@@ -165,8 +164,6 @@ Es ist auch möglich, Assoziationen in beide Richtungen zu modellieren:
     \label{fig:bidirectionalassociation}
 \end{figure}
 
-Im Code lässt sich das bspw. folgendermaßen umsetzen:
-\newpage
 
 \begin{minted}[mathescape,
     linenos,
@@ -193,6 +190,7 @@ Im Code lässt sich das bspw. folgendermaßen umsetzen:
     \label{fig:bidirectionalassocexample}
 \end{figure}
 
+\newpage
 Die Situation aus Abbildung~\ref{fig:bidirectionalassocexample} b) kann wie folgt im Code implementiert werden.
 
 \begin{minted}[mathescape,
@@ -210,7 +208,7 @@ Die Situation aus Abbildung~\ref{fig:bidirectionalassocexample} b) kann wie folg
 \end{minted}\\
 
 \noindent
-Assoziationen können auch \textbf{reflexiv} sein;
+Assoziationen können auch \textbf{reflexiv} sein:
 
 
 \begin{figure}
@@ -220,10 +218,10 @@ Assoziationen können auch \textbf{reflexiv} sein;
     \label{fig:reflexive}
 \end{figure}
 
-
+\newpage
 \subsection{Benutzt-Beziehungen}
 
-\begin{tcolorbox}
+\begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
     Referenzen, die einen Methodenaufruf nicht überdauern (Parameter, Rückgabe, lokale Variable), werden durch \textbf{Benutzt-Beziehungen} ausgedrückt.\\
 
     \noindent
@@ -237,7 +235,7 @@ Wenn eine Klasse \code{X} kein Attribut vom Typ \code{Y} benutzt, kann die Klass
 Eine \textbf{Benutzt-Beziehung} wird durch eine gestrichelte Linie dargestellt.\footnote{
 Das Skript zu FOPT 3 geht bei der Benutzt-Beziehung nicht sehr in die Tiefe, auch wird i.d.R. eine gestrichelte Pfeilspitze anstatt einer geschlossenen für die Benutzt-Beziehungen verwendet. Siehe hierzu auch die UML-Spezifikation unter \url{https://www.omg.org/spec/UML/2.5.1/PDF} - abgerufen 28.01.2024
 }
-In Abbildung
+
 
 \begin{figure}
     \centering
@@ -252,13 +250,12 @@ In Abbildung
 
 \textbf{Implementierungsbeziehungen} werden durch einen offenen Pfeil und eine gestrichelte Linie Richtung der implementierten Schnittstelle dargestellt (s. Abbildung~\ref{fig:inheritance} b).\\
 
-In Java können Schnittstellen gleichzeitig von mehreren Schnittstellen erben, was in (s. Abbildung~\ref{fig:inheritance} b) dargestellt ist.\\
+In Java können Schnittstellen gleichzeitig von mehreren Schnittstellen erben, was in (s. Abbildung~\ref{fig:inheritance} b) dargestellt ist, und im folgenden Listing demonstriert wird.\\
 
 \begin{minted}[mathescape,
-    linenos,
     numbersep=5pt,
     gobble=2,
-    frame=lines,
+    frame=none,
     framesep=2mm]{java}
     public Interface A extends B, C {
         ...
@@ -272,12 +269,12 @@ In Java können Schnittstellen gleichzeitig von mehreren Schnittstellen erben, w
     \label{fig:inheritance}
 \end{figure}
 
-
+\newpage
 \subsection{Sequenzdiagramme}
 
-\textbf{Sequenzdiagramme} dienen zur grafischen Beschreibung des dynamischen Verhaltens eines Programmes.\\
+\textbf{Sequenzdiagramme} dienen zur grafischen Beschreibung des dynamischen Verhaltens eines Programmes.
 
-\begin{tcolorbox}
+\begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
 \blockquote[{\cite[333]{Oes05}}]{
 Der Zweck von Sequenzdiagrammen ist es, genau ein Szenario darzustellen und nicht eine Menge von verschiedenen Abläufen.
 }
@@ -324,17 +321,19 @@ Als Beispiel sei folgender Code gegeben, der in dem Sequenzdiagramm in Abbildung
 Die Kästchen auf der $x$-Achse symbolisieren \textbf{Objekte}, \ul{nicht} Klassen.\\
 
 \noindent
-Gestrichelte Linien stellen die Lebenszeit der involvierten Objekte dar.\\
+Gestrichelte vertikale Linien unter den Objekten stellen die Lebenszeit der involvierten Objekte dar.\\
 
 \noindent
-Aufruf einer Methode wird durch eine durchgezogene Linie gekennzeichnet, die Rückkehr aus der Methode durch eine
-gestrichelte Linie.\\
+Der \textbf{Aufruf} einer Methode wird durch eine durchgezogene Linie gekennzeichnet, die \textbf{Rückkehr} aus der Methode durch eine
+gestrichelte Linie.
 
-\noindent
+\begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
 Ein Sequenzdiagramm gibt immer einen von mehreren möglichen Abläufen an.\\
+\end{tcolorbox}
+
 
 \noindent
-Findet ein Methodenaufruf bei einem Objekt statt, auf dem bereits ein Methodenaufruf stattfindet, wird das Kästchen für den Methodenaufruf leicht versetzt dargestellt, wie im folgenden Beispiel zu sehen ist (s. Abbildung~\ref{fig:callback}).
+Findet ein Methodenaufruf bei einem Objekt statt, auf dem bereits ein Methodenaufruf stattfindet, wird das Kästchen für den Methodenaufruf leicht versetzt dargestellt, wie in Abbildung~\ref{fig:callback} zu sehen ist; nachfolgendes Listing enthält die Implementierung dazu.
 
 \begin{minted}[mathescape,
     linenos,
@@ -342,7 +341,6 @@ Findet ein Methodenaufruf bei einem Objekt statt, auf dem bereits ein Methodenau
     gobble=2,
     frame=lines,
     framesep=2mm]{java}
-
     class Y {
         public void bar(X x) {
             x.callback();
@@ -377,7 +375,7 @@ Findet ein Methodenaufruf bei einem Objekt statt, auf dem bereits ein Methodenau
 \end{figure}
 
 \noindent
-Die Darstellung \textbf{rekursiver Aufrufe} ist ebenfalls möglich, wie Abbildung~\ref{fig:recursion} zeigt:
+Die Darstellung \textbf{rekursiver Aufrufe} ist ebenfalls möglich, wie Abbildung~\ref{fig:recursion} zeigt.
 
 \begin{figure}
     \centering
@@ -388,7 +386,7 @@ Die Darstellung \textbf{rekursiver Aufrufe} ist ebenfalls möglich, wie Abbildun
 
 
 \noindent
-Werden erst während der Abfolge eines Sequenzdiagramms neue Objekte erzeugt, werden diese Objekte in dem Sequenzdiagramm versetzt dargestellt, wie Abbildung~\ref{fig:create} illustriert:
+Werden erst während der Abfolge eines Sequenzdiagramms neue Objekte erzeugt, werden diese Objekte in dem Sequenzdiagramm versetzt dargestellt, wie in Abbildung~\ref{fig:create} zu sehen ist.
 
 \begin{figure}
     \centering
@@ -396,3 +394,4 @@ Werden erst während der Abfolge eines Sequenzdiagramms neue Objekte erzeugt, we
     \caption{Beispiel für die Darstellung der Erzeugung eines neuen Objektes in einem Sequenzdiagramm. (Quelle: eigene)}
     \label{fig:create}
 \end{figure}
+
