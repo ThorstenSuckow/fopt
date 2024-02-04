@@ -1,12 +1,14 @@
 \section{Grundlegende Synchronisationskonzepte in Java}
 
-Die Schlüsselwörter \code{synchronized}, \code{wait}, \code{notify} sowie \code{notifyAll} sind essentiell für die Umsetzung von Synchronisation mit Java.
+Die Schlüsselwörter \code{synchronized}, \code{wait()}, \code{notify()} sowie \code{notifyAll()} sind essentiell für die Umsetzung von Synchronisation mit Java.
 
 \subsection{Erzeugung und Start von Java-Threads}
 
 \begin{itemize}
-    \item Klasse muss von \code{java.lang.Thread} erben oder
-    \item einer \code{Thread}-Klasse wird ein Objekt übergeben, welches das Interface \code{java.lang.Runnable} implementiert
+    \item Klasse muss von \code{java.lang.Thread}\footnote{im folgenden nur \textit{Thread}} erben
+    \item[] oder
+    \item einer \code{Thread}-Klasse wird ein Objekt übergeben, welches das Interface
+    \begin{center}\code{java.lang.Runnable}\end{center}\footnote{im folgenden nur \textit{Runnable}} implementiert
 \end{itemize}\\
 
 \begin{minted}[mathescape,
@@ -27,7 +29,10 @@ Die Schlüsselwörter \code{synchronized}, \code{wait}, \code{notify} sowie \cod
 \end{minted}
 
 
-Insbesondere im letzten Fall muss die \code{+run():void}-Methode überschrieben werden; wird \code{run()} der Thread-Klasse nicht überschrieben, passiert folglich beim Starten eines Threads nichts (\code{run()} besitzt eine leere Implementierung\footnote{
+Insbesondere im letzten Fall muss die \code{+run():void}-Methode implementiert werden.\\
+
+\noindent
+Wird \code{run()} der Thread-Klasse nicht überschrieben, passiert folglich beim Starten eines Threads nichts (\code{run()} besitzt eine leere Implementierung\footnote{
     Class Thread - \url{https://docs.oracle.com/javase/8/docs/api/java/lang/Thread.html#Thread-java.lang.Runnable-} - abgerufen 24.01.2024
 }).
 
@@ -37,7 +42,6 @@ Insbesondere im letzten Fall muss die \code{+run():void}-Methode überschrieben 
     gobble=2,
     frame=lines,
     framesep=2mm]{java}
-
     class Countdown implements Runnable {
         public void run() {
             // do something
@@ -45,20 +49,10 @@ Insbesondere im letzten Fall muss die \code{+run():void}-Methode überschrieben 
     }
 
     Thread t = new Thread(new Countdown());
-    t.start();
-
-\end{minted}\\
-
-\begin{minted}[mathescape,
-    linenos,
-    numbersep=5pt,
-    gobble=2,
-    frame=lines,
-    framesep=2mm]{java}
+    t.start(); // does something
 
     Thread t1 = new Thread();
     t.start(); // does nothing
-
 \end{minted}
 
 
@@ -88,13 +82,14 @@ Das \textbf{Pausieren von Threads} kann mittels der statischen Methode\footnote{
     statisch, weil der \ul{gerade aktive Thread} ``schlafen`` gelegt wird.
 }
 \begin{center}
-\staticcode{+sleep(milis:long):void} \code{throws java.lang.InterruptedException}
+\staticcode{sleep(milis:long):void} (\code{throws java.lang.InterruptedException})
 \end{center}
-realisiert werden.
+der Klasse \codee{Thread} realisiert werden.
 Der Thread wird dann bei der Thread-Umschaltung für die geg. Zeit nicht mehr vom Betriebssystem berücksichtigt und verbraucht in dieser Zeit auch keine Rechenzeit (vgl~\cite[16]{Oec22}).\\
 
-$\rightarrow$ Die Reihenfolge der auszuführenden Threads ist nicht fest vorgegeben, deshalb kann man mit \code{sleep} keine Ausführungsreihenfolge erzwingen.\\
+$\rightarrow$ Die Reihenfolge der auszuführenden Threads ist nicht fest vorgegeben, deshalb kann man mit \code{sleep()} keine Ausführungsreihenfolge erzwingen.\\
 
+\noindent
 \textbf{Echte Parallelität} wird bei der Betrachtung möglicher Reihenfolgen von Aktionen nicht berücksichtigt: Wenn $A$ und $B$ \textit{parallel} laufen, entspricht das der Reihenfolge $A\ \rightarrow\ B$ bzw. $B\ \rightarrow\ A$ - viele Probleme ergeben sich aus den möglichen Reihenfolgen der Abarbeitung, deshalb ist es wichtig, den Programmcode so zu implementieren, dass er alle Prozesse vom Vorrang her (zunächst)\footnote{
 wartenden Prozessen kann später über bestimmte Warteschlangenimplementierungen nach der Wiederuafnahme ihrer Tätigkeit Vorrang eingeräumt werden
 } als ``gleichberechtigt`` ansieht.
@@ -107,14 +102,15 @@ wartenden Prozessen kann später über bestimmte Warteschlangenimplementierungen
 
 In Java besitzt jedes Objekt eine \textbf{Sperre}, die in der Klasse \code{Object} gesetzt wird (vgl.\cite[26]{Oec22}).\\
 
+\noindent
 Wenn eine Methode, die nicht als \staticcode{static} gekennzeichnet ist, mit \code{synchronized}\footnote{
     Java Language Specification - 8.4.3.6. synchronized Methods: \url{https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.4.3.6} - abgerufen 25.01.2024
-} gekennzeichnet wird, dann wird das Objekt für andere Threads $t_2..t_n$ gesperrt, wenn ein Thread $t_1$ auf die Methode zugreift.
-
+} gekennzeichnet wird, dann wird das Objekt für andere Threads $t_2..t_n$ gesperrt, wenn ein Thread $t_1$ auf die Methode zugreift.\\
 Hierbei wird die Sperre gesetzt, bevor die Methode ausgeführt wird - ist bereits eine Sperre gesetzt, dann kann der Thread nicht auf die Methode zugreifen und wird in die \textbf{Warteschlange} des Objektes für die betreffende Methode eingereiht, der aufrufende Thread ist dann \textbf{blockiert}.
-Solange der Thread blockiert ist, wird er (wie bei \staticcode{sleep}) nicht mehr beim Umschalten berücksichtigt und verbraucht so keine Rechenzeit (vgl.~\cite[26]{Oec22}).
+Solange der Thread blockiert ist, wird er (wie bei \staticcode{sleep()}) nicht mehr beim Umschalten berücksichtigt und verbraucht so keine Rechenzeit (vgl.~\cite[26]{Oec22}).
 \\
 
+\noindent
 Neben \textit{synchronisierten Methoden} können auch \textbf{synchronisierte Anweisungsblöcke}\footnote{
 Java Language Specification - 14.19. The synchronized Statement: \url{https://docs.oracle.com/javase/specs/jls/se21/html/jls-14.html#jls-14.19}, insb. 14.2. Blocks: \url{https://docs.oracle.com/javase/specs/jls/se21/html/jls-14.html#jls-Block} - beides abgerufen 25.01.2024
 } implementiert werden:\\
@@ -138,20 +134,27 @@ Java Language Specification - 14.19. The synchronized Statement: \url{https://do
     }
 \end{minted}\\
 
-Es ist ebenfalls möglich, \textit{statische Methoden} zu synchronisieren.
-Beim Synchronisieren statischer Methoden werden nicht die Objekte der betreffenden Klasse gesperrt, wenn ein Thread die statische Methode aufruft.\\
+\noindent
+Es ist ebenfalls möglich, \textit{statische Methoden} zu synchronisieren.\\
+Beim Synchronisieren statischer Methoden werden nicht die Objekte der betreffenden Klasse gesperrt, wenn ein Thread die statische Methode aufruft, sondern nur die Klassen.\\
+Objektsperren und Klassensperren sind unabhängig voneinander.\\
 
+\noindent
 In Java sind Sperren \textbf{reentrant} (\textit{wiederbetretbar}):
 
 \blockquote[\url{https://docs.oracle.com/javase/tutorial/essential/concurrency/locksync.html}, Hervorhebungen i.O., abgerufen 25.01.2024]{
      [...] a thread can acquire a lock that it already owns. Allowing a thread to acquire the same lock more than once enables \textit{reentrant} synchronization. This describes a situation where synchronized code, directly or indirectly, invokes a method that also contains synchronized code, and both sets of code use the same lock. Without reentrant synchronization, synchronized code would have to take many additional precautions to avoid having a thread cause itself to block.
 }\\
 
-\begin{tcolorbox}
+
+\begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
     Ein Thread kann eine weitere Sperre für ein Objekt anfordern, für das der Thread bereits eine Sperre hält.
-    Ansonsten könnte es passieren, dass sich Threads selber ausschließen.
+    Ansonsten könnte es passieren, dass sich Threads selber ausschließen.\\
+    Deshalb nennt man Sperren in Java \textbf{reentrant}.
 \end{tcolorbox}\\
 
+
+\noindent
 \textbf{Konstruktoren} können nicht synchronisiert werden, aber man kann einen Anweisungsblock innerhalb eines Konstruktors synchronisieren.
 
 \subsection*{Notwendigkeit von synchronized}
@@ -160,64 +163,67 @@ In Java sind lesende und schreibende Zugriffe auf Referenzen und Basisdatentypen
 hiermit ist \textit{unteilbar} gemeint
 }.\\
 
+\noindent
 Zugriffe auf \code{long} und \code{double} sind nicht atomar: Lesen und schreiben kann hier in zwei Schritten auf jeweils 32 Bits erfolgen (vgl.~\cite[30]{Oec22}).\\
 
 \subsection*{volatile}
 \code{volatile}\footnote{``flüchtig``.
 S. a. Java Language Specification - 8.3.1.4. volatile Fields: \url{https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.3.1.4} - abgerufen 25.01.2024
-} kann verwendet werden, um sicherzustellen, dass ein Thread immer den aktuellen Wert der Variable liest.
-Der Compiler führt ggf. Optimierungen vor, und Variablen werden aus dem Cache gelesen.
-Ein Thread $t_3$ schreibt die Daten, andere Threads $t_1, t_2$ greifen aber auf diese Daten über nicht synchronisierte Methoden zu.
-Die Verwendung von \code{volatile} führt dazu, das Zugriff auf die Daten immer über den Hauptspeicher erfolgt, und somit immer der aktuelle Wert gelesen wird.
+} kann verwendet werden, um sicherzustellen, dass ein Thread immer den aktuellen Wert der Variable liest.\\
+Der Compiler nimmt ggf. Optimierungen vor, und Variablen werden aus dem Cache gelesen.\\
+Ein Thread $t_3$ schreibt die Daten, andere Threads $t_1, t_2$ greifen aber auf diese Daten über nicht-synchronisierte Methoden zu.\\
+Die Verwendung von \code{volatile} führt dazu, das Zugriff auf die Daten immer über den Hauptspeicher erfolgt, und somit immer der aktuelle Wert gelesen wird.\\
 
-$\rightarrow$ für Variablen, die in \code{synchronized} Blöcken/Methoden stehen, geschieht dies automatische.
+$\rightarrow$ für Variablen, die in \code{synchronized} Blöcken/Methoden stehen, geschieht dies automatisch.
 
 \subsection{Ende von Java-Threads}
 
 Ein Thread ist \textbf{beendet}, wenn seine \code{run}- bzw. die \code{main}-Methode des Ursprungs-Threads beendet ist (vgl.~\cite[33]{Oec22}).\\
 
+\noindent
 Die \code{+start():void}-Methode eines Thread-Objekts kann maximal einmal aufgerufen werden (ansonsten kommt es zu einer \code{java.lang.IllegalThreadStateException}) - zu jedem Thread-Objekt gibt es also maximal einen Thread.
 
-Mittels
+\noindent
+Mit der Methode
 
 \begin{center}
-    \code{+join(millis: int = 0)} \code{throws java.lang.InterruptedException}
+    \code{+join(millis: int)} (\code{throws java.lang.InterruptedException})
 \end{center}
-kann auf das Ende eines Threads gewartet werden.
+
+der Klasse \code{Thread} kann auf das Ende eines Threads gewartet werden.\\
 \code{millis} ist optional und gibt ein Timeout an, es wird dann höchstens so lange auf das Ende eines Threads gewartet.\\
-Nachdem \code{join} beendet ist, läuft die implementierende Methode weiter.\\
+Nachdem \code{join()} beendet ist, läuft die implementierende Methode weiter.\\
 
-\code{start()} und \code{join()} haben einen \code{volatile}-Effekt: Daten, die von Thread $t_a$ geändert wurden, sind für Thread $t_b$ aktuell, wenn $t_b$ mittels \code{join} auf das Ende von $t_a$ gewartet hat.\\
-Für \code{start} gilt, wenn $t_a$ den Thread $t_b$ startet, liest $t_b$ die von $t_a$ geänderten Daten aktuell (vgl.~\cite[37]{Oec22}).\\
+\noindent
+\code{start()} und \code{join()} haben einen \code{volatile}-Effekt: Daten, die von Thread $t_a$ geändert wurden, sind für Thread $t_b$ aktuell, wenn $t_b$ mittels \code{join()} auf das Ende von $t_a$ gewartet hat.\\
+Für \code{start()} gilt, wenn $t_a$ den Thread $t_b$ startet, liest $t_b$ die von $t_a$ geänderten Daten aktuell (vgl.~\cite[37]{Oec22}).\\
 
+\noindent
 Die Anzahl der zur Verfügung stehenden Prozessoren kann über
 
-\begin{minted}[mathescape,
-    linenos,
-    numbersep=5pt,
-    gobble=2,
-    frame=lines,
-    framesep=2mm]{java}
-    java.lang.Runtime.getRuntime().availableProcessors();
-\end{minted}\\
+\begin{center}
+    \staticcode{java.lang.Runtime.getRuntime().availableProcessors()}
+\end{center}
 
 ermittel werden.\\
 
-Um einen Thread zu unterbrechen, wurde die Methode \code{stop} genutzt, die aber mittlerweile \textbf{depcrecated} ist\footnote{
+\noindent
+Um einen Thread zu unterbrechen, wurde früher die Methode \code{stop()} genutzt, die aber mittlerweile \textbf{depcrecated} ist\footnote{
 Grund: Ist der Thread gerade in einem \textit{synchronized}-Block und der Thread wird gestoppt, ist es möglich, dass das Objekt in einen inkonsistenten Zustand überführt wird (vgl.~\cite[40]{Oec22}).
 }.\\
 Stattdessen sollte \code{+isInterrupted():boolean} verwendet werden um zu überprüfen, ob ein Thread unterbrochen wurde - \code{isInterrupted()} ändert dabei nicht den \textbf{interrupted status} des betreffenden Objektes, im Gegensatz zu
 \begin{center}
-\staticcode{+interrupted():boolean throws InterruptedException}
+\staticcode{+interrupted():boolean} (\code{throws InterruptedException})
 \end{center}
-welche das \textit{Interrupted-Flag} zurücksetzt.\\
+welche das \textit{Interrupt-Flag} zurücksetzt.\\
 
-Wird ein Thread unterbrochen, und er befindet sich bspw. gerade über \code{sleep} / \code{join} / \code{wait} in einem bestimmten Zustand, werfen diese Methoden eine \code{InterruptedException}, auf die man entsprechend reagieren sollte.
+\noindent
+Wird ein Thread unterbrochen, und er befindet sich bspw. gerade über \code{sleep()} / \code{join()} / \code{wait()} in einem bestimmten Zustand, werfen diese Methoden eine\\
+\code{InterruptedException}, auf die man entsprechend reagieren sollte.
 
-\newpage
-
-Im folgenden Beispiel wird die \code{InterruptedException} innerhalb der \code{while}-Schleife gefangen. Danach wird
-das interne flag wieder zurückgesetzt, die Schleife läuft weiter\footnote{
+\noindent
+Im folgenden Beispiel wird die \code{InterruptedException} innerhalb der \code{while}-Schleife gefangen.
+Danach wird das interne flag wieder zurückgesetzt, die Schleife läuft weiter\footnote{
     Class Thread - sleep(): \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Thread.html#sleep(long)}
 }.
 \begin{minted}[mathescape,
@@ -246,6 +252,7 @@ das interne flag wieder zurückgesetzt, die Schleife läuft weiter\footnote{
     }
 \end{minted}\\
 
+\noindent
 Die alternative (richtige) Implementierung berücksichtigt sowohl das \textit{Interrupt-Flag} als auch eine \code{InterruptedException} - in beiden Fällen wird die \code{while}-Schleife unterbrochen:
 
 \begin{minted}[mathescape,
@@ -265,8 +272,9 @@ Die alternative (richtige) Implementierung berücksichtigt sowohl das \textit{In
     }
 \end{minted}\\
 
-Es ist zu berücksichtigen, dass \code{interrupt()} \ul{kein sofortiges Ende} des Ziel-Threads bedingt: Der Thread läuft so lange weiter, wie es seine \code{run()}-Methode bedingt (vgl.~\cite[44 f.]{Oec22}):
-
+Es ist zu berücksichtigen, dass \code{interrupt()} \ul{kein sofortiges Ende} des Ziel-Threads bedingt: Der Thread läuft so lange weiter, wie es seine \code{run()}-Methode bedingt (vgl.~\cite[44 f.]{Oec22}).\\
+In dem folgenden Code-Beispiel wird in der \code{while}-Schleife \code{isAlive()} als Abbruchbedingung verwendet, was \textbf{aktives Warten} darstellt.
+Dies ist in dem Beispiel nötig, um an die Zählvariable zu kommen.
 
 \begin{minted}[mathescape,
     linenos,
@@ -304,17 +312,14 @@ Es ist zu berücksichtigen, dass \code{interrupt()} \ul{kein sofortiges Ende} de
     );
 \end{minted}\\
 
-In dem Code-Beispiel wird in der \code{while}-Schleife \code{isAlive()} als Abbruchbedingung verwendet, was \textbf{aktives Warten} darstellt.
-Dies ist in dem Beispiel nötig, um an die Zählvariable zu kommen.
-Um auf das Ende eines Threads zu warten, verwendet man \code{join}.
 
 \subsection*{Befristetes Warten}
 
 Befristetes Warten kann verwendet werden, um einen Thread nach einer gewissen Zeitdauer zu beenden.
-Hierzu wird \code{join(milis:long):void} genutzt.\\
+Hierzu wird \code{+join(milis:long):void} genutzt.\\
 Im folgenden Beispiel wird $10$ Sekunden auf das Ende eines Threads gewartet.
 Läuft der Thread danach noch, wird er mittels \code{interrupt()} unterbrochen.
-Da der Thread in seiner  \code{run}-Methode danach noch weiter laufen kann (s. o.), muss erneut mittels \code{join()} auf
+Da der Thread in seiner  \code{run()}-Methode danach noch weiter laufen kann (s. o.), muss erneut mittels \code{join()} auf
 das Ende der Ausführung gewartet werden.
 
 \begin{minted}[mathescape,
@@ -329,40 +334,40 @@ das Ende der Ausführung gewartet werden.
 \end{minted}\\
 
 
-\subsection{wait und notify}
+\subsection{wait und notify()}
 
 Werden Objekte von mehreren Threads genutzt und dabei verändert, helfen \code{synchronized}-Methoden dabei, für ein Objekt einen konsistenten Zustand zu gewährleisten.\\
 
 \noindent
 \textbf{Aktives Warten} wurde im vorhergehenden Abschnitt bereits kurz erwähnt.
-\code{wait} und \code{notify} ermöglichen Implementierungen \ul{ohne} auf \textit{aktives warten} zurückgreifen zu müssen: Die Methoden werden auf ein Objekt angewendet, das der aufrufende Thread zum Zeitpunkt des Aufrufs durch \code{synchronized} gesperrt hat.
+\code{wait()} und \code{notify()} ermöglichen Implementierungen \ul{ohne} auf \textit{aktives warten} zurückgreifen zu müssen: Die Methoden werden auf ein Objekt angewendet, das der aufrufende Thread zum Zeitpunkt des Aufrufs durch \code{synchronized} gesperrt hat.
 
-\begin{tcolorbox}
-    Der Thread, der \code{wait} / \code{notify} auf ein Objekt aufruft, muss auch die Sperre des Objektes halten, ansonsten wird eine \code{java.lang.IllegalMonitorStateException} geworfen\footnote{
+\begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
+    Der Thread, der \code{wait()} / \code{notify()} auf ein Objekt aufruft, muss auch die Sperre des Objektes halten, ansonsten wird eine \code{java.lang.IllegalMonitorStateException} geworfen\footnote{
     class IllegalMonitorStateException - \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/IllegalMonitorStateException.html} - abgerufen 25.01.2024
     } (``...current Thread is not owner.``).
 \end{tcolorbox}\\
 
 \begin{center}
-\code{+java.lang.Object::wait():void throws InterruptedException}
+\code{+wait():void} (\code{throws InterruptedException})
 \end{center}
 \noindent
-blockiert den aufrufenden Thread und fügt ihn in die Warteschlange des Objektes ein, das von dem Thread gesperrt wurde.\\
+der Klasse \code{java.lang.Object} blockiert den aufrufenden Thread und fügt ihn in die Warteschlange des Objektes ein, das von dem Thread gesperrt wurde.\\
 \ul{Danach wird die Sperre des Objektes aufgehoben}.
 
 \begin{center}
-    \code{+java.lang.Object::notify():void throws InterruptedException}
+    \code{+notify():void} (\code{throws InterruptedException})
 \end{center}
 \noindent
-holt einen wartenden Thread aus der Warteschlange.\\
+der Klasse \code{java.lang.Object} holt einen wartenden Thread aus der Warteschlange.\\
 Die Sperre des Objektes wird aufgehoben, sobald die \code{synchronized}-Methode, in der \code{notify()} aufgerufen wurde, beendet ist (durch eine Rückgabe).\\
 Der Thread, der aus der Warteschlange kommt, wird an der Stelle weiter ausgeführt, an der er in die Warteschlange eingetreten ist: Dafür sperrt er aber zunächst erneut das Objekt!
 
 \begin{center}
-    \code{+java.lang.Object::notifyAll():void throws InterruptedException}
+    \code{+notifyAll():void throws InterruptedException}
 \end{center}
 \noindent
-weckt \ul{alle} Threads auf, die sich in der Warteschlange befinden, und die erneut die Wartebedingungen überprüfen können.\\
+der Klasse \code{java.lang.Object} weckt \ul{alle} Threads auf, die sich in der Warteschlange befinden, und die erneut die Wartebedingungen überprüfen können.\\
 Die Reihenfolge, in der wartende Threads mittels \code{notify()}/\code{notifyAll()} aus der Warteschlange entfernt werden, ist nicht festgelegt.
 
 \newpage
@@ -414,36 +419,38 @@ Im folgenden Beispiel wird ein Thread in die Warteschlange des \code{Waiter}-Obj
     }
 \end{minted}\\
 
-\code{wait} besitzt überladene Varianten, mit denen man einen Zeitraum angeben kann in dem gewartet wird - nach der angegebenen Zeitspanne wird der Thread aus der Warteschlange geholt.
-Wie bei join erwartet \code{wait} hier einen Wert in \textit{millisekunden}. \code{wait(0)} entspricht \code{wait()}.
+\newpage
+\noindent
+\code{wait()} besitzt überladene Varianten, mit denen man einen Zeitraum angeben kann in dem gewartet wird - nach der angegebenen Zeitspanne wird der Thread aus der Warteschlange geholt.
+Wie bei join erwartet \code{wait()} hier einen Wert in \textit{millisekunden}. \code{wait(0)} entspricht \code{wait()}.
 
 
-\begin{tcolorbox}
+\begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
     Es ist nicht garantiert, dass ein geweckter Thread die nächste Sperre setzt - das kann durch jeden anderen Thread passieren, der Zugriff auf die Methode anmeldet (vgl.~\cite[61]{Oec22}).
 \end{tcolorbox}\\
 
-\subsection{notifyAll}
+\subsection{notifyAll()}
 
-Erst wenn in einer \code{synchronized}-Methode eine Rückgabe erfolgt, wird die Sperre auf das Objekt aufgehoben (es sei denn, die Sperre wurde bspw. durch ein \code{wait} vorher aufgehoben.)
+Erst wenn in einer \code{synchronized}-Methode eine Rückgabe erfolgt, wird die Sperre auf das Objekt aufgehoben (es sei denn, die Sperre wurde bspw. durch ein \code{wait()} vorher aufgehoben.)
 
 \noindent
 Mit der Methode
 
 \begin{center}
-    \code{+java.lang.Object::notifyAll():void throws InterruptedException}
+    \code{+notifyAll():void} (\code{throws InterruptedException})
 \end{center}
 
 \noindent
-werden \ul{alle} in der Warteschlange eines Objektes befindlichen Threads geweckt.
+der Klasse \code{java.lang.Object} werden \ul{alle} in der Warteschlange eines Objektes befindlichen Threads geweckt.
 \noindent
-Der aufrufende Thread muss Besitzer der Sperre sein, ansonsten wird eine \code{IllegalMonitorStateException} geworfen.\\
+Der aufrufende Thread muss Besitzer der Sperre sein, ansonsten wird eine \code{IllegalMonitorStateException} geworfen.
 
-\begin{tcolorbox}
+\begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
 Wenn in unterschiedlichen Methoden \code{wait()} genutzt wurde, um Threads in die Warteschlange einzufügen, dann bewirkt ein Aufruf von \code{notifyAll()} auch, dass alle diese wartenden Threads geweckt werden und ihre Wartebedingungen überprüfen.
 Es ist also wichtig, dass die Wartebedingungen sinnvoll implementiert sind, ansonsten kann es zu unerwünschten Seiteneffekten kommen\footnote {
     in \cite[71 ff.]{Oec22} anhand des Erzeuger-Verbraucher-Problems beschrieben.
 }.\\
-Generell sollte \code{notifyAll} dann verwendet werden, wenn sich Threads mit unterschiedlichen Wartebedingungen in einer Warteschlange befinden (also wenn es \textbf{mehrere Wartebedingungen} gibt), oder wenn sich der Zustand des Objektes so ändert, dass mehrere Threads ihre \textit{while-wait-Schleife} verlassen können (vgl.~\cite[73]{Oec22}).
+Generell sollte \code{notifyAll()} dann verwendet werden, wenn sich Threads mit unterschiedlichen Wartebedingungen in einer Warteschlange befinden (also wenn es \textbf{mehrere Wartebedingungen} gibt), oder wenn sich der Zustand des Objektes so ändert, dass mehrere Threads ihre \textit{while-wait-Schleife} verlassen können (vgl.~\cite[73]{Oec22}).
 \end{tcolorbox}
 
 
@@ -451,7 +458,7 @@ Generell sollte \code{notifyAll} dann verwendet werden, wenn sich Threads mit un
 Je nach Anzahl der wartenden Threads is \code{notifyAll()} nicht sehr performant, insb. wenn die Überprüfung der Wartebedingung komplex ist.
 
 \noindent
-Im folgenden Beispiel werden 3 Threads in die Warteschlange eines Objektes eingereiht. \code{notifyAll()} weckt alle diese Threads - das Verhalten danach ist das gleiche, als würde keine Warteschlange genutzt: Die Threads reihen sich ein und bekommen Zugriff auf das Objekt, sobald eine Sperre aufgehoben wird:
+Im folgenden Beispiel werden 3 Threads in die Warteschlange eines Objektes eingereiht. \code{notifyAll()} weckt alle diese Threads - das Verhalten danach ist das gleiche, als würde keine Warteschlange genutzt - die Threads reihen sich ein und bekommen Zugriff auf das Objekt, sobald eine Sperre aufgehoben wird:
 \blockquote[{java.lang.Object - notifyAll(): \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#notifyAll()} - abgerufen 26.01.2024}]{
     Wakes up all threads that are waiting on this object's monitor.\\ A thread waits on an object's monitor by calling one of the wait methods.
     The awakened threads will not be able to proceed until the current thread relinquishes the lock on this object. The awakened threads will compete in the usual manner with any other threads that might be actively competing to synchronize on this object; for example, the awakened threads enjoy no reliable privilege or disadvantage in being the next thread to lock this object.
@@ -462,6 +469,7 @@ Im folgenden Beispiel werden 3 Threads in die Warteschlange eines Objektes einge
     numbersep=5pt,
     gobble=2,
     frame=lines,
+    fontsize=\small,
     framesep=2mm]{java}
     class Waiter {
         public synchronized void enter() {
@@ -496,7 +504,6 @@ Im folgenden Beispiel werden 3 Threads in die Warteschlange eines Objektes einge
         // notifyAll() - Threads werden geweckt und führen ihre Aufgaben durch
         Thread leaveThread = new Thread(waiter::leave);
         leaveThread.start();
-
     }
 \end{minted}\\
 
@@ -507,16 +514,17 @@ Es existiert ein Thread\footnote{
 der sog. \textbf{Reference Handler} mit der höchsten Thread-Priorität von $10$.
 } in Java, der nach nicht mehr referenzierten Objekten sucht und den belegten Speicherplatz solcher Objekte wieder dem Freispeicher hinzufügt, als Teil der \textbf{Garbage Collection} in Java (vgl.~\cite[88]{Oec22}).\\
 \noindent
-Dieser Thread läuft als \code{Hintergrund-Thread} bzw. \textbf{Daemon Thread}.\\
+Dieser Thread läuft als \texbf{Hintergrund-Thread} bzw. \textbf{Daemon Thread}.
+
+\begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
+Ein Java-Programm ist beendet, wenn alle Threads beendet sind - dazu gehört der \textit{Main}-Thread wie auch alle \textbf{Vordergrund-Threads} (auch: \textbf{User Threads}) - Hintergrund-Threads werden hierbei nicht beachtet.\\
+\end{tcolorbox}
 
 \noindent
-Ein Java-Programm ist beendet, wenn alle Threads beendet sind - dazu gehört der \textit{Main}-Thread wie auch alle \textbf{Vordergrund-Threads} (auch: \code{User Threads}) - Hintergrund-Threads werden hierbei nicht beachtet.\\
+Threads können von dem Entwickler \ul{vor dem Start des Threads} zu \textit{Daemon Threads} gemacht werden (\code{+setDaemon(on: boolean): void}) - ohne expliziten Status hat ein Thread denjenigen Status, wie der Thread, aus dem er erzeugt wird.
 
 \noindent
-Threads können von dem Entwickler \ul{vor dem Start des Threads} zu \textit{Daemon Threads} gemacht werden (\code{+java.lang.Thread::setDaemon(on: boolean): void}) - ohne expliziten Status hat ein Thread denjenigen Status, wie der Thread, aus dem er erzeugt wird.
-
-\noindent
-$\rightarrow$ Der Thread, der die \code{main}-Methode eines Java-Programms ausführt, ist ein Vordergrund-Threads.
+$\rightarrow$ Der Thread, der die \code{main()}-Methode eines Java-Programms ausführt, ist ein Vordergrund-Thread.\\
 Der Status dieses Threads kann nachträglich nicht mehr geändert werden, da er schon läuft, wenn das Programm gestartet ist.\\
 Alle durch ihn erzeugten Threads sind implizit auch Vordergrund-Threads.
 
