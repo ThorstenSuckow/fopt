@@ -13,10 +13,10 @@ Folgende Bedingungen müssen erfüllt sein, damit es zu einer \textbf{Verklemmun
     \item Threads besitzen bereits Betriebsmittel und fordern weitere an.
     \item Folgende Bedingung gilt genau dann, wenn eine Verklemmung konkret vorliegt:
     \begin{itemize}
-        \item Es gibt eine zyklische Kette von Threads, von denen jeder mindestens ein Betriebsmittel besitzt, das der nächste Thread in der Kette benötigt (s. Abbildung~\ref{fig:cyclic}).
+        \item[] Es gibt eine zyklische Kette von Threads, von denen jeder mindestens ein Betriebsmittel besitzt, das der nächste Thread in der Kette benötigt (s. Abbildung~\ref{fig:cyclic}).
          \begin{figure}
             \centering
-            \includegraphics[scale=0.25]{chapters/fopt2/img/cyclic}
+            \includegraphics[scale=0.5]{chapters/fopt2/img/cyclic}
             \caption{Betriebsmittelgraph. Quelle: in Anlehnung an \cite[192, Bild 3.9]{Oec22}}
             \label{fig:cyclic}
         \end{figure}
@@ -53,7 +53,7 @@ Realisierung mit Hilfe eines \textbf{ResourceManagers}, der alle Betriebsmittel 
 Threads fragen ResourceManager an, der die Betriebsmittel dann zuweist.\\
 
 \noindent
-Anfordern von Betriebsmittel auf einen Schlag (s. \textbf{Semaphorgruppe}), damit es zu keener Verklemmung kommen kann (s. \textbf{Philosophenproblem}).\\
+Anfordern von Betriebsmittel auf einen Schlag (s. \textbf{Semaphorgruppe}), damit es zu keiner Verklemmung kommen kann (s. \textbf{Philosophenproblem}).\\
 
 \noindent
 Betriebsmittel gemäß einer vorgegebenen Reihenfolge anfordern, damit keine Verklemmungen entstehen können.\\
@@ -76,4 +76,4 @@ Eine \textbf{Verklemmung} ist eingetreten, wenn es einen Zyklus von Threads gibt
 Voraussetzung für Verklemmungen sind, dass Betriebsmittel nur unter gegenseitigem Ausschluss nutzbar sind, einem Thread nicht entzogen werden können, und dass ein Thread bereits Betriebsmittel hält und weitere anfordert.\\
 
 \noindent
-Zur Vermeidung von Verklemmungen bieten sich verschiedene Strategien an, {bspw.} Anfordern der Betriebsmittel auf einen Schlag, in deiner bestimmten Reihenfolge oder Durchführung einer Bedarfsanalyse vor der Zuteilung, {bspw.} mithilfe des Bankier-Algorithms.
+Zur Vermeidung von Verklemmungen bieten sich verschiedene Strategien an, {bspw.} Anfordern der Betriebsmittel auf einen Schlag, in einer bestimmten Reihenfolge oder Durchführung einer Bedarfsanalyse vor der Zuteilung, {bspw.} mithilfe des Bankier-Algorithms.

@@ -34,7 +34,14 @@ Beim Empfangen wird nur so lange gewartet, bis der Puffer nicht mehr leer ist:
  Das \textbf{Philosophen-Problem}\footnote{
 Wikipedia - Dining Philosophers Problem: \url{https://en.wikipedia.org/wiki/Dining_philosophers_problem} - abgerufen 27.01.2024
 }
-veranschaulicht die Entstehung von Verklemmungen: An einem runden Tisch sitzen 5 Philosophen ($P_1,...,P_5$), die abwechselnd mit Denken und Essen beschäftigt sind.\\
+veranschaulicht die Entstehung von Verklemmungen: An einem runden Tisch sitzen 5 Philosophen ($P_1,...,P_5$), die abwechselnd mit Denken und Essen beschäftigt sind (s. Abbildung~\ref{fig:philosopher}).\\
+\noindent
+ Zum Essen benötigen die Philosophen Gabeln, und zwar eine in jeder Hand.
+ Die Gabeln liegen genau zwischen den Philosophen.
+ Angenommen, alle Philosophen sind mit Denken beschäftigt.
+ Wenn jetzt ein Philosoph $P_1$ davon zum Essen übergeht, greift er links eine Gabel, und genau in dem Moment wollen die anderen Philosophen auch zum Essen übergehen: Alle nehmen ihre linken Gabeln.
+$P_1$ möchte nun die rechte Gabel nehmen, die aber als linke Gabel von $P_5$ von diesem gehalten wird - also muss $P_1$ warten, bis $P_5$ seine Gabel freigibt - der gleichzeitig aber nicht essen kann, weil er dazu die Gabel benötigt, die $P_4$ hält.
+Da alle Philosophen auf eine Freigabe der Gabeln warten, kommt keiner dazu, zu essen.
 
 \begin{figure}
     \centering
@@ -42,14 +49,6 @@ veranschaulicht die Entstehung von Verklemmungen: An einem runden Tisch sitzen 5
     \caption{ Eine Illustration des Philosophen-Problems: Ein Philosoph benötigt jeweils die Gabel links und rechts von ihm zum Essen (Quelle: eigene)}
     \label{fig:philosopher}
 \end{figure}
-
-
- Zum Essen benötigen die Philosophen Gabeln, und zwar eine in jeder Hand.
- Die Gabeln liegen genau zwischen den Philosophen.
- Angenommen, alle Philosophen sind mit Denken beschäftigt.
- Wenn jetzt ein Philosoph $P_1$ davon zum Essen übergeht, greift er links eine Gabel, und genau in dem Moment wollen die anderen Philosophen auch zum Essen übergehen: Alle nehmen ihre linken Gabeln.
-$P_1$ möchte nun die rechte Gabel nehmen, die aber als linke Gabel von $P_5$ von diesem gehalten wird - also muss $P_1$ warten, bis $P_5$ seine Gabel freigibt - der gleichzeitig aber nicht essen kann, weil er dazu die Gabel benötigt, die $P_4$ hält.
-Da alle Philosophen auf eine Freigabe der Gabeln warten, kommt keiner dazu, zu essen.\\
 
 \noindent
 Diese Verklemmungssituation läßt sich bspw. durch Semaphorgruppen lösen, wobei ein Philosoph jeweils zwei Gabeln \textbf{auf einen Schlag} anfordert, oder auch durch $n$ Semaphore, wobei jeder Semaphor eine Gabel repräsentiert, und ein zusätzlicher Semaphor als ``Essenserlaubnis``, die den ``Gabel-Semaphoren`` vorgeschaltet ist, wie im folgenden Beispiel:
@@ -86,13 +85,14 @@ Diese Verklemmungssituation läßt sich bspw. durch Semaphorgruppen lösen, wobe
 Wenn alle Zugriffe \textbf{synchron} sein müssen, würde das Objekt beim Lesen als auch beim Schreiben blockiert - das schränkt die Parallelität ein, vor allem, wenn der Lesevorgang länger dauert und das Objekt somit nicht aktualisiert werden kann.\\
 
 \noindent
-$\rightarrow$ Es muss eine Lösung gefunden werden, so dass mehrere Threads lesen, aber nur ein Thread schreiben kann.
+$\rightarrow$ Es muss eine Lösung gefunden werden, so dass mehrere Threads lesen, aber nur ein Thread schreiben kann.\\
 
+\noindent
 Zur Lösung sind verschiedene Strategien denkbar:
 
 \begin{itemize}
-    \item Bevorzugung der Leser, falls es darauf ankommt, dass die Leser schnell Zugriff auf die Daten erhalten, und die Aktualität der Daten weniger wichtig ist
-    \item Bevorzugung der Schreiber, falls die Aktualität der Daten wichtiger ist
+    \item \textbf{Bevorzugung der Leser}, falls es darauf ankommt, dass die Leser schnell Zugriff auf die Daten erhalten, und die Aktualität der Daten weniger wichtig ist
+    \item \textbf{Bevorzugung der Schreiber}, falls die Aktualität der Daten wichtiger ist
 \end{itemize}\\
 
 \noindent
@@ -106,7 +106,7 @@ Der \textbf{Zustand} eines Objektes wird durch die Werte seiner Attribute beschr
 
 \noindent
 Gewisse Konsistenzbedingungen\footnote{bestimmte Invarianten bzw. Integritätsbedingungen} gelten für manche solcher Attribute immer $\rightarrow$ das Ändern solcher Attribute führt ein Objekt von einen konsistenten Zustand in einen anderen\footnote{
-Konsistenzbedingungen können währen der Überführung eines Objektes in einen anderen Zustand verletzt werden, weshalb man bspw. Zugriffsmodifizierer wie \testit{private} verwendet.
+Konsistenzbedingungen können währen der Überführung eines Objektes in einen anderen Zustand verletzt werden, weshalb man bspw. Zugriffsmodifizierer wie \textit{private} verwendet.
 }.\\
 
 \noindent
@@ -116,7 +116,7 @@ Wenn mehrere Threads schreibend auf ein Objekt zugreifen, muss die durchgehende 
 In einigen Fällen ist die Änderung des Zustands an eine bestimmte Bedingung geknüpft, die als \textbf{Wartebedingung} überprüft werden kann - diese Bedingung sollte in einer \code{while}-Schleife als Ausdruck verwendet werden, damit die Bedingung nach Freigabe erneut überprüft werden kann (sie kann zwischenzeitlich wieder geändert worden sein).\\
 
 \noindent
-Wenn nach einer Zustandsänderung wartende Threads weiterlaufen können, sollten diese im Anschluss mittels \code{notify()}/\code{notifyAll} wieder geweckt werden - je nach Implementierung unterscheidet sich das aber, bspw. wenn \textbf{Additive Semaphore} genutzt werden: Die Zustandsänderung des Zählers bewirkt nicht gleich für alle Threads ein weiterlaufen.\\
+Wenn nach einer Zustandsänderung wartende Threads weiterlaufen können, sollten diese im Anschluss mittels \code{notify()}/\code{notifyAll()} wieder geweckt werden - je nach Implementierung unterscheidet sich das aber, bspw. wenn \textbf{Additive Semaphore} genutzt werden: Die Zustandsänderung des Zählers bewirkt nicht gleich für alle Threads ein weiterlaufen.\\
 
 \noindent
 Komplexe Wartebedingungen implementiert man in einer eigenen Methode.\\
@@ -131,13 +131,14 @@ Exceptions sollten nicht zu einem inkonsistenten Zustand führen. Hier sollte \c
 Es ist darauf zu achten, dass nach der Initialisierung und bei jeder Freigabe einer Sperre der Objektzustand konsistent ist, denn dann kann man davon ausgehen, dass der Zustand auch bei jedem Setzen einer Sperre konsistent ist.
 }
 
-Weiter stellt \cite{Oec22} 6 Schablonen vor, die für verschiedene Kategorien von \code{synchronized}-Methoden verwendet werden können:
+\noindent
+Weiter stellt \cite[138 ff.]{Oec22} 6 Schablonen vor, die für verschiedene Kategorien von \code{synchronized}-Methoden verwendet werden können:
 
 \begin{itemize}
-    \item lesende Methoden ohne \code{wait}
-    \item lesende Methoden mit \code{wait}
-    \item schreibende Methoden ohne \code{wait} und ohne \code{notify}/\code{notifyAll}
-    \item schreibende Methoden mit \code{wait}, aber ohne \code{notify}/\code{notifyAll}
-    \item schreibende Methoden ohne \code{wait}, aber mit \code{notify}/\code{notifyAll}
-    \item schreibende Methoden mit \code{wait} und mit \code{notify}/\code{notifyAll}
+    \item lesende Methoden ohne \code{wait()}
+    \item lesende Methoden mit \code{wait()}
+    \item schreibende Methoden ohne \code{wait()} und ohne \code{notify()}/\code{notifyAll()}
+    \item schreibende Methoden mit \code{wait()}, aber ohne \code{notify()}/\code{notifyAll()}
+    \item schreibende Methoden ohne \code{wait()}, aber mit \code{notify()}/\code{notifyAll()}
+    \item schreibende Methoden mit \code{wait()} und mit \code{notify()}/\code{notifyAll()}
 \end{itemize}
