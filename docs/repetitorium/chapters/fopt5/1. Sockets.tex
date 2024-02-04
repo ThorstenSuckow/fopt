@@ -1,8 +1,8 @@
 \section{Socket-Schnittstelle}
 
-Die \textbf{Socket-Schnittstelle} ermöglicht die Kommunikation von verteilten Client-Server-Anwendungen untereinander.\\
+Die \textbf{Socket-Schnittstelle} ermöglicht die Kommunikation von verteilten Client-Server-Anwendungen untereinander.
 
-\begin{tcolorbox}
+\begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
 Die Socket-Schnittstelle stellt eine Schnittstelle zwischen \textbf{Schicht 4} (Transportschicht) und \textbf{Schicht 5} (Anwendungsschicht) dar.
 \end{tcolorbox}
 
@@ -18,22 +18,24 @@ Der Socket empfängt nur Nachrichten, die an diesen Port adressiert wurden.\\
 Bei \textbf{Client/Server-Anwendungen} geht die Initiative vom Client aus, der eine Anfrage an einen Server schickt.\\
 Der Server antwortet an die in der Nachricht enthaltenen IP-Adresse und Quellportnummer.
 
-\begin{tcolorbox}
+\begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
 I.d.R verwendet ein Client eine beliebige freie Portnummer.\\
 
 \noindent
 Dienste laufen auf Servern auf wohlbekannten Portnummern, bspw. ``https`` auf Port $443$\footnote{
 s. a. ``Hypertext Transfer Protocol Secure``: \url{https://de.wikipedia.org/wiki/Hypertext_Transfer_Protocol_Secure} - abgerufen 30.01.2024
 }.\\
-Ein Server, der unter einer bestimmten Portnummer laufen soll, kann nur gestartet werden, wenn die Postnummer nicht schon belegt ist.
+Ein Server, der unter einer bestimmten Portnummer laufen soll, kann nur gestartet werden, wenn die Portnummer nicht schon belegt ist.
 \end{tcolorbox}\\
 
+\newpage
+\noindent
 Beispiel für eine Programmstruktur für eine Kommunikation zwischen UDP-Client und -Server:
 \begin{minted}[mathescape,
-    linenos,
+
     numbersep=5pt,
     gobble=2,
-    frame=lines,
+    frame=none,
     framesep=2mm]{java}
     // UDP Client
     c = ErzeugeUDPSocket();
@@ -51,10 +53,9 @@ Beispiel für eine Programmstruktur für eine Kommunikation zwischen UDP-Client 
         führe Aktion aus;
         schicke über s Antwort an die Adresse/Portnummer der Nachricht;
     }
-\end{minted}\\
+\end{minted}
 
-
-\begin{tcolorbox}
+\begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
     Die Portnummern für \textbf{TCP} und \textbf{UDP} existieren unabhängig voneinander: Ist ein Port $n$ für TCP reserviert, kann die gleiche Portnummer trotzdem für UDP verwendet werden.
 \end{tcolorbox}
 
@@ -75,12 +76,13 @@ Die Besonderheit bei TCP ist, dass der Server auf einen Port auf eine Anfrage (�
 \noindent
 $\rightarrow$ für einen Port kann es somit mehrere Sockets geben.\\
 
+
+\noindent
 Beispiel für eine Programmstruktur für eine Kommunikation zwischen UDP-Client und -Server:
 \begin{minted}[mathescape,
-    linenos,
     numbersep=5pt,
     gobble=2,
-    frame=lines,
+    frame=none,
     framesep=2mm]{java}
     // TCP Client
     c = ErzeugeTCPSocket();
@@ -156,11 +158,12 @@ Clients verwenden i.d.R. den parameterlosen Konstruktor, ein freier Port wird da
 \begin{minted}[mathescape,
     numbersep=5pt,
     gobble=2,
-    frame=lines,
+    frame=none,
     framesep=2mm]{java}
     public class DatagramPacket {
         public DatagramPacket(byte[] buf, int length) {...}
-        public DatagramPacket(byte[] buf, int length, InetAddress address, int port) {...}
+        public DatagramPacket(
+            byte[] buf, int length, InetAddress address, int port) {...}
         ...
     }
 
@@ -174,16 +177,16 @@ Clients verwenden i.d.R. den parameterlosen Konstruktor, ein freier Port wird da
 \end{minted}\\
 
 \noindent
-Die Methode \code{receive} eines Sockets ist \texbf{blocking}, es wird so lange gewartet, bis eine Nachricht eintrifft, oder ein durch \code{setSoTimeout(int timeout)} angegebener Timeout eintritt.\\
+Die Methode \code{receive()} eines Sockets ist \texbf{blocking}, es wird so lange gewartet, bis eine Nachricht eintrifft, oder ein durch \code{setSoTimeout(int timeout)} angegebener Timeout eintritt.\\
 
 \noindent
 Mit \textbf{try-with-resources}\footnote{
     ``The try-with-resources Statement``: \url{https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html} - abgerufen 31.01.2024
 } kann ein Socket automatisch geschlossen werden.
 
-\begin{tcolorbox}
-Ein Objekt, dessen Klasse \textit{AutoCloseable} implementiert, kann als \textit{Resource} für das \textit{try-with-resource}-Statement genutzt werden.
-Das schliesst auch Objekte ein, deren Klasse \textit{Closeable} implementiert, da \textit{Closeable} von \textit{AutoCloseable} abgeleitet ist.\\
+\begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
+Ein Objekt, dessen Klasse \code{AutoCloseable} implementiert, kann als \textit{Resource} für das \textit{try-with-resource}-Statement genutzt werden.
+Das schliesst auch Objekte ein, deren Klasse \code{Closeable} implementiert, da \code{Closeable} von \code{AutoCloseable} abgeleitet ist.\\
 
 \noindent
 Wenn \code{AutoCloseable}-Objekte weder mit \textbf{try-with-resources} noch mit \code{close} verwendet werden, gibt der Compiler seit Java 7 eine Warnung aus.\\
@@ -194,10 +197,9 @@ Wenn die Konstruktoren der erzeugten Objekte eine Exception werfen, sollte das i
 \end{tcolorbox}
 
 \begin{minted}[mathescape,
-    linenos,
     numbersep=5pt,
     gobble=2,
-    frame=lines,
+    frame=none,
     framesep=2mm]{java}
     try (DatagramSocket updSocket = new DatagramSocket(1234);
      PrintWriter pw = new PrintWriter("foo.txt");) {
@@ -210,9 +212,9 @@ Wenn die Konstruktoren der erzeugten Objekte eine Exception werfen, sollte das i
 \section{Multicast-Kommunikation mit Java-Sockets}
 Mittels der Klasse \code{MulticastSocket} (abgeleitet von \code{DatagramSocket}) kann sich ein Socket mittels der Methode \code{joinGroup()} auf eine \textbf{Multicast-Adresse} aufschalten.\\
 Der Socket erhält so jede Nachricht, die an diese Adresse geschickt wurde.\\
-Mittels \code{leaveGroup} schaltet sich der Socket von dem Nachrichtenempfang wieder ab.\\
+Mittels \code{leaveGroup()} schaltet sich der Socket von dem Nachrichtenempfang wieder ab.
 
-\begin{tcolorbox}
+\begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
 \textbf{IP-Multicast-Adressen} sind spezielle Adressen, mit denen mehr als ein Rechner angesprochen werden kann.\\
 Für \textbf{IPv4} ist hierfür der Bereich $224.0.0.0 - 239.255.255.255$ reserviert\footnote{
 s.a. ``Multicast address``: \url{https://en.wikipedia.org/wiki/Multicast_address} - abgerufen 31.01.2024
@@ -241,20 +243,20 @@ Eine Verbindung wird von \code{accept()} über einen zurückgegebenen \code{Sock
 
 \noindent
 Eine \textbf{TCP}-Verbindung kann als zwei unidirektionale Verbindungen gesehen werden (Eingabe, Ausgabe).\\
-$\rightarrow$ Es gibt deshalb nicht nur die Möglichkeit, mit \code{socket.close()} die Verbindung komplett zu schließen, sondern es gibt darüber hinaus noch die Möglichkeiten, die Eingangs-/Ausgangsverbindungen getrennt voneinander zu schließen:
+$\rightarrow$ Es gibt deshalb nicht nur die Möglichkeit, mit \code{close()} der Klasse \code{java.net.Socket} die Verbindung komplett zu schließen, sondern es gibt darüber hinaus noch die Möglichkeiten, die Eingangs-/Ausgangsverbindungen getrennt voneinander zu schließen:
 
 
 \begin{itemize}
-    \item \code{shutdownInput} $\rightarrow$ weiter senden, nicht mehr empfangen: ``Any data sent to the input stream side of the socket is acknowledged and then silently discarded.``\footnote{``Class Socket``: \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/Socket.html#shutdownInput()} - abgerufen 31.01.2024
+    \item \code{shutdownInput()} $\rightarrow$ weiter senden, nicht mehr empfangen: ``Any data sent to the input stream side of the socket is acknowledged and then silently discarded.``\footnote{``Class Socket``: \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/Socket.html#shutdownInput()} - abgerufen 31.01.2024
     }
-    \item \code{shutdownOutput}  $\rightarrow$ weiter empfangen, nicht mehr senden.\footnote{``If you write to a socket output stream after invoking shutdownOutput() on the socket, the stream will throw an IOException.`` s. \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/Socket.html#shutdownOutput()} - abgerufen 31.01.2024
+    \item \code{shutdownOutput()} $\rightarrow$ weiter empfangen, nicht mehr senden.\footnote{``If you write to a socket output stream after invoking shutdownOutput() on the socket, the stream will throw an IOException.`` s. \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/Socket.html#shutdownOutput()} - abgerufen 31.01.2024
     }
 \end{itemize}
 
 \noindent
 \code{Socket} bietet keine Methoden zum Schreiben/Lesen {bzw.} Senden und Empfangen (vgl.~\cite[282]{Oec22}), stattdessen nutzt man die über \code{getInputStream()} / \code{getOutputStream()} zur Verfügung gestellten \textbf{Byteströme}.
 
-\begin{tcolorbox}
+\begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
     \begin{itemize}
         \item \textbf{InputStream} / \textbf{OutputStream}: byteweise Ein-/Ausgabe
         \item \textbf{Reader} / \textbf{Writer}: zeichenweise Ein-/Ausgabe
@@ -273,10 +275,9 @@ Beispiel für das Senden von Daten über einen Socket mittels eines \code{Buffer
     ``Class BufferedWriter``: \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/BufferedWriter.html} - abgerufen 31.01.2024
 }:
 \begin{minted}[mathescape,
-    linenos,
     numbersep=5pt,
     gobble=2,
-    frame=lines,
+    frame=none,
     framesep=2mm]{java}
     OutputStrean os = socket.getOutputStream();
     OutputStreamWriter ow = new OutputStreamWriter(os);
@@ -291,10 +292,9 @@ Beispiel für das Lesen von Daten über einen Socket mittels eines \code{Buffere
     ``Class BufferedReader``: \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/BufferedReader.html} - abgerufen 31.01.2024
 }:
 \begin{minted}[mathescape,
-    linenos,
     numbersep=5pt,
     gobble=2,
-    frame=lines,
+    frame=none,
     framesep=2mm]{java}
     InputStream is = socket.getInputStream();
     InputStreamReader ir = new InputStreamReader(is);
@@ -304,11 +304,11 @@ Beispiel für das Lesen von Daten über einen Socket mittels eines \code{Buffere
 \end{minted}\\
 
 \noindent
-Das Ende eines Datenstroms wird durch den Rückgabewert \code{null} angezeigt (bei Dateioperationen {bspw.} als Ende der Datei; TCP-Verbindung: Client hat die Verbindung geschlossen usw.).\\
+Das Ende eines Datenstroms wird durch den Rückgabewert \code{null} angezeigt (bei Dateioperationen {bspw.} als Ende der Datei; TCP-Verbindung: Client hat die Verbindung geschlossen usw.).
 
-\begin{tcolorbox}
+\begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
     Das Lesen ist eine blockierende Operation.\\
-    Das Schreiben von Daten mit anschliessendem \code{flush} ist nicht blockierend.
+    Das Schreiben von Daten mit anschliessendem \code{flush()} ist nicht blockierend.
     Sollte der Sender allerdings direkt nach dem Senden der Daten mithilfe einer Leseoperation auf die Antwort des Empfängers warten, ist auch diese Leseoperation blockierend und es kann erst wieder gesendet werden, nachdem der Aufrufer nicht mehr blockiert ist.
 \end{tcolorbox}
 
