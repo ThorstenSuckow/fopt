@@ -136,7 +136,7 @@ s.a. ``An Overview of RMI Applications``: \url{https://docs.oracle.com/javase/tu
     Vor dem Starten des Programms ist darauf zu achten, dass auf dem Server die \textbf{RMI-Registry} gestartet wird - was aber auch aus dem Programm heraus geschehen kann.
 \end{enumerate}
 
-\section{Einführendes RMI-Beispiel}
+\section{Einführendes RMI-Beispiel}\label{sec:rmiintro}
 
 Auch bei RMI-Implementierungen bei denen mehrere Clients gleichzeitig auf eine Objektinstanz zugreifen, ist (ggf. nach Anwendung) \code{synchronized} nötig, um ein Objekt für den gleichzeitigen Zugriff zu sperren.\\
 
@@ -478,3 +478,129 @@ Eine \code{ArrayList} nutzt in ihren Methoden bei Objekten \code{equals} zum Ver
 
 \noindent
 Chatbeispiel: Dem Abmelden von Clients sollte genug Zeit eingeräumt werden - funktioniert das Abmelden nicht richtig, entfernt der Server die fehlerhaften Clients allerdings ohnehin wegen der abgefangenen Exception - s. \cite[345, Listing 6.22]{Oec22}.
+
+
+\section{Transformation lokaler in verteilte Anwendungen}
+
+Um eine lokale Anwendung in eine RMI-Anwendung zu überführen, wird die \textit{passive Klasse} (s. Abschnitt~\ref{subsec:syncsummary}) als Remote-Interface implementiert und von \code{UnicastRemoteObject} abgeleitet.
+Daraufhin können Objekte davon als \textbf{RMI-Objekte} von einem Server in der \textbf{RMI-Registry} registriert werden.\\
+
+\noindent
+Der Server wartet dann passiv auf Aufrufe durch die \textbf{RMI-Clients}, also Objekte \textit{aktiver Klassen}, die über \code{Naming.lookup()} Zugriffe auf die vom Server zur Verfügung gestellten \code{RMI-Objekte} erhalten.
+und von einem Server zur Verfügung gestellt werden.\\
+
+\noindent
+Man muss berücksichtigen, dass bei der Entwicklung von Anwendungen, die mit Sperren arbeiten, die Sperre nicht auf den Objekten auf dem lokalen Rechner gesetzt werden, sondern auf den entfernten Objekten. \\
+Wie in Abschnitt~\ref{sec:rmiintro} festgestellt wurde, sind Methodenaufrufe auf RMI-Objekte \textit{blocking}: Ruft also ein Client-Thread auf einem entfernten Objekt eine Methode auf, die den Aufrufer in eine Warteschlange packt, dann ist der Client ebenso lange blockiert wie das in der Warteschlange befindliche Stellvertreterobjekt.\\
+Ist nun über \begin{center}\code{sun.rmi.transport.tcp.responseTimeout}\end{center} ein Timeout gesetzt für die RMI-Kommunikation, kann es vorkommen, dass aufgrund länger andauernder Prozesse eine \code{java.rmi.RemoteException} geworfen wird:
+
+\blockquote[{``sun.rmi.transport.tcp.responseTimeout``: \url{https://docs.oracle.com/javase/8/docs/technotes/guides/rmi/sunrmiproperties.html} - abgerufen 5.2.2024, Hervorhebungen entfernt}]{
+    The value of this property represents the length of time (in milliseconds) that the client-side Java RMI runtime will use as a socket read timeout on an established JRMP connection when reading response data for a remote method invocation. Therefore, this property can be used to impose a timeout on waiting for the results of remote invocations; if this timeout expires, the associated invocation will fail with a java.rmi.RemoteException. Setting this property should be done with due consideration, however, because it effectively places an upper bound on the allowed duration of any successful outgoing remote invocation. The maximum value is Integer.MAX\_VALUE, and a value of zero indicates an infinite timeout. The default value is zero (no timeout).
+}\\
+
+\noindent
+Das muss auf Client-Seite entsprechend berücksichtigt werden.\\
+Per default ist dieser Timeout-Wert nicht gesetzt (vgl. \cite[359]{Oec22}).
+
+\subsection{Verteilte MVP-Anwendung}
+
+Eine MVP-Anwendung kann ohne weiteres in eine RMI-Anwendung überführt werden.\\
+
+\noindent
+Hierfür ist es wichtig, die Verantwortlichkeiten der einzelnen Bestandteile der Anwendung zu berücksichtigen - i.d.r. ist das \textbf{Model} der Bestandteil, der als entferntes RMI-Objekt über einen Server den Clients der Anwendungen zur Verfügung gestellt wird.\\
+
+Der \textbf{Presenter} enthält eine Referenz auf das Model.
+Gleichzeitig kann das Model mit dem Presenter kommunizieren, damit eine Aktualisierung der Daten in allen angeschlossenen Clients - und damit allen Views - geschehen kann.\\
+
+\noindent
+In dem folgenden Beispiel wird ein einfaches Model implementiert, das in einem Thread jede Sekunde ein \textit{increment} von \textit{value} vornimmt.\\
+Die dem Model übergebenen \code{Presenter}-Objekte werden als Referenz übergeben; Änderungen sind folglich in allen so angeschlossenen Clients sichtbar.\\
+Wird hingegen die \code{PresenterImpl}-Klasse so abgeändert, dass sie \code{Serializable} implementiert und nicht mehr von \code{UnicatsRemoteObject} ableitet\footnote{
+aufgrund der Assoziation zu {\textit{View}} muss auch diese Klasse \textit{Serializable} implementieren, sonst kommt es zu einer {\textit{java.rmi.MarshalException}}
+}, werden Kopien der Presenter-Objekte an das RMI-Objekt übergeben: Wenn die Liste in \code{increment()} durchlaufen wird, finden die Konsolenausgabe auf dem Rechner statt, auf dem der Server läuft - die Clients werden nicht informiert.
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    fontsize=\small,
+    frame=lines,
+    framesep=2mm]{java}
+    public class RmiMvpDemo {
+        interface Presenter extends Remote {
+            void setView(View v) throws RemoteException;
+            void updateView(int value) throws RemoteException;
+        }
+
+        interface Model extends Remote {
+            void increment() throws RemoteException;
+            void addClient(Presenter client) throws RemoteException;
+        }
+        static class PresenterImpl extends UnicastRemoteObject implements Presenter {
+            private View view;
+            public PresenterImpl() throws RemoteException{}
+            public void setView(View v){
+                this.view = v;
+            }
+            public void updateView(int value){
+                this.view.update(value);
+            }
+        }
+        static class ModelImpl extends UnicastRemoteObject implements Model {
+            private List<Presenter> clients = new ArrayList<>();
+            private int value = 0;
+            public ModelImpl() throws RemoteException {
+                Thread t1 = new Thread(()-> {
+                    while (true) {
+                        try {
+                            Thread.sleep(1000);
+                            increment();
+                        } catch (RemoteException | InterruptedException ignored) {
+                        }
+                    }
+                });
+
+                t1.start();
+            }
+            public synchronized void addClient(Presenter c) throws RemoteException {
+                clients.add(c);
+            }
+            public synchronized void increment() throws RemoteException {
+                value++;
+                System.out.println(value);
+                for (Presenter client: clients) {
+                    client.updateView(value);
+                }
+            }
+        }
+        static class View {
+            private final String name;
+            public View(Presenter p, String n) throws RemoteException {
+                this.name = n;
+                p.setView(this);
+            }
+            public void update(int value) {
+                System.out.println("[client:" + name + "] update " + value);
+            }
+            public String toString() {
+                return name;
+            }
+        }
+
+        public static void main(String[] args)
+            throws RemoteException, MalformedURLException, NotBoundException {
+            if (args.length == 0) { // server
+                System.out.println("starting Server...");
+                ModelImpl counterModel = new ModelImpl();
+                Registry r = LocateRegistry.createRegistry(1099);
+                r.rebind("counterModel", counterModel);
+            } else { // client, 1st arg is its displayname
+                System.out.println("starting Client...");
+                Model counterModel = (Model) Naming.lookup("counterModel");
+                PresenterImpl presenter = new PresenterImpl();
+                new View(presenter, args[0]);
+                counterModel.addClient(presenter);
+            }
+        }
+    }
+\end{minted}\\
