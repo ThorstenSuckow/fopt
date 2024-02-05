@@ -486,20 +486,21 @@ Um eine lokale Anwendung in eine RMI-Anwendung zu überführen, wird die \textit
 Daraufhin können Objekte davon als \textbf{RMI-Objekte} von einem Server in der \textbf{RMI-Registry} registriert werden.\\
 
 \noindent
-Der Server wartet dann passiv auf Aufrufe durch die \textbf{RMI-Clients}, also Objekte \textit{aktiver Klassen}, die über \code{Naming.lookup()} Zugriffe auf die vom Server zur Verfügung gestellten \code{RMI-Objekte} erhalten.
-und von einem Server zur Verfügung gestellt werden.\\
+Der Server wartet dann passiv auf Aufrufe durch die \textbf{RMI-Clients}, also Objekte \textit{aktiver Klassen}, die über \code{Naming.lookup()} Zugriffe auf die vom Server zur Verfügung gestellten \code{RMI-Objekte} erhalten.\\
 
 \noindent
-Man muss berücksichtigen, dass bei der Entwicklung von Anwendungen, die mit Sperren arbeiten, die Sperre nicht auf den Objekten auf dem lokalen Rechner gesetzt werden, sondern auf den entfernten Objekten. \\
-Wie in Abschnitt~\ref{sec:rmiintro} festgestellt wurde, sind Methodenaufrufe auf RMI-Objekte \textit{blocking}: Ruft also ein Client-Thread auf einem entfernten Objekt eine Methode auf, die den Aufrufer in eine Warteschlange packt, dann ist der Client ebenso lange blockiert wie das in der Warteschlange befindliche Stellvertreterobjekt.\\
-Ist nun über \begin{center}\code{sun.rmi.transport.tcp.responseTimeout}\end{center} ein Timeout gesetzt für die RMI-Kommunikation, kann es vorkommen, dass aufgrund länger andauernder Prozesse eine \code{java.rmi.RemoteException} geworfen wird:
+Man muss berücksichtigen, dass bei der Entwicklung von RMI-Anwendungen, die mit Sperren arbeiten, die Sperre nicht auf den Objekten auf dem lokalen Rechner gesetzt werden, sondern auf den entfernten Objekten. \\
+Wie in Abschnitt~\ref{sec:rmiintro} festgestellt wurde, sind Methodenaufrufe auf RMI-Objekte \textit{blocking}: Ruft also ein Client-Thread auf einem entfernten Objekt eine Methode auf, die den Aufrufer bspw. in eine Warteschlange einfügt, dann ist der Client ebenso lange blockiert wie das in der Warteschlange befindliche Stellvertreterobjekt\footnote{
+zu ``Stellvertreterobjekte`` s.a. \url{https://openbook.rheinwerk-verlag.de/java8/14_003.html#u14.3.3} - abgerufen 5.2.2024
+}.\\
+Ist nun für die RMI-Kommunikation über \begin{center}\code{sun.rmi.transport.tcp.responseTimeout}\end{center} ein Timeout gesetzt, kann es vorkommen, dass aufgrund länger andauernder Prozesse eine \code{java.rmi.RemoteException} geworfen wird:
 
 \blockquote[{``sun.rmi.transport.tcp.responseTimeout``: \url{https://docs.oracle.com/javase/8/docs/technotes/guides/rmi/sunrmiproperties.html} - abgerufen 5.2.2024, Hervorhebungen entfernt}]{
     The value of this property represents the length of time (in milliseconds) that the client-side Java RMI runtime will use as a socket read timeout on an established JRMP connection when reading response data for a remote method invocation. Therefore, this property can be used to impose a timeout on waiting for the results of remote invocations; if this timeout expires, the associated invocation will fail with a java.rmi.RemoteException. Setting this property should be done with due consideration, however, because it effectively places an upper bound on the allowed duration of any successful outgoing remote invocation. The maximum value is Integer.MAX\_VALUE, and a value of zero indicates an infinite timeout. The default value is zero (no timeout).
 }\\
 
 \noindent
-Das muss auf Client-Seite entsprechend berücksichtigt werden.\\
+Auf CLient-Seite sollte dies entsprechend berücksichtigt werden.\\
 Per default ist dieser Timeout-Wert nicht gesetzt (vgl. \cite[359]{Oec22}).
 
 \subsection{Verteilte MVP-Anwendung}
@@ -507,17 +508,17 @@ Per default ist dieser Timeout-Wert nicht gesetzt (vgl. \cite[359]{Oec22}).
 Eine MVP-Anwendung kann ohne weiteres in eine RMI-Anwendung überführt werden.\\
 
 \noindent
-Hierfür ist es wichtig, die Verantwortlichkeiten der einzelnen Bestandteile der Anwendung zu berücksichtigen - i.d.r. ist das \textbf{Model} der Bestandteil, der als entferntes RMI-Objekt über einen Server den Clients der Anwendungen zur Verfügung gestellt wird.\\
+Hierfür ist es wichtig, die Verantwortlichkeiten der einzelnen Bestandteile der Anwendung auszumachen - i.d.R. ist das \textbf{Model} der Bestandteil, der als entferntes RMI-Objekt über einen Server den Clients der Anwendung zur Verfügung gestellt wird.\\
 
 Der \textbf{Presenter} enthält eine Referenz auf das Model.
-Gleichzeitig kann das Model mit dem Presenter kommunizieren, damit eine Aktualisierung der Daten in allen angeschlossenen Clients - und damit allen Views - geschehen kann.\\
+Gleichzeitig kann das Model mit dem Presenter kommunizieren, damit eine Aktualisierung der Daten in allen angeschlossenen Clients - und damit allen Views - passieren kann.\\
 
 \noindent
 In dem folgenden Beispiel wird ein einfaches Model implementiert, das in einem Thread jede Sekunde ein \textit{increment} von \textit{value} vornimmt.\\
 Die dem Model übergebenen \code{Presenter}-Objekte werden als Referenz übergeben; Änderungen sind folglich in allen so angeschlossenen Clients sichtbar.\\
-Wird hingegen die \code{PresenterImpl}-Klasse so abgeändert, dass sie \code{Serializable} implementiert und nicht mehr von \code{UnicatsRemoteObject} ableitet\footnote{
+Wird hingegen die \code{PresenterImpl}-Klasse so abgeändert, dass sie \code{Serializable} implementiert und nicht mehr von \code{UnicastRemoteObject} ableitet\footnote{
 aufgrund der Assoziation zu {\textit{View}} muss auch diese Klasse \textit{Serializable} implementieren, sonst kommt es zu einer {\textit{java.rmi.MarshalException}}
-}, werden Kopien der Presenter-Objekte an das RMI-Objekt übergeben: Wenn die Liste in \code{increment()} durchlaufen wird, finden die Konsolenausgabe auf dem Rechner statt, auf dem der Server läuft - die Clients werden nicht informiert.
+}, werden Kopien der Presenter-Objekte an das RMI-Objekt übergeben: Wenn die Liste nun in \code{increment()} durchlaufen wird, finden die Konsolenausgabe auf dem Rechner statt, auf dem der Server läuft - die Clients werden nicht informiert.
 
 \begin{minted}[mathescape,
     linenos,
