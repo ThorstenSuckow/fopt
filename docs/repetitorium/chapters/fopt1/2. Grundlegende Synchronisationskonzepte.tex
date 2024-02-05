@@ -528,11 +528,15 @@ $\rightarrow$ Der Thread, der die \code{main()}-Methode eines Java-Programms aus
 Der Status dieses Threads kann nachträglich nicht mehr geändert werden, da er schon läuft, wenn das Programm gestartet ist.\\
 Alle durch ihn erzeugten Threads sind implizit auch Vordergrund-Threads.
 
-\subsection{Zusammenfassung}
+\subsection{Zusammenfassung}\label{subsec:syncsummary}
 
+\begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
 \textbf{Aktive Klassen} sind \textbf{Thread-Klassen} bzw. Klassen, die \code{Runnable} implementieren.\\
 
 \noindent
 \textbf{Passive Klassen} sind Klassen der Objekte, die von mehreren Threads benutzt werden.\\
 
+\noindent
 $\rightarrow$ Synchronisation ( \code{wait, notify, notifyAll, synchronized...}) ist i.d.R. immer in der passiven Klasse realisiert.
+\end{tcolorbox}
+
