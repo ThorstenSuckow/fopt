@@ -1,0 +1,86 @@
+\chapter{ASB Zusatzaufgabe BoundedCounter}\label{ch:boundedcounter}
+
+
+\section{Lösung}
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    fontsize=\small,
+    frame=lines,
+    framesep=2mm]{java}
+    public class BoundedCounter {
+        private int min;
+        private int max;
+        private int value;
+        public BoundedCounter(int min, int max) {
+            if (max <= min) {
+                throw new IllegalArgumentException();
+            }
+            this.min = min;
+            this.max = max;
+            this.value = min;
+        }
+
+        public synchronized void down() {
+            while (value - 1 < min) {
+                try {
+                    this.wait();
+                } catch (InterruptedException ignored) {}
+            }
+            value--;
+            notifyAll();
+        }
+
+        public synchronized void up() {
+            while (value + 1 > max) {
+                try {
+                    this.wait();
+                } catch (InterruptedException ignored) {}
+            }
+            value++;
+            notifyAll();
+        }
+
+        public synchronized int get() {
+            return value;
+        }
+    }
+\end{minted}\\
+
+
+\section{Anmerkung und Ergänzungen}
+
+Bei dem Beispiel handelt es sich um eine einfache Implementierung des Erzeuger-Verbraucher-Problems\footnote{
+s. \cite[Abschnitt 2.6.1]{Oec22}
+}.\\
+\noindent
+Es gibt für die Threads unterschiedliche Wartebedingungen.\\
+Aus diesem Grund muss sowohl bei \code{up()} als auch \code{down()} die Methode \code{notifyAll()} benutzt werden, damit alle wartenden Threads ihre Wartebedingungen überprüfen können (s.a. Abschnitt~\ref{subsec:notifyAll}).
+Ansonsten kann es sein, dass ein Thread, der in \code{up()} durch ein  \code{notify()} aufgeweckt wird, ein Thread ist, der den Zähler dekrementieren möchte.\\
+Da der Zähler aber bereits wegen des durch $value == min$ festgelegten Zustandes kein weiteres Herunterzählen ermöglicht, wird der Verbraucher-Thread wieder in die Warteschlange des Objektes eingereiht.\\
+
+\noindent
+Im dem (fehlerhaften) Fall weckt ein \textit{Verbraucher-Thread} also einen anderen \textit{Verbraucher-Thread}, obwohl ein weiteres Konsumieren des passiven Objektes nicht mehr möglich ist und deshalb ein \textit{Erzeuger-Thread} hätte geweckt werden müssen.\\
+
+\noindent
+Kurzum: Mittels \code{notifyAll()} werden alle Threads geweckt, sodass ggf. ein \textit{Erzeuger-Thread} für ein Inkrementieren des Wertes sorgen kann.
+
+\subsection*{Was passiert bei notifyAll()}
+
+In Abschnitt~\ref{subsec:notifyAll} wurde auf einen Auszug der API Docs von Java verwiesen, in dem das Verhalten von \code{notifyAll()} beschreiben wird:
+
+\begin{enumerate}
+    \item es werden alle Threads geweckt, die sich in der Warteschlange des gesperrten Objektes befinden.
+    \item sobald der Thread, der noch die Sperre auf das Objekt hält, die Sperre freigibt, konkurrieren alle geweckten Threads mit allen anderen Threads (ohne Bevorzugung) erneut um eine Sperre des Objektes.
+    \item der erste Thread, der die Sperre setzen kann, kann auch seine Wartebedingungen erneut überprüfen.
+    \item schlägt die Überprüfung fehl, wird er wieder in die Warteschlange eingereiht.
+    \item aus den aktiven Threads setzt der nächste Thread die Sperre, und überprüft die Wartebedingung...
+    \item das ganze setzt sich so lange fort, bis ein Thread erfolgreich den Zustand des passiven Objektes ändern konnte.\\
+    \code{notifyAll()} bewirkt eine Wiederholung der beschriebenen Schritte dann.\footnote{
+        die Wirkung von \textit{notifyAll()} ist also ganz einfach so, als dass ein Aufruf davon das erneute Konkurrieren von aktiven Objekten um das passive Objekt bewirkt, als hätte es ein \textit{wait()} nie gegeben und sich die aktiven Objekte nie in einer Warteschlange befunden.
+    }
+\end{enumerate}
+
+Weitere Informationen finden sich auch in den ``Java Language Specification - Chapter 17. Threads and Locks``: \url{https://docs.oracle.com/javase/specs/jls/se21/html/jls-17.html} (abgerufen 6.2.2024).

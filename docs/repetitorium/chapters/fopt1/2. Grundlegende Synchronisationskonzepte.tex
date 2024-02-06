@@ -429,7 +429,7 @@ Wie bei join erwartet \code{wait()} hier einen Wert in \textit{millisekunden}. \
     Es ist nicht garantiert, dass ein geweckter Thread die nächste Sperre setzt - das kann durch jeden anderen Thread passieren, der Zugriff auf die Methode anmeldet (vgl.~\cite[61]{Oec22}).
 \end{tcolorbox}\\
 
-\subsection{notifyAll()}
+\subsection{notifyAll()}\label{subsec:notifyAll}
 
 Erst wenn in einer \code{synchronized}-Methode eine Rückgabe erfolgt, wird die Sperre auf das Objekt aufgehoben (es sei denn, die Sperre wurde bspw. durch ein \code{wait()} vorher aufgehoben.)
 
@@ -448,7 +448,7 @@ Der aufrufende Thread muss Besitzer der Sperre sein, ansonsten wird eine \code{I
 \begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
 Wenn in unterschiedlichen Methoden \code{wait()} genutzt wurde, um Threads in die Warteschlange einzufügen, dann bewirkt ein Aufruf von \code{notifyAll()} auch, dass alle diese wartenden Threads geweckt werden und ihre Wartebedingungen überprüfen.
 Es ist also wichtig, dass die Wartebedingungen sinnvoll implementiert sind, ansonsten kann es zu unerwünschten Seiteneffekten kommen\footnote {
-    in \cite[71 ff.]{Oec22} anhand des Erzeuger-Verbraucher-Problems beschrieben.
+    in \cite[70 f.]{Oec22} anhand des Erzeuger-Verbraucher-Problems beschrieben.
 }.\\
 Generell sollte \code{notifyAll()} dann verwendet werden, wenn sich Threads mit unterschiedlichen Wartebedingungen in einer Warteschlange befinden (also wenn es \textbf{mehrere Wartebedingungen} gibt), oder wenn sich der Zustand des Objektes so ändert, dass mehrere Threads ihre \textit{while-wait-Schleife} verlassen können (vgl.~\cite[73]{Oec22}).
 \end{tcolorbox}
@@ -507,6 +507,8 @@ Im folgenden Beispiel werden 3 Threads in die Warteschlange eines Objektes einge
     }
 \end{minted}\\
 
+\noindent
+Für ein weiteres Beispiel und ergänzende Anmerkungen zu \code{notifyAll()} sei auf \ref{ch:boundedcounter} verwiesen.
 
 \subsection{Vordergrund- und Hintergrundthreads}
 
