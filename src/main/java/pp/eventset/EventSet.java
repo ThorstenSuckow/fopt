@@ -18,7 +18,9 @@ public class EventSet {
         }
 
         this.set[pos] = value;
-        notifyAll();
+        if (value) {
+            notifyAll();
+        }
     }
 
     public synchronized void waitAND() {
