@@ -1,7 +1,11 @@
-\chapter{ASB Zusatzaufgabe Calculator}\label{ch:calculator}
+\section{Calculator}\label{ch:calculator}
 
 
-\section{Lösung}
+\subsection{Lösung}
+
+Die Lösung enthält nicht die fxml-Datei\footnote{
+vollständige Lösung unter \url{https://github.com/ThorstenSuckow/fopt/tree/main/src/main/java/gui/calculator}
+}.
 
 \begin{minted}[mathescape,
     linenos,
@@ -10,13 +14,86 @@
     fontsize=\small,
     frame=lines,
     framesep=2mm]{java}
+    public class Calculator extends Application {
+        private boolean clearOnInput = true;
 
+        public void start(Stage primaryStage) throws IOException {
+            Pane root;
+            root = FXMLLoader.load(getClass().getResource("mainui.fxml"));
+
+            installListeners(root);
+
+            Scene scene = new Scene(root);
+            primaryStage.setScene(scene);
+
+            primaryStage.show();
+        }
+
+        private void installListeners(Parent parent) {
+            Set<Node> buttons = parent.lookupAll(".button");
+
+            for (Node button : buttons) {
+                Button b = (Button) button; // casting is required since
+                                            // Node does not provide a setOnAction-method
+                b.setOnAction(this::onButtonAction);
+            }
+        }
+
+        private void onButtonAction(ActionEvent evt) {
+            Button b = (Button) evt.getSource();
+            handleInput(b.getText(), (TextField) ((Button) evt.getSource()).getScene().getRoot().lookup("#display"));
+        }
+
+        private void handleInput(String btnText, TextField display) {
+
+            if (clearOnInput) {
+                display.setText("");
+                clearOnInput = false;
+            }
+
+            String displayText = display.getText();
+
+            switch (btnText) {
+                case "CLEAR":
+                    display.setText("");
+                    return;
+                case "DELETE":
+                    display.setText(
+                        displayText.length() > 0
+                            ? displayText.substring(0, display.getText().length() - 1)
+                            : ""
+                    );
+                    return;
+                case "=":
+                    try {
+                        display.setText(displayText + "=" + Computation.evaluate(displayText));
+                    } catch (IllegalArgumentException e) {
+                        display.setText(displayText + "=>FEHLER");
+                    }
+                    clearOnInput = true;
+                    return;
+                default:
+                    display.setText(display.getText() + btnText);
+            }
+        }
+
+        public static void main(String[] args) {
+            launch(args);
+        }
+
+    }
 \end{minted}\\
 
 
-\section{Anmerkung und Ergänzungen}
+\subsection{Anmerkung und Ergänzungen}
 
 
 \begin{itemize}
-    \item wieso ist launch blocking?
+    \item \code{Button}s können auch über \code{lookupAll()} ermittelt werden - als Wert übergibt man der Methode einfach \code{.button}, was den CSS-Selektor für die CSS-Klasse \textbf{button} ist, die per Default einem \code{Button}-Objekt zugewiesen ist.
+    \item Die Methode \code{launch} ist \textbf{blocking}, aus ihr kehrt man erst zurück, wenn  alle Anwendungsfenster geschlossen wurden oder \code{Platform.exit()}\footnote{
+    beendet den \textbf{JavaFX Application Thread} - s. \url{https://docs.oracle.com/javase/8/javafx/api/javafx/application/Platform.html#exit--} - abgerufen 8.2.2024
+    } aufgerufen wurde:
+    \blockquote[{``launch``: \url{https://docs.oracle.com/javase/8/javafx/api/javafx/application/Application.html#launch-java.lang.String...-} - abgerufen 8.2.2024}]{
+     The launch method does not return until the application has exited, either via a call to Platform.exit or all of the application windows have been closed.
+    }
 \end{itemize}
