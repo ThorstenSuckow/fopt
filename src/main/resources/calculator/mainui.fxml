@@ -37,9 +37,10 @@
 <?import javafx.scene.layout.Pane?>
 
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="289.0" prefWidth="180.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="289.0" prefWidth="180.0"
+      xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <TextField editable="false" layoutX="14.0" layoutY="14.0" />
+      <TextField alignment="CENTER_RIGHT" editable="false" layoutX="14.0" layoutY="14.0" fx:id="display"/>
       <Button layoutX="14.0" layoutY="50.0" mnemonicParsing="false" text="CLEAR" />
       <Button layoutX="74.0" layoutY="50.0" mnemonicParsing="false" text="DELETE" />
       <Button layoutX="14.0" layoutY="89.0" mnemonicParsing="false" text="." />
