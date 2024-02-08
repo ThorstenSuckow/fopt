@@ -1,0 +1,89 @@
+\chapter{ASB Zusatzaufgabe EventSet}\label{ch:eventset}
+
+
+\section{Lösung}
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    fontsize=\small,
+    frame=lines,
+    framesep=2mm]{java}
+    public class EventSet {
+        final private boolean[] set;
+        public EventSet(int n) {
+            if (n < 0) {
+                throw new IllegalArgumentException();
+            }
+            set = new boolean[n];
+        }
+
+        public synchronized void set(int pos, boolean value) {
+            if (pos < 0 || pos >= set.length) {
+                throw new IllegalArgumentException();
+            }
+            this.set[pos] = value;
+            if (value) {
+                notifyAll();
+            }
+        }
+
+        public synchronized void waitAND() {
+            while(!allTrue()) {
+                try {
+                    this.wait();
+                } catch (InterruptedException ignored) {}
+            }
+            notifyAll();
+        }
+
+        public synchronized void waitOR() {
+            while (!oneTrue()) {
+                try {
+                    this.wait();
+                } catch (InterruptedException ignored) {}
+            }
+            notifyAll();
+        }
+
+        private boolean allTrue() {
+            for (boolean b : set) {
+                if (!b) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private boolean oneTrue() {
+            for (boolean b : set) {
+                if (b) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+\end{minted}\\
+
+
+\section{Anmerkung und Ergänzungen}
+
+\begin{itemize}
+    \item Laut Aufgabenstellung sollen nur negative Argumente für den Konstruktor ausgeschlossen werden.
+    Es ist okay, das Feld mit einer Länge von $0$ zu initialisieren.
+    \item \code{waitOR} und \code{waitAND} haben in der Aufgabenstellung keinen expliziten Rückgabetyp,
+    also kann für die Methode der Rückgabetyp \code{void} deklariert werden.
+    \item Es sind zwei unterschiedliche Wartebedingungen vorhanden, also muss wieder mit  \code{notifyAll()}
+    gearbeitet werden, damit alle Threads ihre Wartebedingungen überprüfen können.
+    \item \code{set()} muss ebenfalls über \code{notifyAll()} alle Threads zur erneuten Überprüfung ihrer Wartebedingungen wecken - aber nur, wenn das Feld in einem Index auf \code{true} gesetzt wurde:
+        \begin{itemize}
+            \item $T^{AND}_{1..n}$ können nur weiterlaufen, wenn alle Einträge im Feld auf \code{true} gesetzt sind.
+            \item $T^{OR}_{1..n}$ können nur weiterlaufen, wenn mindestens ein Eintrag im Feld auf \code{true} gesetzt ist.
+            Sind alle Einträge im Feld auf $0$, werden die Threads $T^{OR}_{1..n}$ in die Warteschlange des Objektes
+            eingereiht.
+            Wird nun ein Eintrag auf \code{true} gesetzt, werden diese Threads wieder aus der Warteschlange geholt, und
+            die Threads konkurrieren erneut um die Sperre des \code{EventSet}-Objektes - und zwar so lange, bis wieder alle Einträge auf $0$ sind - die Wartebedingung greift dann wieder, und sie werden in die Warteschlange eingereiht.
+        \end{itemize}
+\end{itemize}
