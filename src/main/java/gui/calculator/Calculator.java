@@ -1,6 +1,7 @@
 package gui.calculator;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -16,10 +17,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 public class Calculator extends Application {
-
-
     private boolean clearOnInput = true;
-
 
     public void start(Stage primaryStage) throws IOException {
 
@@ -32,7 +30,6 @@ public class Calculator extends Application {
         }
 
         installListeners(root);
-
 
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
@@ -70,7 +67,11 @@ public class Calculator extends Application {
                 display.setText("");
                 return;
             case "DELETE":
-                display.setText(displayText.length() > 0 ? displayText.substring(0, display.getText().length() - 1) : "");
+                display.setText(
+                    displayText.length() > 0
+                        ? displayText.substring(0, display.getText().length() - 1)
+                        : ""
+                );
                 return;
             case "=":
                 try {
@@ -84,7 +85,6 @@ public class Calculator extends Application {
                 display.setText(display.getText() + btnText);
         }
     }
-
 
     public static void main(String[] args) {
         launch(args);
