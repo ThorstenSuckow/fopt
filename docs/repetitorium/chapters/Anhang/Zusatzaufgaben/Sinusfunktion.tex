@@ -1,0 +1,97 @@
+\usepackage{lstmisc}\section{Sinusfunktion}\label{ch:sinusfunktion}
+
+
+\subsection{Lösung}
+
+Im Folgenden die Implementierung der Methode \code{drawSinusCurve()} aus der Klasse \code{SinusPresenter}\footnote{
+    vollständige Lösung unter \url{https://github.com/ThorstenSuckow/fopt/tree/main/src/main/java/gui/graphics/sinus}
+}.
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    fontsize=\small,
+    frame=lines,
+    framesep=2mm]{java}
+    private void drawSinusCurve() {
+        Pane sinusCanvas = sinusView.getSinusCanvas();
+        double zoom = sinusView.getZoomSlider().valueProperty().get();
+        double phase = sinusView.getPhaseSlider().valueProperty().get();
+        double frequency = sinusView.getFrequencySlider().valueProperty().get();
+        double amplitude = sinusView.getAmplitudeSlider().valueProperty().get();
+
+        double width = sinusCanvas.widthProperty().get();
+        double height = sinusCanvas.heightProperty().get();
+
+        double start = - (width / 2);
+
+        ObservableList<Double> points = sinusView.getSinusLine().getPoints();
+        List<Double> tmpPoints = new ArrayList<>();
+
+        for (double i = 0; i < width; i+= 1/zoom) {
+
+            double sinX = (start+i);
+            double sinY = sinusModel.getY(sinX, amplitude, frequency, phase);
+
+            double x = (sinX*zoom - start);
+            double y = (sinY*zoom + (height / 2)) ;
+
+            tmpPoints.add(x);
+            tmpPoints.add(y);
+        }
+
+        points.clear();
+        points.addAll(tmpPoints);
+    }
+\end{minted}\\
+
+
+\subsection{Anmerkung und Ergänzungen}
+
+Die Sinuskurve wird mittels einer \code{Polyline} gezeichnet, deren Koordinaten über eine Liste von Punkten (Typ \code{double}) verwaltet werden\footnote{
+s. ``Class Polyline``: \url{https://docs.oracle.com/javase/8/javafx/api/javafx/scene/shape/Polyline.html} - abgerufen 9.2.2024.
+}.\\
+
+\noindent
+Die Methode ist als Observer für verschiedene Property-Änderungen registriert, also insb. die der Slider.\\
+
+\noindent
+Der Scaling-Faktor (\code{zoom}) beeinflusst die Auflösung der berechneten Werte - je höher der Scaling-Faktor, desto höher die Auflösung: Es werden dann auch mehr Werte berechnet.\\
+
+\noindent
+Für die \code{Pane}, die zum Zeichnen des Koordinatensystems und der Sinuskurve verwendet wird, sollte eine Clipping-Maske erstellt werden, damit bei einer Änderung der Amplitude / des Scaling-Faktors nicht über die \code{Pane} hinausgezeichnet wird (s. a. \cite[222]{Oec22}).\\
+
+\noindent
+Damit Kindelemente im \code{HBox}- / \code{VBox}-Layout den zur Verfügung stehenden Platz einnehmen (und dadurch ggf. automatisch vergrößert bzw. verkleinert werden), sollte  die statische Methode \code{setHgrow} (\code{HBox}) bzw. \code{setVgrow} (\code{VBox}) verwendet werden.\\
+Der folgende Code führt dazu, dass der \code{Slider} als Kindelement eines \code{HBox}-Layout-Panes mit dem Elternelement mitwächst, je nach zur Verfügung stehendem Platz\footnote{
+s.a. ``setHgrow``: \url{https://docs.oracle.com/javase/8/javafx/api/javafx/scene/layout/HBox.html#setHgrow-javafx.scene.Node-javafx.scene.layout.Priority-} - abgerufen 9.2.2024
+}:
+
+\begin{minted}[mathescape,
+    numbersep=5pt,
+    gobble=2,
+    frame=none,
+    framesep=2mm]{java}
+    HBox.setHgrow(getAmplitudeSlider(), Priority.ALWAYS);
+\end{minted}\\
+
+\noindent
+Methoden wie \code{setLabel} sucht man i.d.R. bei den meisten Controls vergeblich - Beschriftungen (in der Form von \textit{fieldLabel}s) sollten dann über extra \code{Label}s realisiert werden.\\
+
+\noindent
+Die Methoden \code{setMajorTickUnit()} und \code{setMinorTickCount()} beeinflussen das Rendering der Ticks eines Sliders\footnote{
+s.a. ``Class Slider``: \url{https://docs.oracle.com/javase/8/javafx/api/javafx/scene/control/Slider.html} - abgerufen 9.2.2024
+}:
+
+\noindent
+\begin{minted}[mathescape,
+    numbersep=5pt,
+    gobble=2,
+    frame=none,
+    framesep=2mm]{java}
+    // Alle 2 Einheiten wird ein ``major tick`` gerendert:
+    slider.setMajorTickUnit(2f);
+    // Zwischen zwei major ticks sollen immer 5 ``minor ticks`` gerendert werden:
+    slider.setMinorTickCount(5);
+\end{minted}
