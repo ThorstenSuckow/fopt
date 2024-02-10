@@ -13,8 +13,8 @@ public class PortScanner {
 
     private InetAddress target;
 
-    public static int connectionTimeout = 250;
-    public static boolean verbose = true;
+    private static int connectionTimeout = 250;
+    private static boolean verbose = true;
     private int from;
 
     private int to;

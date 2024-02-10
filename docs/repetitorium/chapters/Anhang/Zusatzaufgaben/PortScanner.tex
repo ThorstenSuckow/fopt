@@ -1,0 +1,62 @@
+\section{PortScanner}\label{ch:portscanner}
+
+
+\subsection{Lösung}
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    fontsize=\small,
+    frame=lines,
+    framesep=2mm]{java}
+
+\end{minted}\\
+
+
+\subsection{Anmerkung und Ergänzungen}
+
+
+
+\begin{itemize}
+    \item Eine IP-Adresse bzw. ein Host-Name kann über ein Objekt der Klasse \code{InetAddress} repräsentiert werden.
+    Hierzu ruft man die statische Methode \code{getByName(host: String)} auf, die ein entsprechendes Objekt zurückliefert,
+    oder aber eine \code{UnknownHostException} (u.a. falls die IP zu dem angegebenen Host nicht gefunden wurde) oder eine \code{SecurityException} wirft\footnote{
+    s. ``getByName``: \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/InetAddress.html#getByName(java.lang.String)} - abgerufen 10.2.2024
+    }.
+    \item Die Methode zur Ermittlung der Anzahl der Einträge einer \code{List<E>} ist \code{size():int}, \textbf{nicht} count().
+    Um zu überprüfen, ob die Liste leer ist, kann auch \code{isEmpty():boolean} aufgerufen werden\footnote{
+    s. ``Interface List<E>``: \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html} - abgerufen 10.2.2024
+    }
+    \end{itemize}
+
+\noindent
+Anstatt den Konstruktor der \code{Socket}-Klasse mit einer Zieladresse/ einem Zielport aufzurufen, kann auch zunächst ein Objekt von \code{Socket} über den parameterlosen Konstruktor erzeugt werden (``unconnected Socket``\footnote {
+    ``Socket``: \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/Socket.html} - abgerufen 10.2.2024
+}).
+Eine Verbindung läßt sich dann mit der Methode \begin{center}\code{connect(endpoint: SocketAddress, timeout: int)}\end{center} realisieren, wobei die Angabe eines Verbindungs-Timeouts möglich (und bei einem PortScanner sinnvoll) ist\footnote{
+    s. ``connect``: \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/Socket.html#connect(java.net.SocketAddress,int)} - abgerufen 10.2.2024
+}.
+Bei einem Wert von $0$ ist der Verbindungsaufbau so lange \textit{blocking}, bis eine Verbindung hergestellt wurde, oder ein Fehler auftritt.
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    fontsize=\small,
+    frame=lines,
+    framesep=2mm]{java}
+    final InetSocketAddress sckAddr = new InetSocketAddress(target, port);
+    try(Socket scanSocket = new Socket()) {
+        scanSocket.connect(sckAddr, 1000);
+    } catch (IOException e) {
+        System.out.println("error: " + e);
+    }
+\end{minted}
+
+\noindent
+Auch wenn in diesem Beispiel in der \textit{ResourceSpecification}\footnote{
+``ResourceSpecification``: \url{https://docs.oracle.com/javase/specs/jls/se21/html/jls-14.html#jls-ResourceSpecification} - abgerufen 10.2.2024
+} des \textbf{try-with-resources}-Statement keine Verbindung aufgebaut, sondern nur ein Objekt vom Typ \code{Socket} erzeugt wird, handelt es sich bei dem Objekt trotzdem um eine \textbf{Ressource}, die \code{AutoCloseable} implementiert - also wird auch diese Ressource beim Verlassen des \code{try}-Blocks automatisch geschlossen\footnote{
+s. ``14.20.3. try-with-resources``: \url{https://docs.oracle.com/javase/specs/jls/se21/html/jls-14.html#jls-14.20.3}, sowie ``The try-with-resources Statement``: \url{https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html} - beide abgerufen 10.2.2024
+} - und damit auch eine {evtl.} vorher aufgebaute Verbindung.
