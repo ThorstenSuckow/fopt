@@ -1,4 +1,4 @@
-package rmi.bank.a;
+package rmi.bank.c;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -66,16 +66,17 @@ public class Client {
     }
 
     private Account getAccount(int accountNumber) throws RemoteException, NotBoundException {
-        Registry registry = LocateRegistry.getRegistry(port);
 
-        try {
-            return (Account) registry.lookup("Konto" + accountNumber);
-
-        } catch (NotBoundException e) {
-            throw new IllegalArgumentException(e);
-        }
+        return getBank().getAccount(accountNumber);
 
     }
 
+    private Bank getBank() throws RemoteException, NotBoundException {
+
+        Registry registry = LocateRegistry.getRegistry(port);
+
+        return (Bank) registry.lookup("Bank");
+
+    }
 
 }
