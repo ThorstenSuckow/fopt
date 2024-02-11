@@ -3,6 +3,10 @@
 
 \subsection{Lösung}
 
+Im Folgenden ist die Implementierung der \code{scan()}-Methode des PortScanners angegeben\footnote{
+vollständige Implementierung unter \url{https://github.com/ThorstenSuckow/fopt/tree/main/src/main/java/socket/tcp/scan}
+}
+
 \begin{minted}[mathescape,
     linenos,
     numbersep=5pt,
@@ -10,7 +14,31 @@
     fontsize=\small,
     frame=lines,
     framesep=2mm]{java}
+    public List<Integer> scan() {
 
+        int port = from;
+
+        int timeout = Math.abs(connectionTimeout);
+
+        List<Integer> connections = new ArrayList<>();
+        while (port <= to) {
+
+            final InetSocketAddress sckAddr = new InetSocketAddress(target, port);
+            try(Socket scanSocket = new Socket()) {
+                log("[scan] trying to connect to \"" + sckAddr + "\"...");
+
+                scanSocket.connect(sckAddr, timeout);
+                log("[scan]    connection established  to \"" + sckAddr + "\" >]");
+                connections.add(port);
+            } catch (IOException e) {
+                logErr("[scan]     error while trying to connect to " + sckAddr + ": " + e);
+            }
+
+            port++;
+        }
+
+        return connections;
+    }
 \end{minted}\\
 
 

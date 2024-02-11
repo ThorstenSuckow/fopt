@@ -1,5 +1,35 @@
-KOnstruktor muss RemoteException werfen
+\section{RmiBank}\label{ch:rmibank}
 
-wenn kein Server bekannt ist: LocateRegistry.getRegistry(port) sucht auch lokalem Rechner (da, wo auch server gestartet ist)
 
-bei dem Abfragen eines Objektes aus der Registry das casten  nicht vergessen!
+\subsection{Lösung}
+
+Die vollständige Implementierung ist unter \url{https://github.com/ThorstenSuckow/fopt/tree/main/src/main/java/rmi/bank} abrufbar.
+
+\subsection{Anmerkung und Ergänzungen}
+
+\begin{itemize}
+    \item In den Klassen, die die \code{Remote}-Interfaces implementieren und von \code{UnicastRemoteObject} ableiten, muss ein Konstruktor angegeben werden, der ebenfalls \code{RemoteException} wirft (s.a. \ref{sec:distributedrmiapplications}).
+    \item Die statische Methode \code{getRegistry(port:int)} der Klasse \code{LocateRegistry} im Package \code{java.rmi.registry} kann verwendet werden, um unter Angabe einer Portnummer die Registry zu ermitteln, die auf dem lokalen Rechner läuft\footnote{
+    s. ``getRegistry``: \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.rmi/java/rmi/registry/LocateRegistry.html#getRegistry(int)} - abgerufen 11.2.2024
+    }.
+    \item Wenn ein Objekt der Registry angefragt wird, darf man nicht vergessen, das Objekt noch zu dem benötigten Typen zu casten:
+    Die Methode \code{lookup()} einer Klasse, die \code{java.rmi.registry.Registry} implementiert, liefert ein Objekt vom Typ \code{Remote}
+    zurück\footnote{
+    s. ``lookup```: \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.rmi/java/rmi/registry/Registry.html#lookup(java.lang.String)} - abgerufen 11.2.2024
+    }.
+    \item Alle Klassen, die auf eine Portnummer einer lokalen Registry angewiesen sind, sollten darauf achten, diesen auch anzugeben.
+    Wird bei einem Aufruf von \code{getRegistry(port: int)}
+     ein Wert $<= 0$ übergeben, greift die Implementierung auf die \textbf{well known port}-Nummer der Registry zurück\\ (\code{Registry.REGISTRY_PORT}, entspricht $1099$)\footnote{
+       nachgewiesen mit JDK21; Implementierung findet sich in \textit{getRegistry(host: String, port: int, csf: RMIClientSocketFactory)} und wird
+    wegen des Urheberrechts hier nicht aufgeführt.
+    }.
+    \item Die zu implementierende Exception \code{OverdrawAccountException} sollte von \code{RuntimeException} abgeleitet werden, ansonsten muss die \textbf{throws}-Klausel der Methode \code{changeBalance()} auch diese Exception aufführen\footnote{
+    s.a. ``11.2. Compile-Time Checking of Exceptions``: \url{https://docs.oracle.com/javase/specs/jls/se21/html/jls-11.html#jls-11.2} - abgerufen 11.2.2024
+    }:
+    \blockquote[{``Class RuntimeException``: \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/RuntimeException.html} - abgerufen 11.2.2024, Hervorhebungen i.O.}]{
+        RuntimeException and its subclasses are \textit{unchecked exceptions}. Unchecked exceptions do \textit{not} need to be declared in a method or constructor's throws clause if they can be thrown by the execution of the method or constructor and propagate outside the method or constructor boundary.
+    }
+
+\end{itemize}
+
+
