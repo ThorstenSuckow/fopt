@@ -7,13 +7,15 @@ import java.rmi.registry.Registry;
 
 public class Client {
 
-    private int port = 0;
+    private int port;
 
     public Client(int port, String[] args)  {
 
         if (port < 1 || port >= 65_536 || args.length < 2) {
             throw new IllegalArgumentException();
         }
+        this.port = port;
+
 
         String operation = args[0];
         int accountNumber;
@@ -64,9 +66,15 @@ public class Client {
     }
 
     private Account getAccount(int accountNumber) throws RemoteException, NotBoundException {
-        Bank bank = getBank();
+        Registry registry = LocateRegistry.getRegistry(port);
 
-        return bank.getAccount(accountNumber);
+        try {
+            return (Account) registry.lookup("Konto" + accountNumber);
+
+        } catch (NotBoundException e) {
+            throw new IllegalArgumentException(e);
+        }
+
     }
 
     private Bank getBank() throws RemoteException, NotBoundException {

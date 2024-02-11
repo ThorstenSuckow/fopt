@@ -22,17 +22,14 @@ public class Server {
 
     private void registerAccounts() throws RemoteException {
 
+        Registry registry = LocateRegistry.getRegistry(port);
+
         Account[] accounts = new Account[100];
 
         for (int i = 0; i < accounts.length; i++) {
             accounts[i] = new AccountImpl(0);
+            registry.rebind("Konto" + i, accounts[i]);
         }
-
-        BankImpl bank = new BankImpl(accounts);
-
-        Registry registry = LocateRegistry.getRegistry(port);
-
-        registry.rebind("bank", bank);
     }
 
 }

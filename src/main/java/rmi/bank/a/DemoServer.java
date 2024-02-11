@@ -16,7 +16,7 @@ public class DemoServer {
         Server server = new Server(port);
 
         Client c = new Client(port, cmd(5, 10));
-        c = new Client(port, cmd(5));
+        c = new Client(port, cmd(10));
         c = new Client(port, cmd(5, -20));
         c = new Client(port, cmd(5));
     }
