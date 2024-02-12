@@ -28,6 +28,13 @@ public class ProcessorImpl extends UnicastRemoteObject implements Processor {
             return;
         }
 
-        next.execute(d);
+
+        new Thread(() -> {
+            try {
+                next.execute(d);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
     }
 }

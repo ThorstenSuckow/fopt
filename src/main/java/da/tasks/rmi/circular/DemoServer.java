@@ -39,7 +39,6 @@ public class DemoServer {
                         s.remove(ps.get(i));
                     }
                     System.out.println(Arrays.toString(d.getValues().toArray()));
-                    System.exit(0);
                 }  catch (InterruptedException|RemoteException ignored) {}
             });
             t.start();
@@ -49,15 +48,6 @@ public class DemoServer {
                 Processor p = new ProcessorImpl(s);
                 ps.add(p);
                 s.add(p);
-                if (i == 0) {
-                    new Thread(() -> {
-                        try {
-                            ps.get(0).execute(d);
-                        } catch (RemoteException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }).start();
-                }
             }
 
 

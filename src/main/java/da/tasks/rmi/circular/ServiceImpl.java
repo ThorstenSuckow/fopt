@@ -7,27 +7,39 @@ import java.util.List;
 
 public class ServiceImpl extends UnicastRemoteObject implements Service{
 
-    List<Processor> processors;
+    private List<Processor> processors;
 
+    private final Data data;
 
     public ServiceImpl() throws RemoteException {
 
         processors = new ArrayList<>();
+        data = new DataImpl();
 
     }
 
     @Override
-    public void add(Processor p) throws RemoteException {
+    public synchronized void add(Processor p) throws RemoteException {
         processors.add(p);
+        if (processors.size() == 1) {
+            new Thread(()-> {
+                try {
+                    p.execute(data);
+                } catch (RemoteException e) {
+                    throw new RuntimeException(e);
+                }
+            }).start();
+        }
+
     }
 
     @Override
-    public void remove(Processor p) throws RemoteException {
+    public synchronized void remove(Processor p) throws RemoteException {
         processors.remove(p);
     }
 
     @Override
-    public Processor next(Processor p) throws RemoteException {
+    public synchronized Processor next(Processor p) throws RemoteException {
         if (processors.isEmpty()) {
             return null;
         }
