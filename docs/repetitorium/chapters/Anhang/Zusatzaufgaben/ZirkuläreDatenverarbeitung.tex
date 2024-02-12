@@ -1,0 +1,28 @@
+\section{Zirkuläre Datenverarbeitung}\label{ch:circular}
+
+
+\subsection{Lösung}
+
+Die vollständige Implementierung ist unter \url{https://github.com/ThorstenSuckow/fopt/tree/main/src/main/java/da/tasks/rmi/circular} abrufbar.
+
+\subsection{Anmerkung und Ergänzungen}
+
+\begin{itemize}
+    \item für jeden Aufruf von \code{execute()} muss ein neuer Thread gestartet werden.
+    \item Die Zugriffe in \code{DataImpl} auf gemeinsam genutzte Daten sollten synchronisiert sein.
+    Die Liste (\code{values}), die über \code{getValues(): List<String>} der Klasse \code{DataImpl} zurückgegeben wird,
+    muss nicht zwingend  als Kopie zurückgegeben werden, da von dem \textbf{Stub} von \code{DataImpl} ohnehin keine Referenz
+    auf diese Liste zurückgegeben wird:
+    Objekte vom Type \code{Processor} werden bei dem \code{Service} - einem \textbf{RMI-Objekt} - registriert.
+    Der Service verwaltet diese Objekte in einer Liste.
+    Da die \code{Processor}-Objekte von \code{UnicastRemoteObject} ableiten, werden sie \textbf{exportiert}, nicht \textbf{serialisiert} - auf Anfrage liefert \code{Service} also ein Stellvertreter-Objekt dieser Instanzen zurück, die auf die jeweiligen Remote-Objekte zeigen (vgl.~\cite[330]{Oec22} sowie Abschnitt~\ref{sec:rmiparallel}).\\
+    Gleiches gilt für \code{DataImpl}: Auch ein Objekt dieser Klasse ist von \code{UnicastRemoteObjekt} abgeleitet und exportiert.\\
+    Operationen auf dem Stellvertreter-Objekt werden an das Remote-Objekt weitergeleitet.\\
+    Die Liste der \code{values} wird aber nur als Kopie an den Client zurückgegeben - diese wird nicht als Remote-Objekt zur Verfügung gestellt.\\
+    Nachvollziehen läßt sich das ganze, indem man das Programm so ändert, dass \code{values} nicht vom Typ \code{ArrayList<String>} ist - die Klasse implementiert \code{Serializable}.\\
+    Stattdessen ändert man den Typen um in einen, der nicht Serializable implementiert.
+    Sobald man dann versucht, über ein Remote-Objekt auf diese Daten zuzugreifen, wird eine \begin{center}\code{java.rmi.UnmarshalException}\end{center} geworfen.\\
+    Sind die Daten hingegen exportiert (von UnicastRemoteObject abgeleitet und die Schnittstelle Remote realisierend), kann auf sie wie auf eine ``lokale Referenz`` (Objekt innerhalb des Adressraums eines Prozesses) zugegriffen werden.
+\end{itemize}
+
+
