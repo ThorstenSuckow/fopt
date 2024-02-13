@@ -134,7 +134,7 @@ Die Methode \code{invalidate()} von \code{HttpSession} löscht explizit eine Ses
 
 \begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
 Auch Sitzungsdaten müssen synchronisiert werden, da ein Anwender parallel mehrere Tabs offen haben kann.\\
-\end{tcolorbox}
+\end{tcolorbox}\\
 
 \noindent
 Es existieren wie für \textbf{ServletContext} auch Listener für \textbf{Sessions}:\\
@@ -167,7 +167,7 @@ Die Sitzungs-Id wird dann verwendet, um in d r Tabelle nach einem assoziierten S
 \noindent
 Bei horizontaler Skalierung können Sitzungsobjekte i.d.R nicht geteilt werden unter den beteiligten Webservern - hier eignet sich eine zentrale Speicherung der Sitzungsdaten, bspw. in einer Datenbank (vgl.~\cite[433]{Oec22}).
 
-\subsection{Direkter Zugriff auf Cookies}
+\subsection{Direkter Zugriff auf Cookies}\label{sec:cookieaccess}
 Die Servlet-Klassenbibliothek erlaubt auch einen direkten Zugriff auf Cookies.\\
 
 \noindent
@@ -179,6 +179,16 @@ $\rightarrow$ die Klasse \code{Cookie}\footnote{
 Cookies, die die Lebensdauer einer Browsersitzung überdauern sollen, sollten mittels \code{setMaxAge(expiry:int):void}\footnote{
     ``Sets the maximum age in seconds for this Cookie.`` (\url{https://jakarta.ee/specifications/servlet/6.0/apidocs/jakarta.servlet/jakarta/servlet/http/cookie#setMaxAge(int)} - abgerufen 3.2.2024)
 } konfiguriert werden (die Browsereinstellungen des Nutzers haben hier aber Vorrang).
+
+
+\begin{tcolorbox}
+    Session-Cookies werden i.d.R. nach den Schliessen des Browsers gelöscht.\\ Um dieses Verhalten für ``reguläre`` Cookies umzusetzen, kann man über die Methode \code{setMaxAge()} einen negativen Wert übergeben\footnote{der Wert $0$ veranlaßt ein Löschen des Cookies}:
+
+    \blockquote[{``setMaxAge``: \url{https://jakarta.ee/specifications/servlet/6.0/apidocs/jakarta.servlet/jakarta/servlet/http/cookie#setMaxAge(int)} - abgerufen 13.4.2024}]{
+        A negative value means that the cookie is not stored persistently and will be deleted when the Web browser exits.
+    }
+\end{tcolorbox}\\
+
 
 \subsection{Servlets mit länger andauernden Aufträgen}
 Threads in Servlets können die Antwortzeiten einer Anfrage verzögern, da pro Servlet i.d.R. nur ein Objekt dieses Servlets existiert.\\

@@ -1,0 +1,175 @@
+\section{Pizza Bestelldienst}\label{ch:pizzaservlet}
+
+
+\subsection{Lösung}
+
+Im Folgenden wird das \code{PizzaServlet} auszugsweise vorgestellt\footnote{
+vollständige Implementierung unter \url{https://github.com/ThorstenSuckow/fopt/tree/main/ee/foptweb/src/main/java/servlets/pizza}
+}.\\
+Generell folgt die Lösung dem Ansatz von \textbf{Sessions}, dass nämlich in einem zentralen Container zu einer \textbf{Cookie-ID} Bestellungen
+assoziiert sind.
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    fontsize=\small,
+    frame=lines,
+    framesep=2mm]{java}
+    @WebServlet(urlPatterns="/zusatzaufgaben/pizza-servlet")
+    public class PizzaServlet extends HttpServlet {
+
+        private final static int MAX_AGE = 10;
+        private HashMap<String, Bestellung> bestellungen;
+
+        private int bestellungId;
+        record Bestellung(String kundenname, String kundennummer, String adresse, String pizzaliste, long letzteBestellung){
+            public String toString() {
+                return "kundenname: " + kundenname +
+                        "; kundennummer: " + kundennummer +
+                        "; adresse: " + adresse +
+                        "; pizzaliste: " + pizzaliste;
+            }
+        }
+
+        public void init() {
+            bestellungId = 0;
+            bestellungen = new HashMap<>();
+        }
+
+        public synchronized void doGet(HttpServletRequest request, HttpServletResponse response) {
+            response.setContentType("text/html");
+            // writer von response anfordern und Formular übergeben
+        }
+        public synchronized void doPost(HttpServletRequest request, HttpServletResponse response) {
+            response.setContentType("text/html");
+
+            Cookie pizzaCookie = getPizzaCookie(request);
+            if (pizzaCookie == null) {
+                pizzaCookie = createPizzaCookie();
+            }
+
+            Bestellung bestellung = new Bestellung(
+              // ...
+            );
+
+            bestellungen.put(pizzaCookie.getValue(), bestellung);
+            response.addCookie(pizzaCookie);
+
+            try {
+                response.getWriter().print(
+                        "Vielen Dank für ihre Bestellung! <br/>" +
+                            bestellung
+                );
+            } catch (IOException e) {
+                response.setStatus(500);
+            }
+        }
+
+        private String getForm(HttpServletRequest request) {
+
+            Cookie pizzaCookie = getPizzaCookie(request);
+            Bestellung bestellung = getBestellungFromCookie(pizzaCookie);
+
+            String kundenname = "";
+            String kundennummer = "";
+            String adresse = "";
+            String pizzaliste = "";
+
+            if (bestellung != null) {
+                kundenname = bestellung.kundenname();
+                kundennummer = bestellung.kundennummer();
+                adresse = bestellung.adresse();
+                pizzaliste = bestellung.pizzaliste();
+            }
+
+            // formular erstellen und zurückgeben
+            // ...
+        }
+
+        private Bestellung getBestellungFromCookie(Cookie pizzaCookie) {
+            if (pizzaCookie != null) {
+                String key = pizzaCookie.getValue();
+                return bestellungen.get(key);
+            }
+            return null;
+        }
+
+        private Cookie getPizzaCookie(HttpServletRequest request) {
+            Cookie pizzaCookie = null;
+            if (request.getCookies() != null) {
+                for (Cookie cookie: request.getCookies()) {
+                    if (cookie.getName().equals("pizzaCookie")) {
+                        pizzaCookie = cookie;
+                        break;
+                    }
+                }
+            }
+
+            if (pizzaCookie != null) {
+                String key = pizzaCookie.getValue();
+                Bestellung bestellung = bestellungen.get(key);
+                if (bestellung == null) {
+                    pizzaCookie = null;
+                } else {
+                    long letzteBestellung = bestellung.letzteBestellung();
+                    if (System.currentTimeMillis() - letzteBestellung > MAX_AGE) {
+                        pizzaCookie = null;
+                        bestellungen.remove(key);
+                    }
+                }
+            }
+
+            return pizzaCookie;
+        }
+
+        private Cookie createPizzaCookie() {
+            Cookie pizzaCookie = new Cookie("pizzaCookie", "bestellung" + (bestellungId++));
+            pizzaCookie.setMaxAge(MAX_AGE);
+            return pizzaCookie;
+        }
+}
+\end{minted}\\
+
+
+\subsection{Anmerkung und Ergänzungen}
+
+Das Servlet wird i.d.R. mit \code{@WebServlet} annotiert, gefolgt von einem Klammernpaar (rund), in dem \code{Element-Wert-Paare}\footnote{
+``element-value pairs``: \url{https://docs.oracle.com/javase/specs/jls/se21/html/jls-9.html#jls-ElementValuePairList} - abgerufen 13.2.2024
+} angegeben werden können:
+
+\begin{minted}[mathescape,
+    numbersep=5pt,
+    gobble=2,
+    framesep=2mm]{java}
+    @WebServlet(name="pizza-servlet",urlPatterns="/pizza-servlet")
+\end{minted}
+Der generelle Ablauf beim Aufbereiten einer Response ist:
+
+\begin{itemize}
+    \item Setzen des \textbf{Content-Type}-Header
+    \item Anfragen des \code{Writer}s von dem Response-Objekt, Übergabe der zu sendenden Daten an den \code{PrintWriter} mittels \code{print(s: String)}, \textit{commit} der Ausgabedaten über \code{flush()}\footnote{
+    s. ``getWriter``: \url{https://jakarta.ee/specifications/servlet/6.0/apidocs/jakarta.servlet/jakarta/servlet/servletresponse#getWriter()} - abgerufen 13.2.2024
+    }
+\end{itemize}
+
+
+\begin{itemize}
+    \item Da sowohl bei einem \textbf{POST} als auch einem \textbf{GET} auf zentrale Daten lesend und schrieben zugegriffen werden, sind die Methoden synchronisiert: Bei dem Objekt, das Ziel der Datenzugriffe ist, handelt es sich um die \code{HashMap}, die zu den Cookie-IDs (Schlüssel) die Bestellungen (vom Typ eines Bestellung-\code{Record}s) vorhält.
+    \item In der Aufgabenstellung wird nach einer Cookie-basierten Lösung gefragt, die in der umgesetzten Form eigentlich einem Session-Management über \textit{Tokens} entspricht -
+     der Cookie speichert eine Id (den \textit{Token}), die Daten hierzu werden auf dem Server gespeichert und sind mit diesem Token assoziiert.
+    Der Entwickler muss sich sowohl um das Neuinitialisieren der Tokens kümmern als auch um das Löschen der server-seitig-gespeicherten Daten, sollte ein Cookie aufgrund der \textbf{max-age} Einstellung (10 sek. in der Aufgabe) invalidiert werden müssen.\\
+    Bie Sessions wird i.d.R der Session-Cookie automatisch gelöscht, wenn die zugehörige Browserinstanz geschlossen wird (s. Abschnitt~\ref{sec:cookieaccess}).\\
+    Auch ist bei Sessions die Semantik (``\textit{Inaktivität}``) für das Setzen eines Timeouts eine andere, dort über die Schnittstellenmethode \begin{center}\code{setMaxInactiveInterval(interval: int)}\end{center}\footnote{
+        s. ``setMaxInactiveInterval`` : \url{https://jakarta.ee/specifications/servlet/6.0/apidocs/jakarta.servlet/jakarta/servlet/http/httpsession#setMaxInactiveInterval(int)} - abgerufen 13.2.2024
+    }, außerdem kann auch der Zeitpunkt abgefragt werden, an dem die Session zuletzt über einen Request aktiv gewesen ist\footnote{``getLastAccessedTim``: \url{https://jakarta.ee/specifications/servlet/6.0/apidocs/jakarta.servlet/jakarta/servlet/http/httpsession#getLastAccessedTime()} - abgerufen 13.2.2024}.
+    \item Enthält ein Request keine Cookies, liefert \code{getCookies():Cookie[]} den Wert \code{null} zurück\footnote{
+    ``getCookies``: \url{https://jakarta.ee/specifications/servlet/6.0/apidocs/jakarta.servlet/jakarta/servlet/http/httpservletrequest#getCookies()} - abgerufen 13.2.2024
+    }
+    \item Bis auf den Cookie-Namen und den Wert des Cookies werden sonst keine Informationen von dem Client an den Server mit dem Cookie-Header gesendet\footnote{
+    s. ``Cookie``: \url{https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cookie}
+    }.\\
+    Deshalb kann in der o.a. Implementierung auch nicht über den Request auf den vorher konfigurierten Wert für \textbf{max-age} zugegriffen werden - diese Information wird vom Client-Browser gespeichert, aber nicht an den ``origin server`` zurückkommuniziert\footnote{
+    s. `´4.2.1.  Syntax``: \url{https://www.rfc-editor.org/rfc/rfc6265#section-4.2.1} bzw. im aktuelleren Draft \url{https://httpwg.org/http-extensions/draft-ietf-httpbis-rfc6265bis.html#name-syntax-2} - beide abgerufen 13.2.2024
+    }
+\end{itemize}
