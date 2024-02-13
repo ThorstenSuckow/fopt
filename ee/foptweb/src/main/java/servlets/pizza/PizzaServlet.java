@@ -18,6 +18,12 @@ public class PizzaServlet extends HttpServlet {
     private int bestellungId;
     record Bestellung(String kundenname, String kundennummer, String adresse, String pizzaliste, long letzteBestellung){
 
+        public String toString() {
+            return "kundenname: " + kundenname +
+                    "; kundennummer: " + kundennummer +
+                    "; adresse: " + adresse +
+                    "; pizzaliste: " + pizzaliste;
+        }
     }
 
     private HashMap<String, Bestellung> bestellungen;
@@ -67,7 +73,10 @@ public class PizzaServlet extends HttpServlet {
         response.addCookie(pizzaCookie);
 
         try {
-            response.getWriter().print("Vielen Dank für ihre Bestellung!");
+            response.getWriter().print(
+                    "Vielen Dank für ihre Bestellung! <br/>" + bestellung
+
+            );
         } catch (IOException e) {
             response.setStatus(500);
         }
@@ -95,7 +104,7 @@ public class PizzaServlet extends HttpServlet {
         return "<form method=\"POST\">" +
                 "<input type=\"text\" value=\"" + kundenname + "\" placeholder=\"kundenname\" name=\"kundenname\" /><br />"+
                 "<input type=\"text\" value=\"" + kundennummer + "\" placeholder=\"kundennummer\"  name=\"kundennummer\" /><br />"+
-                "<textarea value=\"" + adresse + "\" name=\"adresse\" ></textarea><br />" +
+                "<textarea name=\"adresse\" >" + adresse + "</textarea><br />" +
                 "<select name=\"pizzaliste\">" +
                 "<option " + (pizzaliste.equals("Vegetaria") ? "selected" : "") + " value=\"Vegetaria\">Vegetaria</option>" +
                 "<option " + (pizzaliste.equals("Diavolo") ? "selected" : "") + " value=\"Diavolo\">Diavolo</option>" +
@@ -107,7 +116,7 @@ public class PizzaServlet extends HttpServlet {
 
     private Bestellung getBestellungFromCookie(Cookie pizzaCookie) {
 
-       if (pizzaCookie != null) {
+        if (pizzaCookie != null) {
             String key = pizzaCookie.getValue();
             return bestellungen.get(key);
         }
