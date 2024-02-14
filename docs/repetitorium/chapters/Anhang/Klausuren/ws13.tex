@@ -1,0 +1,110 @@
+\chapter{WS13}\label{ch:klausurws13}
+
+
+\subsection{Lösungsvorschlag}
+
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    fontsize=\small,
+    frame=lines,
+    framesep=2mm]{java}
+    class Zahlenschloss {
+
+        private int[] kombination;
+
+        private int[] state;
+
+        private boolean opened = false;
+
+        public Zahlenschloss(int[] kombination) {
+            this.kombination = kombination;
+            this.state = new int[kombination.length];
+        }
+
+        public int anzahlRaedchen() {
+            return kombination.length;
+        }
+
+        public synchronized int lesen(int radnummer) {
+            return state[radnummer];
+        }
+
+        public synchronized void drehen(int radnummer, int zahl) {
+
+            state[radnummer] = zahl;
+            opened = true;
+            for (int i = 0; i < anzahlRaedchen(); i++) {
+                if (lesen(i) != kombination[i]) {
+                    opened = false;
+                    break;
+                }
+            }
+
+            if (opened) {
+                this.notify();
+            }
+        }
+
+        public synchronized void warten() {
+
+            while (!opened) {
+                try {
+                    this.wait();
+                } catch (InterruptedException ignored) {}
+            }
+        }
+    }
+\end{minted}\\
+
+
+\subsection{Anmerkung und Ergänzungen}
+
+\begin{itemize}
+    \item Es wird eine Wartebedingung benötigt, und zwar für die Methode \code{warten()}; ankommende Threads werden
+    in die Warteschlange des Zahlenschloss-Objektes geschickt, wenn \code{opened} auf false gesetzt ist, ansonsten
+    verlassen diese direkt die Methode wieder.\\
+    Die Methode \code{drehen} benötigt keine separate Wartebedingung.
+    Es reicht aus, sicherzustellen, dass das Zahlenschloss nicht gleichzeitig von anderen Threads benutzt werden kann:
+    Die Methode \code{drehen} ist hierfür synchronisiert, damit das Zahlenschloss {insg.} immer nur eine Zustandsänderung
+    erfährt - es sind andere Implementierungen möglich, in denen das Zahlenschloss dann von mehreren Threads gleichzeitig
+    genutzt werden darf, wenn sich die Zugriffe anhand der ``Ziel``-\code{radnummer} unterscheiden, {bspw.} durch Mutex-Semaphore,
+    die pro Radnummer verwendet werden\footnote{
+        der gleichzeitige Zugriff auf unterschidliche Arrays-Indizes ist erlaubt, s. `´17.4.1. Shared Variables``: \url{https://docs.oracle.com/javase/specs/jls/se21/html/jls-17.html#jls-1.4.1} - abgerufen 14.2.2024
+    }.
+    \item Es gibt nur eine Wartebedingung, von daher sollte \code{notify()} genügen.\\
+    Wenn wir allerdings davon ausgehen, dass mehrere Threads über die Methode \code{warten()} in die Warteschlange des Objektes eingereiht worden sind,  sollte \code{notifyAll()} verwendet werden (siehe hierzu auch Abschnitt \ref{subsec:notifyAll}).
+    Dennoch ist nicht garantiert, dass auch alle Threads aus der Warteschlange gelangen, denn es kann sein, dass ein anderer Thread die Methode \code{drehen()} betritt, dort die
+    Zahlenkombination ändert und \code{opened} wieder auf \code{false} gesetzt wird. \\
+    Ein anderer Thread, der nun in  \code{warten()} an die Reihe kommt, überprüft die Wartebedingung, und wird wieder in die Warteschlange eingereiht.
+    Es ist also durchaus möglich, dass ein Thread nicht mehr aus der Methode \code{warten()} herauskommt.\\
+    Dies könnte bspw. dadurch verhindert werden, dass die Threads in eine Queue gepackt werden, und in \code{drehen()} eine Wartebedingung eingefügt wird, die erst erfüllt ist,
+    wenn die Queue geleert wurde oder aus ihr entnommen wurde, in der Reihenfolge, in der die Threads in die Queue eingereiht worden sind (\textit{FIFO}) (s. a. Abschnitt~\ref{subsec:readerwriterproblem}).
+    \item Bei der Teilaufgabe mit der Schleife muss die komplette Schleife synchronisiert werden, was man durch ein \code{synchronized}-Statement erreicht\footnote{siehe Abschnitt~\ref{subsec:synchronizedstatement}.}
+    \begin{minted}[mathescape,
+        linenos,
+        numbersep=5pt,
+        gobble=2,
+        fontsize=\small,
+        frame=lines,
+        framesep=2mm]{java}
+        synchronized (zk) {
+            for (int i = 0; i < anzahlRaedchen; i++) {
+                System.out.println(zk.lesen(i));
+            }
+        }
+    \end{minted}
+    Ansonsten läuft man Gefahr, dass sich nach Auslesen der 1. Position der Wert von Position 2 geändert hat und dadurch eine
+    Zahlenkombination ausgegeben wird, die es nicht gegeben hat:
+    \begin{enumerate}
+        \item $K\coloneqq[0, 0, 0]$
+        \item Position $K_0$ wird ausgelesen und liefert $0$.
+        \item Thread ändert $K_0$ zu $1$ $\implies K\coloneqq[1, 0, 0] $.
+        \item Thread ändert $K_1$ zu $2$ $\implies K\coloneqq[1, 2, 0] $.
+        \item Thread ändert $K_2$ zu $3$ $\implies K\coloneqq[1, 2, 3] $.
+        \item Positionen $K_1$ und $K_2$ werden ausgelesen und liefern: $2, 3$
+        \item Ausgabe: $0, 2, 3$ - diese Kombination hat es in dem Fall aber tatsächlich nicht gegeben.
+    \end{enumerate}
+\end{itemize}
