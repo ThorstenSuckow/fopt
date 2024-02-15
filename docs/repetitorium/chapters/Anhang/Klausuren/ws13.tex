@@ -1,6 +1,6 @@
 \chapter{WS13}\label{ch:klausurws13}
 
-
+\section{Aufgabe 1}
 \subsection{Lösungsvorschlag}
 
 
@@ -72,7 +72,7 @@
     erfährt - es sind andere Implementierungen möglich, in denen das Zahlenschloss dann von mehreren Threads gleichzeitig
     genutzt werden darf, wenn sich die Zugriffe anhand der ``Ziel``-\code{radnummer} unterscheiden, {bspw.} durch Mutex-Semaphore,
     die pro Radnummer verwendet werden\footnote{
-        der gleichzeitige Zugriff auf unterschidliche Arrays-Indizes ist erlaubt, s. `´17.4.1. Shared Variables``: \url{https://docs.oracle.com/javase/specs/jls/se21/html/jls-17.html#jls-1.4.1} - abgerufen 14.2.2024
+        der gleichzeitige Zugriff auf unterschiedliche Arrays-Indizes ist erlaubt, s. `´17.4.1. Shared Variables``: \url{https://docs.oracle.com/javase/specs/jls/se21/html/jls-17.html#jls-1.4.1} - abgerufen 14.2.2024
     }.
     \item Es gibt nur eine Wartebedingung, von daher sollte \code{notify()} genügen.\\
     Wenn wir allerdings davon ausgehen, dass mehrere Threads über die Methode \code{warten()} in die Warteschlange des Objektes eingereiht worden sind,  sollte \code{notifyAll()} verwendet werden (siehe hierzu auch Abschnitt \ref{subsec:notifyAll}).
@@ -108,3 +108,39 @@
         \item Ausgabe: $0, 2, 3$ - diese Kombination hat es in dem Fall aber tatsächlich nicht gegeben.
     \end{enumerate}
 \end{itemize}
+
+\begin{tcolorbox}[colback=red!20,color=white,title=Anmerkung]
+    Die Methode \code{lesen()} als \code{synchronized} zu markieren könnte man sich vlt. sparen, wenn man davon ausgeht,
+    dass die Methode ohnehin in einem \code{synchronized}-Statement verwendet wird, um alle Rädchen abzulesen.\\
+    Mehrere Threads können also nicht parallel auf unterschiedliche Positionen des Feldes zugreifen, wenn die Methode
+    synchronisiert ist.\\
+    Allerdings ist sowohl das Skript als auch das Buch recht klar, was in dieser Situation geschehen muss (s. Skript Fopt1/2, S. 9, außerdem \cite[31, Abschnitt 2.3.6]{Oec22}): Es muss (in diesem Kurs) immer \code{synchronized} verwendet werden, wenn gleichzeitig
+    Daten geschrieben und gleichzeitig diese Daten gelesen werden sollen - und eine andere Implementierung, bei der die
+    einzelnen Positionen ``gelocked`` sind, so dass ein gleichzeitiger Zugriff auf unterschiedliche Rädchen möglich ist, war nicht gefordert.\\
+    Ggfl. würde in anderen Implementierungen der Einsatz von \code{AtomicReferenceArray}\footnote{s. \cite[157 ff.]{Oec22}
+    s. ``Class AtomicReferenceArray<E>``: \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/atomic/AtomicReferenceArray.html} - abgerufen 15.2.2024
+    } Sinn machen, aber das Lehrmaterial ist bereits sehr eindeutig bzgl. der Verwendung von \code{synchronized}.
+\end{tcolorbox}
+
+
+
+\section{Aufgabe 3}
+\subsection{Lösungsvorschlag}
+
+\subsection*{Statische Parallelität}
+Statische Parallelität erlaubt es einem Server, eine \textit{fixe} Anzahl von Verbindungen gleichzeitig zu bedienen.\\
+Hierbei wird ein Feld von Threads erstellt, wobei jeder Thread das \code{ServerSocket}-Objekt als Referenz übergeben bekommt.
+In der \code{run()}-Methode wird dann über \code{accept()} in einer Endlosschleife auf eingehende Verbindungen gewartet, die dann so lange bedient werden, bis sich ein Client wieder abmeldet (oder eine andere Abbruchbedingung erfüllt ist, wie z.B. ein \code{SocketTimeout}).\\
+Das sich ein Client abmeldet, bekommt man bspw. dadurch mit, dass \code{null} beim Lesen von einer Nachricht des Clients zurückgegeben wird (vgl. \cite[286]{Oec22}. \\
+Siehe Abschnitt~\ref{sec:seqparserver} für ein Implementierungsbeispiel.
+
+
+
+\subsection*{Dynamische Parallelität}
+
+Bei der \textbf{Dynamischer Parallelität} erzeugt der Server für jede Verbindung einen neuen Thread, der so lange läuft, bis der Client die Verbindung wieder trennt.\\
+Die Anzahl der Threads ändert sich dadurch laufend.\\
+Wird die max. Anzahl erlaubter Threads nicht kontrolliert, kann es zu einer Überlastung des Server-Rechners kommen (bspw. durch einen Denial-of-Service-Angriff.)\\
+
+\noindent
+I.d.R. ist eine Mischform aus beidem geeignet, um mehrere Clients gleichzeitig bedienen zu können, und dabei nicht Gefahr zu laufen, durch dynamisches, unbegrenztes Wachstum der Anzahl der Threads überlastet zu werden.

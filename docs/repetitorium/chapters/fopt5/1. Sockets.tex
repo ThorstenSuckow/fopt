@@ -324,7 +324,7 @@ Sobald ein Server-Socket über Java gestartet wurde, können sich Clients zu die
 Dabei spiel es keine Rolle, ob der Server \code{accept()} zur Annahme neuer Verbindungen aufgerufen hat - sowohl die Clients als auch bereits gesendete Nachrichten werden vom OS bis zu einer gewissen Grenze gepuffert.\\
 Sobald der Server dann \code{accept()} aufruft, wird ein Client aus dem Puffer genommen und die von ihm gesendeten Daten können gelesen werden (s. Skript FOPT5/6, S. 48).
 
-\section{Sequenzielle und parallele Server}
+\section{Sequenzielle und parallele Server}\label{sec:seqparserver}
 
 Bei der Benutzung eines \textbf{TCP}-Servers wird nach der Annahme einer Verbindung nur von dieser Verbindung gelesen; die nächste Verbindung muss warten, bis die Verbindung geschlossen wird.\\
 $\rightarrow$ Die Problematik kann umgangen werden, indem man für eine eingehende Verbindung einen neuen Thread startet, der mit dieser Verbindung arbeitet.\\
@@ -337,13 +337,68 @@ Fixe Anzahl von Threads (``Verbindungen``) die von einem Server genutzt werden k
 
 $\rightarrow$ \textbf{Statische Parallelität} kann über ein Feld von Threads realisiert werden, oder einen \textbf{ThreadPool}\footnote{
 ``Thread Pools``: \url{https://docs.oracle.com/javase/tutorial/essential/concurrency/pools.html} - abgerufen 31.01.2024
-}, bei dem \code{corePoolSize} $=$ \code{maxPoolSize} gilt (s.a.~\cite[146]{Oec22}).
+}, bei dem \code{corePoolSize} $=$ \code{maxPoolSize} gilt (s.a.~\cite[146]{Oec22}).\\
 
+\noindent
+Statische Parallelität erlaubt es einem Server, eine \textit{fixe} Anzahl von Verbindungen gleichzeitig zu bedienen.\\
+Hierbei wird ein Feld von Threads erstellt, wobei jeder Thread das \code{ServerSocket}-Objekt als Referenz übergeben bekommt.
+In der \code{run()}-Methode wird dann über \code{accept()} in einer Endlosschleife auf eingehende Verbindungen gewartet, die dann so lange bedient werden, bis sich ein Client wieder abmeldet (oder eine andere Abbruchbedingung erfüllt ist, wie z.B. ein \code{SocketTimeout}).\\
+Das sich ein Client abmeldet, bekommt man bspw. dadurch mit, dass \code{null} beim Lesen von einer Nachricht des Clients zurückgegeben wird (vgl. \cite[286]{Oec22}
+
+Im Folgenden ein Implementierungsbeispiel für \textbf{Statische Parallelität}:
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    fontsize=\small,
+    frame=lines,
+    framesep=2mm]{java}
+    class ServerThread extends Thread {
+        private ServerSocket server;
+        public ServerThread(ServerSocket sck) {
+            this.server = sck;
+            start();
+        }
+        public void run() {
+            try (Socket socket = server.accept()) {
+                while (true) {
+                    // lesen & schreiben
+                    // bei timeout oder exception Schleife verlassen
+                }
+            }
+        }
+    }
+
+    class Server {
+        private ServerThread[] serverThreads;
+
+        public Server(int num) {
+            serverThreads = new ServerThread[num];
+            init();
+        }
+        private void init() {
+            try {
+                ServerSocket sck = new ServerSocket(8888));
+            } catch (Exception e) {
+                System.err.println(e);
+                return;
+            }
+            for (int i = 0; i < clientThreads.length; i++) {
+                serverThreads[i] = new ServerThread(sck);
+            }
+        }
+    }
+\end{minted}
 
 \subsection*{Dynamische Parallelität}
 Die Anzahl der Threads wachsen mit den eingehenden Verbindungen.\\
 
-$\rightarrow$ Risiko eines DDoS ist erhöht, da viele Verbindungen einen Server beschäftigen können; je mehr Verbindungen angenommen werden, desto mehr Thread-Objekte werden erstellt, bis die Auslastung des Rechners zu groß wird.
+$\rightarrow$ Risiko eines DDoS ist erhöht, da viele Verbindungen einen Server beschäftigen können; je mehr Verbindungen angenommen werden, desto mehr Thread-Objekte werden erstellt, bis die Auslastung des Rechners zu groß wird.\\
+
+\noindent
+Bei \textbf{Dynamischer Parallelität} erzeugt der Server für jede Verbindung einen neuen Thread, der so lange läuft, bis der Client die Verbindung wieder trennt (oder eine andere Abbruchbedingung erfüllt ist, wie z.B. ein \code{SocketTimeout}).\\
+Die Anzahl der Threads ändert sich dadurch laufend.
+
 
 \subsection*{Mischform}
 Fixe Anzahl von Threads, aber Anzahl wird erhöht, wenn die Auslastung hoch ist.\\
