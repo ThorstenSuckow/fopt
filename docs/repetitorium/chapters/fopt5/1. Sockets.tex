@@ -229,7 +229,7 @@ Will man aber einen \textbf{TTL}\footnote{\textit{Time-to-Live} - auch \textbf{h
     The Time to Live is an indication of an upper bound on the lifetime of an internet datagram. It is set by the sender of the datagram and reduced at the points along the route where it is processed. If the time to live reaches zero before the internet datagram reaches its destination, the internet datagram is destroyed. The time to live can be thought of as a self destruct time limit.
 }
 
-\section{Kommunikation über TCP mit Java-Sockets}
+\section{Kommunikation über TCP mit Java-Sockets}\label{sec:sockettcp}
 
 
 Für \textbf{TCP}-Kommunikation werden in Java die Klassen \code{Socket} und \code{ServerSocket} eingesetzt.\\
@@ -307,8 +307,10 @@ Beispiel für das Lesen von Daten über einen Socket mittels eines \code{Buffere
 Das Ende eines Datenstroms wird durch den Rückgabewert \code{null} angezeigt (bei Dateioperationen {bspw.} als Ende der Datei; TCP-Verbindung: Client hat die Verbindung geschlossen usw.).
 
 \begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
-    Das Lesen ist eine blockierende Operation.\\
-    Das Schreiben von Daten mit anschliessendem \code{flush()} ist nicht blockierend.
+    Das Empfangen von Daten ist eine blockierende Operation\footnote{Bsp.: Der Client wartet so lange, bis die Nachricht, getrennt durch \textit{newline}, bei ihm ankommt}.\\
+    Das Schreiben von Daten mit anschliessendem \code{flush()} ist i.d.R. nicht blockierend\footnote{
+    Fluss- und Überlastkontrolle spielen hier aber durchaus eine Rolle
+    }.
     Sollte der Sender allerdings direkt nach dem Senden der Daten mithilfe einer Leseoperation auf die Antwort des Empfängers warten, ist auch diese Leseoperation blockierend und es kann erst wieder gesendet werden, nachdem der Aufrufer nicht mehr blockiert ist.
 \end{tcolorbox}
 
@@ -345,6 +347,7 @@ Hierbei wird ein Feld von Threads erstellt, wobei jeder Thread das \code{ServerS
 In der \code{run()}-Methode wird dann über \code{accept()} in einer Endlosschleife auf eingehende Verbindungen gewartet, die dann so lange bedient werden, bis sich ein Client wieder abmeldet (oder eine andere Abbruchbedingung erfüllt ist, wie z.B. ein \code{SocketTimeout}).\\
 Das sich ein Client abmeldet, bekommt man bspw. dadurch mit, dass \code{null} beim Lesen von einer Nachricht des Clients zurückgegeben wird (vgl. \cite[286]{Oec22}
 
+\noindent
 Im Folgenden ein Implementierungsbeispiel für \textbf{Statische Parallelität}:
 \begin{minted}[mathescape,
     linenos,
@@ -365,13 +368,14 @@ Im Folgenden ein Implementierungsbeispiel für \textbf{Statische Parallelität}:
                     // lesen & schreiben
                     // bei timeout oder exception Schleife verlassen
                 }
+            } catch (Exception e) {
+                System.err.println("[serverthread error] " + e);
             }
         }
     }
 
     class Server {
         private ServerThread[] serverThreads;
-
         public Server(int num) {
             serverThreads = new ServerThread[num];
             init();
@@ -399,9 +403,59 @@ $\rightarrow$ Risiko eines DDoS ist erhöht, da viele Verbindungen einen Server 
 Bei \textbf{Dynamischer Parallelität} erzeugt der Server für jede Verbindung einen neuen Thread, der so lange läuft, bis der Client die Verbindung wieder trennt (oder eine andere Abbruchbedingung erfüllt ist, wie z.B. ein \code{SocketTimeout}).\\
 Die Anzahl der Threads ändert sich dadurch laufend.
 
+\noindent
+Im Folgenden ein Implementierungsbeispiel für \textbf{Dynamische Parallelität}:
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    fontsize=\small,
+    frame=lines,
+    framesep=2mm]{java}
+    class ServerThread extends Thread {
+        private Socket client;
+        public ServerThread(Socket sck) {
+            client = sck;
+            start();
+        }
+        public void run() {
+            try (Socket socket = client) {
+                while (true) {
+                    // lesen & schreiben
+                    // bei timeout oder exception Schleife verlassen
+                }
+            } catch (Exception e) {
+                System.err.println("[serverthread error] " + e);
+            }
+        }
+    }
+
+    class Server {
+        public Server() {
+            init();
+        }
+        private void init() {
+            try (ServerSocket server = new ServerSocket(8888)) {
+                while (true) {
+                    try {
+                        new ServerThread(server.accept());
+                    } catch (Exception e) {
+                        System.err.println("[server error]  " + e);
+                    }
+                }
+            } catch (Exception e) {
+                System.err.println("[server error] " + e);
+            }
+        }
+    }
+\end{minted}
 
 \subsection*{Mischform}
-Fixe Anzahl von Threads, aber Anzahl wird erhöht, wenn die Auslastung hoch ist.\\
-
-\noindent
-Eine \textbf{Mischform} kann leicht realisiert werden, indem wieder ein \textbf{ThreadPool} verwendet wird, bei dem \code{maximumPoolSize} $>$ \code{corePoolSize} gilt und die \code{BlockingQueue}\footnote{ ``Interface BlockingQueue<E>``: \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/BlockingQueue.html} - abgerufen 31.01.2024; s.a.~\cite[146]{Oec22}} eine begrenzte Anzahl von Plätzen hat (darf nicht beliebig anwachsen).
+I.d.R. ist eine Mischform aus beidem geeignet, um mehrere Clients gleichzeitig bedienen zu können, und dabei nicht Gefahr zu laufen, durch dynamisches, unbegrenztes Wachstum der Anzahl der Threads den Server-Rechner zu überlasten.\\
+Eine Vorgabe vorinitialisierter Threads kann dabei die ansonsten benötigten Rechenoperationen zur Instanziierung neuer Thread-Objekte
+einsparen.\\
+Ein \code{ThreadPoolExecutor}\footnote{
+    s. ``Class ThreadPoolExecutor``: \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/ThreadPoolExecutor.html} - abgerufen 16.2.2024
+} kann verwendet werden, um eine Mischform aus statischer und dynamischer Parallelität zu realisieren (vgl.\cite[164 u. 302]{Oec22})\footnote{
+    es sollte dann \textit{maximumPoolSize} $>$ \textit{corePoolSize} gelten und die \textit{BlockingQueue} (s. ``Interface BlockingQueue<E>``: \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/BlockingQueue.html} - abgerufen 31.01.2024; s.a.~\cite[146]{Oec22}) sollte eine begrenzte Anzahl von Plätzen haben (darf nicht beliebig anwachsen).
+}.

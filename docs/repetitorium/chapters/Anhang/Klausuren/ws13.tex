@@ -134,13 +134,111 @@ In der \code{run()}-Methode wird dann über \code{accept()} in einer Endlosschle
 Das sich ein Client abmeldet, bekommt man bspw. dadurch mit, dass \code{null} beim Lesen von einer Nachricht des Clients zurückgegeben wird (vgl. \cite[286]{Oec22}. \\
 Siehe Abschnitt~\ref{sec:seqparserver} für ein Implementierungsbeispiel.
 
-
-
 \subsection*{Dynamische Parallelität}
 
-Bei der \textbf{Dynamischer Parallelität} erzeugt der Server für jede Verbindung einen neuen Thread, der so lange läuft, bis der Client die Verbindung wieder trennt.\\
+Bei \textbf{Dynamischer Parallelität} erzeugt der Server für jede Verbindung einen neuen Thread, der so lange läuft, bis der Client die Verbindung wieder trennt (oder eine andere Abbruchbedingung erfüllt ist).\\
 Die Anzahl der Threads ändert sich dadurch laufend.\\
-Wird die max. Anzahl erlaubter Threads nicht kontrolliert, kann es zu einer Überlastung des Server-Rechners kommen (bspw. durch einen Denial-of-Service-Angriff.)\\
+Wird die max. Anzahl erlaubter Threads nicht kontrolliert, kann es zu einer Überlastung des Rechners kommen, auf dem der Server läuft (bspw. durch einen Denial-of-Service-Angriff.)\\
+Siehe Abschnitt~\ref{sec:seqparserver} für ein Implementierungsbeispiel.
 
 \noindent
-I.d.R. ist eine Mischform aus beidem geeignet, um mehrere Clients gleichzeitig bedienen zu können, und dabei nicht Gefahr zu laufen, durch dynamisches, unbegrenztes Wachstum der Anzahl der Threads überlastet zu werden.
+I.d.R. ist eine Mischform aus beidem geeignet, um mehrere Clients gleichzeitig bedienen zu können, und dabei nicht Gefahr zu laufen, durch dynamisches, unbegrenztes Wachstum der Anzahl der Threads überlastet zu werden.\\
+Eine feste Vorgabe existierender Threads kann dabei ansonsten benötigte Rechenoperationen zur Instanziierung neuer Thread-Objekte
+einsparen.\\
+Ein \code{ThreadPoolExecutor}\footnote{
+    s. ``Class ThreadPoolExecutor``: \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/ThreadPoolExecutor.html} - abgerufen 16.2.2024
+} kann verwendet werden, um eine Mischform aus statischer und dynamischer Parallelität zu realisieren (vgl.\cite[164 u. 302]{Oec22})\footnote{
+    es sollte dann \textit{maximumPoolSize} $>$ \textit{corePoolSize} gelten und die \textit{BlockingQueue} (s. ``Interface BlockingQueue<E>``: \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/BlockingQueue.html} - abgerufen 31.01.2024; s.a.~\cite[146]{Oec22}) sollte eine begrenzte Anzahl von Plätzen haben (darf nicht beliebig anwachsen).
+}.
+
+\subsection*{Client sendet Kommandos in einer Schleife, und empfängt KOmmandos in einer zweiten}
+
+Der Client $C$ verbindet sich zu dem Server $S$ und sendet in einer Schleife Kommandos an den Server, in einer zweiten
+empfängt er die Antworten des Servers.\\
+Der Programmcode dazu könnte so aussehen:
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    fontsize=\small,
+    frame=lines,
+    framesep=2mm]{java}
+    // Client
+    public void run() {
+        try (Socket client = socket) {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
+
+            for (int i = 0; i < cmd.length; i++) {
+                writer.write(cmd[i]);
+                writer.newLine();
+            }
+            writer.flush();
+
+            for (int i = 0; i < cmd.length; i++) {
+                String response = server.readLine();
+                processResponse(response);
+            }
+        } catch (Exception e) {
+            // ...
+        }
+    }
+\end{minted}
+
+Bei der TCP-Kommunikation sind schreibende Zugriffe nicht blocking, wohl aber lesende (s. Abschnitt~\ref{sec:sockettcp}).\\
+Es macht deshalb keinen Unterschied, wenn die schreibenden Zugriffe in einer Schleife sind, und die lesenden ebenfalls.\\
+Angenommen, ein schreibender Zugriff $w$ benötigt eine Zeit von $0$, ein lesender Zugriff $1$.\\
+Bei $4$ schreibenden Zugriffen und $5$ lesenden Zugriffen addiert sich die benötigte Zeit zu $4*0 + 5*1 = 5$ - es ist im Endeffekt egal, in welcher Reihenfolge die Befehle ausgeführt werden - offenbar wächst die benötigte Zeit linear zu der Anzahl der lesenden Aufrufe.\\
+Die Kommunikation zwischen Client und Server ist durch die Nutzung ein und desselben Sockets des Clients ohnehin \textit{sequentiell}.
+Die Parallelität wirkt sich nur auf die Bearbeitung weiterer Clients aus.
+
+
+\noindent
+Wird nun statische und/ oder dynamische Parallelität (und = Mischform), so kann es durchaus sein, dass die Anfragen vom Client eher beantwortet werden, weil der Rechner mehr Resourcen hat, aber auch hier ist eine schnellere Abarbeitung nicht garantiert.
+Bestünde eine Iteration der Kommunikation aus \textit{senden - empfangen - senden - empfangen ...} so kann es sein, dass die Kommunkationskette beim letzten \textit{empfangen} wegen der Last des Servers zum Halt kommt.
+Gleiches kann aber auch durchaus passieren, wenn zuerst gesendet wird, und dann in einer Schleife empfangen wird.\\
+Bis auf größere Kapazitäten des Servers, der dadurch in der Lage ist, mehrere Clients gleichzeitig zu bedienen, hat man dadurch also nicht viel gewonnen.
+
+\subsection*{Wie kann die Datenstromorientierung des beschriebenen TCP-Clients zum Problem werden}
+TCP besitzt die folgenden Eigenschaften:
+
+\begin{itemize}
+    \item es ist verlässlich durch Fluss- / Überlastkontrolle
+    \item es ist datenstromorientiert
+    \item es ist verbindungsorientiert
+\end{itemize}
+
+Gerade die Fluss-/ Überlastkontrolle könnte für den Client zum Problem werden, wenn er zuviele Nachrichten hintereinander sendet.\\
+\noindent
+Als Lösung könnte man ggf. versuchen, kürzere Nachrichten in einer größeren Nachricht zu sammeln, und diese an den Server zu schicken.\\
+\noindent
+Als Alternative böte sich ggfl. an, dass man eine Art ``Lastkontrolle`` auf dem Client implementiert, und immer nur $n$-Nachrichten hintereinander schickt.
+
+\begin{tcolorbox}[colback=red!20,color=white,title=Anmerkung]
+    Die Auswirkungen von Fluss-/Überlastkontrolle wurden im WS2023/2024 nicht ausführlich behandelt.\\
+    Auch im Lehrbuch bzw. im Skript finden sich nicht viele Informationen hierzu.
+\end{tcolorbox}
+
+\subsection*{Wie kann eine Laufzeitverbesserung erreicht werden}
+Man könnte ggfl. zwei verschiedene Thread-Klassen implementieren, die beide eine separate Socket-Verbindung zu dem Server aufbauen.\\
+Dabei sendet der eine Client-Thread nur Daten, und der andere Client-Thread empfängt die Daten.\\
+Hierzu müßte sich der empfangende Client-Thread, der sendet, zunächst identifzieren.
+Der empfangende Client-Thread identifiziert sich mit denselben Daten.
+Dadurch sollte der Server in der Lage sein, die zu sendenden Nachrichten auch den entsprechenden ``empfangenden`` Verbindungen zuordnen zu können..\\
+
+
+\section{Aufgabe 4}
+\subsection{Lösungsvorschlag}
+
+Bei dem gegebenen Sourcecode fehlt in der Klasse \code{HelloImpl} der Konstruktor, der, wenn von \code{UnicastRemoteObject}\footnote{
+s. ``Class UnicastRemoteObject``: \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.rmi/java/rmi/server/UnicastRemoteObject.html} - abgerufen 16.2.2024
+} abgeleitet wird, zwingend vorhanden sein muss (s. Abschnitt~\ref{sec:rmiapps}).\\
+Das ist dadurch bedingt, weil es in \code{UnicastRemoteObject} einen parameterlose Konstruktor gibt, der eine \code{throws}-Klausel besitzt, die eine Ausnahme vom Typ \code{RemoteException} wirft.
+Da der in \code{HelloImpl} vom Compiler zur Verfügung gestellte Standardkonstruktor diese \code{throws}-Klausel nicht definiert, kommt es zu einem Compiler-Fehler (vgl.\cite[313]{Oec22}).
+
+\noindent
+Bei der Parameterübergabe handelt es sich um \textbf{Wertübergabe}.\\
+Für Referenzübergabe müsste der Rückgabewert von \code{hello} exportiert sein - entweder, indem das Objekt explizit exportiert wird\footnote{
+bspw. über ``exportObject`` - s. \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.rmi/java/rmi/server/UnicastRemoteObject.html#exportObject(java.rmi.Remote)} - abgerufen 16.2.2024
+}, oder indem ein Objekt einer Klasse verwendet wird, die von \code{UnicastRemoteObject} ableitet - der Aufruf des Konstruktors von \code{UnicastRemoteObject} sorgt dafür, dass das Objekt implizit exportiert wird.
