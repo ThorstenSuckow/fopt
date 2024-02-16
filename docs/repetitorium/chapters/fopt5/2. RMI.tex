@@ -13,12 +13,6 @@ Für RMI ist ein Protokoll auf Schicht 5 definiert, das Daten, deren Reihenfolge
 \noindent
 \textbf{RMI} verfolgt den Ansatz, OOP auch für die Kommunikation zwischen verteilten Anwendungen zu realisieren, wobei der Aspekt der Verteilung für die Entwickler weitestgehend transparent bleibt
 
-\begin{figure}
-    \centering
-    \includegraphics[scale=0.5]{chapters/fopt5/img/rmi/processcall}
-    \caption{Zwei unterschiedliche Objekte in unterschiedlichen Aufrufsituationen. Im oberen Beispiel befinden sich die Objekte im selben Adressraum, im unteren Beispiel in unterschiedlichen Adressräumen - diese Situation kommt bei der Nutzung von RMI vor (Quelle: in Anlehnung an \cite[311 f., Abbildung 6.1 und 6.2]{Oec22})}
-    \label{fig:processcall}
-\end{figure}
 
 \noindent
 Die \textbf{Verteilungstransparenz} wird bei \textbf{RMI} über \textbf{Stubs} und \textbf{Skeletons} realisiert.\\
@@ -30,12 +24,7 @@ Ein \textbf{Stub} implementiert dieselbe Schnittstelle wie das Objekt, das über
 Ein \textbf{Skeleton} nimmt die Nachrichten, die vom \textbf{Stub} über die aufgebaute \textbf{TCP}-Verbindung gesendet werden, entgegen und ruft die Methoden auf dem entsprechenden Server-Objekt auf.\\
 $\rightarrow$ Ein \textbf{Skeleton} besitzt die Struktur eines \textbf{TCP}-Servers.
 
-\begin{figure}
-    \centering
-    \includegraphics[scale=0.4]{chapters/fopt5/img/rmi/stubskeleton}
-    \caption{Prinzip der Kommunikation zwischen RMI-Client und -Server. (Quelle: in Anlehnung an \cite[312, Bild 6.3]{Oec22})}
-    \label{fig:stubskeleton}
-\end{figure}
+
 
 \begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
     Struktur einer RMI Anwendung\footnote{vergleiche zu den folgenden Aussagen~\cite[162 ff.]{HM05}; \textbf{Stubs} und \textbf{Skeletons} werden automatisch generiert.}:\\
@@ -74,6 +63,22 @@ $\rightarrow$ Ein \textbf{Skeleton} besitzt die Struktur eines \textbf{TCP}-Serv
     Ein \textbf{RMI-Server} instanziiert ein entferntes Objekt und registriert es unter einem Namen bei der \textbf{RMI-Registry}, und wartet \textit{passiv} auf den Aufruf einer Methode durch den \textbf{RMI-Client}.
 
 \end{tcolorbox}
+
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.5]{chapters/fopt5/img/rmi/processcall}
+    \caption{Zwei unterschiedliche Objekte in unterschiedlichen Aufrufsituationen. Im oberen Beispiel befinden sich die Objekte im selben Adressraum, im unteren Beispiel in unterschiedlichen Adressräumen - diese Situation kommt bei der Nutzung von RMI vor (Quelle: in Anlehnung an \cite[311 f., Abbildung 6.1 und 6.2]{Oec22})}
+    \label{fig:processcall}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.4]{chapters/fopt5/img/rmi/stubskeleton}
+    \caption{Prinzip der Kommunikation zwischen RMI-Client und -Server. (Quelle: in Anlehnung an \cite[312, Bild 6.3]{Oec22})}
+    \label{fig:stubskeleton}
+\end{figure}
+
 
 \begin{figure}
     \centering
