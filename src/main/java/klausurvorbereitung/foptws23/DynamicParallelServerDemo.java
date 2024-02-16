@@ -24,13 +24,12 @@ public class DynamicParallelServerDemo {
 
             try (Socket s = new Socket(InetAddress.getLocalHost().getHostAddress(), 8888)) {
                 while (true) {
-                    Thread.sleep((int) (Math.random() * 1000));
 
                     BufferedWriter w = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
                     w.write(name + " sending " + i);
                     w.newLine();
                     w.flush();
-
+                    System.out.println(" sent " + i);
                     BufferedReader reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
                     System.out.println("[client] received message from server \"" + reader.readLine() + "\"");
                     i++;
@@ -58,7 +57,13 @@ public class DynamicParallelServerDemo {
                         BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
+                        try {
+                            Thread.sleep(10000);
+                        } catch (InterruptedException e) {
+
+                        }
                         String line = reader.readLine();
+
 
                         writer.write("Received line: \"" + line + "\"");
                         writer.newLine();

@@ -229,7 +229,7 @@ Will man aber einen \textbf{TTL}\footnote{\textit{Time-to-Live} - auch \textbf{h
     The Time to Live is an indication of an upper bound on the lifetime of an internet datagram. It is set by the sender of the datagram and reduced at the points along the route where it is processed. If the time to live reaches zero before the internet datagram reaches its destination, the internet datagram is destroyed. The time to live can be thought of as a self destruct time limit.
 }
 
-\section{Kommunikation über TCP mit Java-Sockets}
+\section{Kommunikation über TCP mit Java-Sockets}\label{sec:sockettcp}
 
 
 Für \textbf{TCP}-Kommunikation werden in Java die Klassen \code{Socket} und \code{ServerSocket} eingesetzt.\\
@@ -307,8 +307,10 @@ Beispiel für das Lesen von Daten über einen Socket mittels eines \code{Buffere
 Das Ende eines Datenstroms wird durch den Rückgabewert \code{null} angezeigt (bei Dateioperationen {bspw.} als Ende der Datei; TCP-Verbindung: Client hat die Verbindung geschlossen usw.).
 
 \begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
-    Das Lesen ist eine blockierende Operation.\\
-    Das Schreiben von Daten mit anschliessendem \code{flush()} ist nicht blockierend.
+    Das Empfangen von Daten ist eine blockierende Operation\footnote{Bsp.: Der Client wartet so lange, bis die Nachricht, getrennt durch \textit{newline}, bei ihm ankommt}.\\
+    Das Schreiben von Daten mit anschliessendem \code{flush()} ist i.d.R. nicht blockierend\footnote{
+    Fluss- und Überlastkontrolle spielen hier aber durchaus eine Rolle
+    }.
     Sollte der Sender allerdings direkt nach dem Senden der Daten mithilfe einer Leseoperation auf die Antwort des Empfängers warten, ist auch diese Leseoperation blockierend und es kann erst wieder gesendet werden, nachdem der Aufrufer nicht mehr blockiert ist.
 \end{tcolorbox}
 
