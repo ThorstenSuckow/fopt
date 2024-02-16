@@ -235,7 +235,7 @@ Bei dem gegebenen Sourcecode fehlt in der Klasse \code{HelloImpl} der Konstrukto
 s. ``Class UnicastRemoteObject``: \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.rmi/java/rmi/server/UnicastRemoteObject.html} - abgerufen 16.2.2024
 } abgeleitet wird, zwingend vorhanden sein muss (s. Abschnitt~\ref{sec:rmiapps}).\\
 Das ist dadurch bedingt, weil es in \code{UnicastRemoteObject} einen parameterlose Konstruktor gibt, der eine \code{throws}-Klausel besitzt, die eine Ausnahme vom Typ \code{RemoteException} wirft.
-Da der in \code{HelloImpl} vom Compiler zur Verfügung gestellte Standardkonstruktor diese \code{throws}-KLausel nicht definiert, kommt es zu einem Compiler-Fehler (vgl.\cite[313]{Oec22}).
+Da der in \code{HelloImpl} vom Compiler zur Verfügung gestellte Standardkonstruktor diese \code{throws}-Klausel nicht definiert, kommt es zu einem Compiler-Fehler (vgl.\cite[313]{Oec22}).
 
 \noindent
 Bei der Parameterübergabe handelt es sich um \textbf{Wertübergabe}.\\
