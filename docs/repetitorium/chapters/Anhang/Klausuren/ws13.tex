@@ -1,4 +1,4 @@
-\chapter{WS13}\label{ch:klausurws13}
+\usepackage{lstmisc}\chapter{WS13}\label{ch:klausurws13}
 
 \section{Aufgabe 1}
 \subsection{Lösungsvorschlag}
@@ -151,7 +151,7 @@ Ein \code{ThreadPoolExecutor}\footnote{
     es sollte dann \textit{maximumPoolSize} $>$ \textit{corePoolSize} gelten und die \textit{BlockingQueue} (s. ``Interface BlockingQueue<E>``: \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/BlockingQueue.html} - abgerufen 31.01.2024; s.a.~\cite[146]{Oec22}) sollte eine begrenzte Anzahl von Plätzen haben (darf nicht beliebig anwachsen).
 }.
 
-\subsection*{Client sendet Kommandos in einer Schleife, und empfängt KOmmandos in einer zweiten}
+\subsection*{Client sendet Kommandos in einer Schleife, und empfängt Kommandos in einer zweiten}
 
 Der Client $C$ verbindet sich zu dem Server $S$ und sendet in einer Schleife Kommandos an den Server, in einer zweiten
 empfängt er die Antworten des Servers.\\
@@ -233,12 +233,80 @@ Dadurch sollte der Server in der Lage sein, die zu sendenden Nachrichten auch de
 
 Bei dem gegebenen Sourcecode fehlt in der Klasse \code{HelloImpl} der Konstruktor, der, wenn von \code{UnicastRemoteObject}\footnote{
 s. ``Class UnicastRemoteObject``: \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.rmi/java/rmi/server/UnicastRemoteObject.html} - abgerufen 16.2.2024
-} abgeleitet wird, zwingend vorhanden sein muss (s. Abschnitt~\ref{sec:rmiapps}).\\
+} abgeleitet wird, zwingend vorhanden sein muss (s. Abschnitt~\ref{sec:rmiapps})\footnote{
+außerdem ist in der Aufgabenstellung ein Typo in ``implements``.
+}.\\
 Das ist dadurch bedingt, weil es in \code{UnicastRemoteObject} einen parameterlose Konstruktor gibt, der eine \code{throws}-Klausel besitzt, die eine Ausnahme vom Typ \code{RemoteException} wirft.
-Da der in \code{HelloImpl} vom Compiler zur Verfügung gestellte Standardkonstruktor diese \code{throws}-Klausel nicht definiert, kommt es zu einem Compiler-Fehler (vgl.\cite[313]{Oec22}).
+Da der in \code{HelloImpl} vom Compiler zur Verfügung gestellte Standardkonstruktor diese \code{throws}-Klausel nicht definiert, aber dennoch den parameterlosen Standardkonstruktor automatisch aufruft (wenn kein anderer Aufruf zu einem Konstruktor der Oberklasse erfolgt), kommt es zu einem Compiler-Fehler (vgl.\cite[313]{Oec22}).
+
 
 \noindent
-Bei der Parameterübergabe handelt es sich um \textbf{Wertübergabe}.\\
-Für Referenzübergabe müsste der Rückgabewert von \code{hello} exportiert sein - entweder, indem das Objekt explizit exportiert wird\footnote{
-bspw. über ``exportObject`` - s. \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.rmi/java/rmi/server/UnicastRemoteObject.html#exportObject(java.rmi.Remote)} - abgerufen 16.2.2024
-}, oder indem ein Objekt einer Klasse verwendet wird, die von \code{UnicastRemoteObject} ableitet - der Aufruf des Konstruktors von \code{UnicastRemoteObject} sorgt dafür, dass das Objekt implizit exportiert wird.
+Die Klasse \code{String} implementiert das Interface \code{Serializable} und ist damit \texit{serialisierbar}.
+Da der Rückgabewert als auch der formale Parameter der Methode \code{hello()} vom Typ \code{String} ist, und für Referenzübergabe ein \code{Remote}-Objekt exportiert werden muss, handelt es sich um \textbf{Wertübergabe}.\\
+Für Referenzübergabe müsste der aktuelle Parameter für \code{hello()} exportiert sein - entweder, indem das Objekt explizit exportiert wird\footnote{
+bspw. über ``exportObject`` - s. \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.rmi/java/rmi/server/UnicastRemoteObject.html#exportObject(java.rmi.Remote,int)} - abgerufen 16.2.2024
+}, oder indem ein Objekt einer Klasse verwendet wird, die von \code{UnicastRemoteObject} ableitet: Der Aufruf des Konstruktors von \code{UnicastRemoteObject} sorgt dafür, dass das Objekt implizit exportiert wird.\\
+Die Klasse \code{String} implementiert nicht das \code{Remote}-Interface, kann also nicht exportiert werden\footnote{
+Hierfür könnte dann aber ein Wrapper-Objekt genutzt werden, das exportiert werden kann und einen Zugriff auf einen String ermöglicht.}.\\
+
+\noindent
+Zusammenfassend gilt:
+
+\blockquote[{\cite[344]{Oec22}}]{
+    Die Vorgehensweise für Referenzübergabe lautet also: In der Schnittstelle muss als Typ eine RMI-Schnittstelle angegeben werden.
+}
+
+\noindent
+Danach kann über einen Export dieses Objektes eine Referenzübergabe realisiert werden.\\
+
+\noindent
+Für weitere Informationen siehe Abschnitte \ref{sec:valuermi} und \ref{sec:refrmi}.\\
+
+\noindent
+Eine Implementierung des geg. Codes könnte wie folgt aussehen:
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    fontsize=\small,
+    frame=lines,
+    framesep=2mm]{java}
+    public interface Hello extends Remote  {
+        String hello(String name) throws RemoteException;
+    }
+
+    public class HelloImpl extends UnicastRemoteObject implements Hello{
+
+        public HelloImpl() throws RemoteException {
+        }
+
+        public String hello(String name) throws RemoteException {
+            return "hello" + name;
+        }
+
+    }
+
+    public class HelloDemo {
+        public static void main(String[] args) {
+            Registry registry;
+            if (args.length == 0) {
+                try {
+                    registry = LocateRegistry.createRegistry(8888);
+                    registry.rebind("hello", new HelloImpl());
+                } catch (RemoteException e) {
+                    System.err.println("[server] " + e);
+                }
+            } else {
+
+                try {
+                    registry = LocateRegistry.getRegistry(8888);
+                    Hello hello = (Hello)registry.lookup("hello");
+                    System.err.println(hello.hello("World"));
+                } catch (RemoteException | NotBoundException e) {
+                    System.err.println("[client] " + e);
+                }
+            }
+        }
+    }
+\end{minted}

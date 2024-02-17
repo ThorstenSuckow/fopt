@@ -378,7 +378,7 @@ Wird ein \textbf{Stub} angefordert, der eine asynchrone Operation ausführt, und
     } geben keinen Hinweis darauf, dass es eine Garantie für die Threads gibt, im Gegensatz zu~\cite[330]{Oec22}.
 \end{tcolorbox}
 
-\section{Wertübergabe für Parameter und Rückgabewerte}
+\section{Wertübergabe für Parameter und Rückgabewerte}\label{sec:valuermi}
 
 Bei \textbf{RMO} können Objektparameter oder Objektrückgabewerte als \textbf{Wert} oder \textbf{Referenz} übergeben werden.\\
 
@@ -438,7 +438,7 @@ vgl. ``8.3.1.3. transient Fields`` \url{https://docs.oracle.com/javase/specs/jls
 \end{tcolorbox}
 
 
-\section{Referenzübergabe für Parameter und Rückgabewerte}
+\section{Referenzübergabe für Parameter und Rückgabewerte}\label{sec:refrmi}
 
 Bei \textbf{RMI} werden Parameter und Rückgabewerte entweder als Wert oder als Referenz übergeben.\\
 
@@ -469,6 +469,28 @@ Deshalb sollte darauf geachtet werden, dass diese Threads beendet sind, bspw. du
     \noindent
     \textbf{Referenzübergabe} hat Vorrang vor \textbf{Wertübergabe}.
 \end{tcolorbox}
+
+
+\subsection*{Spezifikationen}
+
+Die RMI-Spezifikationen\footnote{
+\url{https://docs.oracle.com/en/java/javase/21/docs/specs/rmi/index.html} - abgerufen 17.2.2024
+} führen unter ``2.6 Parameter Passing in Remote Method Invocation`` die Bedingungen für Wert-/Referenzübergabe auf.\\
+Parameter für die Kommunikation bei RMI-Aufrufen können einfache Datentypen (\code{int},  \code{bool},\ldots), serialisierbare Typen (\code{implements} \code{Serializable}) oder exportierte Objekte vom Typ \code{Remote} sein.\\
+Unter ``2.6.5 Parameter Transmission`` ist dokumentiert, dass Parameter eines RMI-Aufrufs über ein Objekt vom Typ \begin{center}\code{java.io.ObjectOutputStream}\end{center} in den Output-Stream geschrieben werden.\\
+Von besonderem Interesse ist hier die Methode \code{replaceObject(obj: Object): Object}\footnote{
+   ``replaceObject``: \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/ObjectOutputStream.html#replaceObject(java.lang.Object)} - abgerufen 17.2.2024
+}, deren Verhalten im gleichen Abschnitt wie folgt beschrieben ist:
+
+\blockquote[{(``2.6.5 Parameter Transmission``, ebenda)}]{
+    \begin{itemize}
+        \item  If the object passed to replaceObject is an instance of java.rmi.Remote and that object is exported to the RMI runtime, then it returns the stub for the remote object. If the object is an instance of java.rmi.Remote and the object is not exported to the RMI runtime, then replaceObject returns the object itself. A stub for a remote object is obtained via a call to the method java.rmi.server.RemoteObject.toStub.
+    \item If the object passed to replaceObject is not an instance of java.rmi.Remote, then the object is simply returned.
+    \end{itemize}
+}
+
+
+
 
 \subsection*{Eigene Notizen}
 
