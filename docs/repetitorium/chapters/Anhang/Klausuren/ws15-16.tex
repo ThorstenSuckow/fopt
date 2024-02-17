@@ -1,0 +1,28 @@
+\chapter{WS13}\label{ch:klausurws5-16}
+
+\section{Rechteck-Scroll (SS15 Aufgabe 2)}
+
+Aufgabenstellung unklar.\\
+Mögliche Implementierung unter \url{https://github.com/ThorstenSuckow/fopt/tree/main/src/main/java/klausurvorbereitung/foptws1516/MouseDragsSquareDemo}.
+
+\section{Rechteck-Scroll (WS15/16 Aufgabe 1)}
+
+Aufgabenstellung unklar.\\
+Mögliche Implementierung unter \url{https://github.com/ThorstenSuckow/fopt/tree/main/src/main/java/klausurvorbereitung/foptws1516/MaxWeightDemo}.\\
+
+\noindent
+Es gibt nur eine Warteschlange für Threads in \code{use()}, es gibt keine Wartebedingung in \code{dontUse()} und damit auch keine weitere Warteschlange.\\
+Es sind durch die Zugriffe auf unterschiedliche Indizes allerdings mehrere Wartebedingungen vorhanden, weshalb hab \code{notifyAll()} nutzen sollte,
+sobald ein Zugriff auf ein Feld nach Aufruf von \code{dontUse} wieder möglich wird.\\
+Ansonsten bestünde die Gefahr, dass bei dem Einsatz von \code{notify()} ein wartender Thread nicht geweckt wird, obwohl er weiterlaufen könnte:\\
+Angenommen, das Feld $F$ hat eine Länge von $3$, das \code{maxWeight} ist mit $2$ konfiguriert.
+Thread $t_1$ mit einer Laufzeit von $200\ sek$ bekommt Zugriff auf $F_0$, setzt $currentWeight$ auf $1$.\\
+Thread $t_2$ mit einer Laufzeit von $1\ sek$ möchte auf $F_1$ zugreifen, setzt $currentWeight=2$ in die Warteschlange.\\
+Thread $t_3$ meldet Zugriff auf $F_0$ an und gelangt in die Warteschlange.\\
+Thread $t_4$ meldet Zugriff auf $F_1$ an und gelangt in die Warteschlange.\\
+Thread $t_2$ ist mit der Bearbeitung von $F_1$ fertig, $currentWeight$ wird auf $1$ gesetzt, \code{notify()} wird aufgerufen.\\
+Thread $t_3$ wird aus der Warteschlange geholt, kann aber nicht weiterarbeiten, da $F_0$ noch durch den länger dauernden $t_1$ blockiert ist, und kommt wieder in die Warteschlange.\\
+
+\noindent
+Offensichtlich hätte in dem Beispiel \code{notifyAll()} dazu geführt, dass auch $T_4$ seine Wartebedingung hätte überprüfen können, und hätte so Zugriff auf $F_1$ bekommen.
+Stattdessen muss nun gewartet werden, bis das nächste \code{notify()} aufgerufen wird, oder ein neu ankommender Thread $F_1$ belegt.
