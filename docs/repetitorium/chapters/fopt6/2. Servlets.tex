@@ -134,6 +134,31 @@ Die Methode \code{invalidate()} von \code{HttpSession} löscht explizit eine Ses
 
 \begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
 Auch Sitzungsdaten müssen synchronisiert werden, da ein Anwender parallel mehrere Tabs offen haben kann.\\
+Hierzu muss man nicht zwingend die entsprechende \textit{do*}-Methode synchronisieren - unter Umständen reicht es, über das \code{synchronized}-Statement das Session-Objekt zu sperren, und dann in dem nachfolgenden Block mit der Session zu arbeiten:
+
+\begin{minted}[mathescape,
+    numbersep=5pt,
+    gobble=2,
+    frame=none,
+    fontsize=\small,
+    framesep=2mm]{java}
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) {
+
+        HttpSession session = request.getSession(false); // keine neue Session erzeugen
+        if (session != null) {
+            synchronized (session) { // synchronized-statement, damit nicht das Servlet
+                                     // bei gleichzeitigen doGet-Aufrufen gesperrt
+                                     // werden muss
+                String value = (String)session.getAttribute("value");
+                session.setAttribute("value", value + " set, done.");
+            }
+        }
+
+    }
+
+\end{minted}\\
+
 \end{tcolorbox}\\
 
 \noindent

@@ -286,7 +286,7 @@ Folgendes Beispiel stellt die Verwendung in vereinfachter Form nochmal dar:
     Generell ist zu berücksichtigen, dass RMI-Aufrufe blocking sind.\\
     Wird also aus einem Programm heraus ein RMI-Methodenaufruf durchgeführt, und ist eine grafische Benutzeroberfläche abhängig von den Rückgabewerten, sollte der Aufruf in einem Thread sttatfinden.\\
     Die Antwort des RMI-Methodenaufrufes sollten dann über \code{Runnable}s and \code{Platform.runLater()} übergeben werden - der Übergabeparameter landet bekanntlich in einer event queue, deren Einträge dann zu einem in der Zukunft ilegenden unbestimmten Zeitpunkt auf dem \textbf{JavaFX Application Thread} aufgerufen werden.\\
-    Werden gleichzeitig mehrere Methoden ein und desselben RMI-Objektes von unterschiedlichen Clients aufgerufen, sollten die Methoden ggf. \code{synchronized} sein.
+    Werden gleichzeitig mehrere Methoden ein und desselben RMI-Objektes von unterschiedlichen Clients aufgerufen, sollten die Methoden \code{synchronized} sein, falls es die Implementierung des passiven Objektes erfordert.
 \end{tcolorbox}
 
 \subsection{RMI-Registry}
@@ -350,7 +350,7 @@ Länger andauernde Aufträge an ein Remote-Objekt sollten über Threads realisie
 Muss eine UI während / infolgedessen aktualisiert werden, sollte diese UI-Aktualisierung über \code{javafx.application.Platform.runLater()} stattfinden (\textbf{JavaFX Application Thread}).
 
 
-\section{Parallelität bei RMI-Methodenaufrufen}\label{sec:rmiparallel}
+\subsection{Parallelität bei RMI-Methodenaufrufen}\label{sec:rmiparallel}
 
 Ein \textbf{Skeleton} ist ein paralleler \textbf{TCP-Server} (vgl.\cite[329]{, Oec22}).
 
@@ -385,7 +385,7 @@ Wird ein \textbf{Stub} angefordert, der eine asynchrone Operation ausführt, und
     } geben keinen Hinweis darauf, dass es eine Garantie für die Threads gibt, im Gegensatz zu~\cite[330]{Oec22}.
 \end{tcolorbox}
 
-\section{Wertübergabe für Parameter und Rückgabewerte}\label{sec:valuermi}
+\subsection{Wertübergabe für Parameter und Rückgabewerte}\label{sec:valuermi}
 
 Bei \textbf{RMO} können Objektparameter oder Objektrückgabewerte als \textbf{Wert} oder \textbf{Referenz} übergeben werden.\\
 
@@ -445,7 +445,7 @@ vgl. ``8.3.1.3. transient Fields`` \url{https://docs.oracle.com/javase/specs/jls
 \end{tcolorbox}
 
 
-\section{Referenzübergabe für Parameter und Rückgabewerte}\label{sec:refrmi}
+\subsection{Referenzübergabe für Parameter und Rückgabewerte}\label{sec:refrmi}
 
 Bei \textbf{RMI} werden Parameter und Rückgabewerte entweder als Wert oder als Referenz übergeben.\\
 
@@ -514,7 +514,7 @@ Eine \code{ArrayList} nutzt in ihren Methoden bei Objekten \code{equals} zum Ver
 Chatbeispiel: Dem Abmelden von Clients sollte genug Zeit eingeräumt werden - funktioniert das Abmelden nicht richtig, entfernt der Server die fehlerhaften Clients allerdings ohnehin wegen der abgefangenen Exception - s. \cite[345, Listing 6.22]{Oec22}.
 
 
-\section{Transformation lokaler in verteilte Anwendungen}
+\subsection{Transformation lokaler in verteilte Anwendungen}
 
 Um eine lokale Anwendung in eine RMI-Anwendung zu überführen, wird die \textit{passive Klasse} (s. Abschnitt~\ref{subsec:syncsummary}) als Remote-Interface implementiert und von \code{UnicastRemoteObject} abgeleitet.
 Daraufhin können Objekte davon als \textbf{RMI-Objekte} von einem Server in der \textbf{RMI-Registry} registriert werden.\\
