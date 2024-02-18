@@ -141,7 +141,7 @@ s.a. ``An Overview of RMI Applications``: \url{https://docs.oracle.com/javase/tu
     Vor dem Starten des Programms ist darauf zu achten, dass auf dem Server die \textbf{RMI-Registry} gestartet wird - was aber auch aus dem Programm heraus geschehen kann.
 \end{enumerate}
 
-\section{Einführendes RMI-Beispiel}\label{sec:rmiintro}
+\subsection{Einführendes RMI-Beispiel}\label{sec:rmiintro}
 
 Auch bei RMI-Implementierungen bei denen mehrere Clients gleichzeitig auf eine Objektinstanz zugreifen, ist (ggf. nach Anwendung) \code{synchronized} nötig, um ein Objekt für den gleichzeitigen Zugriff zu sperren.\\
 
@@ -281,6 +281,13 @@ Folgendes Beispiel stellt die Verwendung in vereinfachter Form nochmal dar:
         }
     }
 \end{minted}\\
+
+\begin{tcolorbox}
+    Generell ist zu berücksichtigen, dass RMI-Aufrufe blocking sind.\\
+    Wird also aus einem Programm heraus ein RMI-Methodenaufruf durchgeführt, und ist eine grafische Benutzeroberfläche abhängig von den Rückgabewerten, sollte der Aufruf in einem Thread sttatfinden.\\
+    Die Antwort des RMI-Methodenaufrufes sollten dann über \code{Runnable}s and \code{Platform.runLater()} übergeben werden - der Übergabeparameter landet bekanntlich in einer event queue, deren Einträge dann zu einem in der Zukunft ilegenden unbestimmten Zeitpunkt auf dem \textbf{JavaFX Application Thread} aufgerufen werden.\\
+    Werden gleichzeitig mehrere Methoden ein und desselben RMI-Objektes von unterschiedlichen Clients aufgerufen, sollten die Methoden ggf. \code{synchronized} sein.
+\end{tcolorbox}
 
 \subsection{RMI-Registry}
 
