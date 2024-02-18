@@ -1,6 +1,6 @@
 \subsection{Concurrent Klassenbibliothek aus Java 5}
 
-Vor Java 5 gab es im Wesentlichen zur Realisierung von Parallelität nur die Klasse \code{Thread}, zur Realisierung von \textbf{Synchronisation} im Wesentlichen nur \code{synchronized, wai(), notify() und notifyAll()}.\\
+Vor Java 5 gab es im Wesentlichen zur Realisierung von Parallelität nur die Klasse \code{Thread}, zur Realisierung von \textbf{Synchronisation} im Wesentlichen nur \code{synchronized, wait(), notify() und notifyAll()}.\\
 
 \noindent
 Seit Java 5 gibt es drei weitere Packages, die Klassen und Schnittstellen anbieten, die mit Synchronisation und Parallelität zu tun haben:
@@ -29,7 +29,7 @@ Mit Hilfe der Schnittstellen \code{Executor} und \code{ExecutorService} kann man
 \noindent
 Eine wichtige Klassen, die die \code{ExecutorSchnittstelle} implementiert, ist die Klasse \code{ThreadPool}: Mit ihr kann es es sich sparen, selbst Threads erzeugen und starten zu müssen (s. a. \cite[146]{Oec22}).\\
 
-\subsection*{Locks und Conditions}
+\subsubsection{Locks und Conditions}
 \code{Lock}s und \code{Condition}s sind eine Alternative für \code{synchronized}, \code{wait()},\code{notify()} und \code{notifyAll()}.\\
 
 \noindent
@@ -45,6 +45,23 @@ Auf \code{Condition}s kann man mit \code{await()} warten\\
 
 \noindent
 Man kann sich zu eine \code{Lock} beliebig viele \code{Condition}s geben lassen, was eine sehr fein granulierte Modellierung der Bedingung(en) ermöglicht.\\
+
+\begin{tcolorbox}[title={Vor- und Nachteile von locks u. conditions}]
+\begin{itemize}
+    \item \code{synchronized} ist ein Schlüsselkonzept in Java, während Locks/Conditions Teil einer Klassenbibliothek sind
+    \item Der Entwickler muss sich selber um das Sperren und Entsperren kümmern, was als Vor- oder Nachteil gesehen werden kann:
+    Das erlaubt nämlich gleichzeitig das Setzen / Auflösen einer Sperre von unterschiedlichen Programmteilen aus
+    \item auf das Setzen einer Sperre kann befristet gewartet werden, das Setzen einer Sperre durch einen Thread kann mittels eines Aufrufes von \code{lockInterruptibly()}\footnote{
+        ``lockInterruptibly``: \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/locks/Lock.html#lockInterruptibly()} - abgerufen 18.2.2024
+    } unterbrochen werden.
+    \item Während \code{notify()}/\code{notifyAll()} nach dem Prinzip ``\textit{einer oder alle}`` funktionieren, kann für ein Lock mehrere conditions definiert werden, die feingranuliert das Warteschlangenverhalten basierend auf unterschiedlichen Bedingungen erlauben.
+     So können bspw. zwei verschiedene Conditions für das Erzeuger-/Verbraucherproblem umgesetzt werden, die einmal die Wartebedingung für einen vollen Puffer repräsentieren, und einmal die Wartebedingung für einen leeren Puffer(\code{await()}, um den aktuellen Thread in die Warteschlange einzureihen).
+     Mittels \code{signal()} / \code{signalAll()} können gezielt die durch die conditions in der Warteschlange befindlichen Threads aus derselben geholt werden.
+    \item Bevor eine Sperre gesetzt wird, kann überprüft werden, ob die Gewährung der Sperre zu einer Verklemmung führen könnte\footnote{s. hierzu ``3.12 Vermeidung von Verklemmungen``, \cite[192 ff.]{Oec22}}.
+    \item soll in einer Methode eine Sperre über \code{unlock()} aufgelöst werden, muss sichergestellt sein, dass eine evtl. vorher auftretende Exception nicht das frühzeitige Verlassen der aufrufenden Methode verursacht.
+    Deshalb sollte \code{unlock()} - je nach Implementierung - in einem \code{finally}-Block aufgerufen werden.
+\end{itemize}
+\end{tcolorbox}
 
 \subsection*{Atomic-Klassen}
 Die \code{Atomic}-Klassen bieten eine Objekthülle für verschiedene Datentypen (\code{Boolean}, \code{Integer}, \code{Long}\ldots) und ermöglichen einen Thread-sicheren lesenden/schreibenden Zugriff auf die umhüllten Werte.\\
