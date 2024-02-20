@@ -5,8 +5,10 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -39,6 +41,9 @@ public class GrafikEditorDemo extends Application {
     private SimpleIntegerProperty rectangleCountProperty;
     private SimpleIntegerProperty circleCountProperty;
 
+    private TextArea logTextArea;
+
+    private Stage logWindow;
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -71,8 +76,36 @@ public class GrafikEditorDemo extends Application {
         stage.setScene(scene);
         stage.setTitle("Deluxe Paint");
         stage.show();
+
+        createLogWindow(stage);
     }
 
+    private void openLogWindow() {
+
+        if (logWindow == null) {
+            return;
+        }
+
+        logWindow.show();
+    }
+
+    private void createLogWindow(Stage primaryStage) {
+
+        if (logWindow != null) {
+            logWindow.show();
+            return;
+        }
+
+        logWindow = new Stage();
+        logWindow.initOwner(primaryStage);
+        logWindow.setTitle("Log");
+        logWindow.setWidth(800);
+        logWindow.setHeight(600);
+        logTextArea = new TextArea();
+        logTextArea.setEditable(false);
+        logWindow.setScene(new Scene(logTextArea));
+
+    }
 
     private void installListeners() {
 
@@ -119,6 +152,7 @@ public class GrafikEditorDemo extends Application {
         circle.setCenterX(startX);
         circle.setCenterY(startY);
         circle.setRadius(Math.sqrt(Math.pow(startX - endX , 2) + Math.pow(startY - endY, 2)));
+        logTextArea.appendText(circle + "\n");
     }
 
     private Circle initCircle(Circle circle) {
@@ -149,6 +183,8 @@ public class GrafikEditorDemo extends Application {
         rectangle.setY(Math.min(startY, endY));
         rectangle.setWidth(Math.abs(endX - startX));
         rectangle.setHeight(Math.abs(endY - startY));
+
+        logTextArea.appendText(rectangle + "\n");
     }
 
     private void drawLine(Line line, double startX, double startY, double endX, double endY) {
@@ -156,6 +192,8 @@ public class GrafikEditorDemo extends Application {
         line.startYProperty().set(startY);
         line.endXProperty().set(endX);
         line.endYProperty().set(endY);
+
+        logTextArea.appendText(line + "\n");
     }
     private Shape getShape() {
 
@@ -187,7 +225,26 @@ public class GrafikEditorDemo extends Application {
 
         toggleGroup = new ToggleGroup();
         toggleGroup.getToggles().addAll(lineRadio, rectangleRadio, circleRadio);
-        hbox.getChildren().addAll(lineRadio, rectangleRadio, circleRadio);
+
+        Button clearButton = new Button("Löschen");
+
+        clearButton.setOnAction(e -> {
+
+            canvas.getChildren().clear();
+            lineCountProperty.set(0);
+            circleCountProperty.set(0);
+            rectangleCountProperty.set(0);
+
+            logTextArea.clear();
+
+        });
+
+        hbox.getChildren().addAll(
+            lineRadio,
+            rectangleRadio,
+            circleRadio,
+            clearButton
+        );
 
         return hbox;
     }
@@ -212,6 +269,12 @@ public class GrafikEditorDemo extends Application {
             Bindings.convert(lineCountProperty.add(rectangleCountProperty).add(circleCountProperty))
         );
 
+        Button openLogButton = new Button("Protokoll");
+
+        openLogButton.setOnAction(e -> {
+            openLogWindow();
+        });
+
         hbox.getChildren().addAll(
             new Label("Linien:"),
             lineCountLabel,
@@ -220,7 +283,8 @@ public class GrafikEditorDemo extends Application {
             new Label("Kreise:"),
             circleCountLabel,
             new Label("Gesamt:"),
-            totalLabel
+            totalLabel,
+            openLogButton
         );
 
         return hbox;
