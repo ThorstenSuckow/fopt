@@ -26,7 +26,7 @@ public class UDPSerializedDemo {
 
                 while (true) {
 
-                    Object o = udpSocketAdvanced.readObject(14);
+                    Object o = udpSocketAdvanced.readObject(1024);
                     System.out.println("[udpserver] received: " + o);
                 }
 
