@@ -21,18 +21,16 @@ public class RmiMeasuringStation {
 
         } else if (args.length == 2) {
 
-            MeasuringStation station = (MeasuringStation) Naming.lookup("measuringstation");
 
+            MeasuringStation station = (MeasuringStation) Naming.lookup("measuringstation");
             station.subscribe(new MeasurementCounterImpl(), Integer.parseInt(args[0]), Integer.parseInt(args[1]));
+
         } else  if (args.length == 1) {
 
             Probe.init();
 
         }
 
-
     }
-
-
 
 }

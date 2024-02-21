@@ -13,7 +13,7 @@ public class Probe extends Thread {
 
 
     public static void init() {
-        new Probe().start();
+        new Probe();
     }
     private Probe() {
         start();
