@@ -23,7 +23,6 @@ Schreibende Methoden können mit oder ohne `wait()` ausgestattet sein, und/oder 
 
 #### - / notifyAll()
 
-1. Ampel `schalteRot()()`
 2. ItalienischeAmpel `schalteGruen()()`
 3. EventSet `set()`
 
@@ -31,11 +30,13 @@ Schreibende Methoden können mit oder ohne `wait()` ausgestattet sein, und/oder 
 #### wait() / -
 
  1. ItalienischeAmpel `passieren()`
-2. EventSet `waitOR()`
-3. EventSet `waitAnd()`
+
 
 ### Schablone -
 #### - / -
+
+1. Ampel `schalteRot()()`
+
 
 ## Reader
 
@@ -45,8 +46,9 @@ Lesende Methoden können mit oder ohne `wait()` ausgestattet sein (Oec22, S. 139
 
 
 #### wait() 
-
+ 1. EventSet `waitOR()`
+ 2. EventSet `waitAnd()`
 #### -
 
  1. BoundedCounter `get()`
-2. Ampel `wartendeFahrzeuge()`
+ 2. Ampel `wartendeFahrzeuge()`
