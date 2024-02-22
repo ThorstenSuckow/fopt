@@ -1,0 +1,126 @@
+\section{Mittwoch}
+
+Das Interface \code{AutoCloseable} wird u.a. für die Implementierung der UDPSocket\footnote{\cite[269, Listing 5.1]{Oec22}}/TCPSocket\footnote{\cite[286, Listing 5.7]{Oec22}}-Klassen genutzt, um sie mit \textbf{try-with-resources} nutzen zu können.\\
+
+\noindent
+Objekte, die man mittels \code{bind()} \code{rebind()} in der RMI-Registry registriert, \textit{müssen} das \code{Remote}-Interface implementieren\footnote{
+Das macht spätestens der Typ des zweiten formalen Parameters von bspw. \textit{rebind(name: String, obj: Remote)} deutlich, s. \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.rmi/java/rmi/registry/Registry.html#rebind(java.lang.String,java.rmi.Remote)} - abgerufen 22.2.2024
+}.
+
+\begin{tcolorbox}
+Objekte, die als Remote Objekte funktionieren sollen, \textit{müssen} exportiert sein: ``Server``-Objekte \textit{müssen} also bspw. von \code{UnicastRemoteObject} ableiten, genauso wie Objekte, die über Call-by-Reference verwendet werden sollen\\
+
+    \noindent
+    Objekte, die lediglich als Call-By-Value verwendet werden, müssen mindestens \code{Serializable} implementieren, genauso wie Objekte, die zum späteren Zugriff (\textit{nicht} als remote Objekt) in der RMI-Registry gespeichert werden\footnote{
+        siehe hierzu auch Abschnitt \ref{sec:refrmi}.
+}
+\end{tcolorbox}\\
+
+\noindent
+Wie das Ende eines Stroms bekanntgegeben wird, ist abhängig von der jeweiligen Methode der genutzten Inputklasse - so meldet \code{readLine} von \code{BufferedReader} bspw. \code{null}, wenn das Ende des Datenstroms erreicht ist, \code{read()}\footnote{
+    ``Class FilterInputStream``: \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/FilterInputStream.html#read()} - abgerufen 22.2.2024
+} der Klasse \code{FilterInputStream} in dem Fall hingegen \code{-1}.\\
+
+\noindent
+\code{DataInputStream} zum lesen einfacher Datentypen, \code{ObjectInputStream} für das Deserialisieren primitiver Datentypen und von Objekten.\\
+
+\noindent
+Beispiel für das Lesen von primitiven Datentypen über einen \code{DataInputStream}:
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    frame=lines,
+    framesep=2mm]{java}
+    byte[] buffer = new byte[4];
+    buffer[0] = 1;
+    DataInputStream dis = new DataInputStream(
+        new ByteArrayInputStream(buffer)
+    );
+    dis.readInt();
+\end{minted}\\
+
+Eine \code{EOFEException} wird geworfen, wenn für einen erwarteten Datentypen nicht genug Daten vorliegen.
+Im Folgenden ein Beispiel für ein \code{readInt()} - der Input-Stream erwartet ein byte-array der Größe 4, es wird aber nur eins
+der Größe 1 übergeben:
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    frame=lines,
+    framesep=2mm]{java}
+    DataInputStream dis = new DataInputStream(new ByteArrayInputStream(new byte[1]));
+    dis.readInt(); // EOFException
+\end{minted}\\
+
+\noindent
+Ein \code{DatagramPacket}, das man zum Empfangen benutzen kann, erstell man über den Aufruf des Konstruktors
+
+\begin{minted}[mathescape,
+    numbersep=5pt,
+    gobble=2,
+    framesep=2mm]{java}
+    DatagramPacket(byte[]buf, int length);
+\end{minted}\\
+
+Über ein \code{DatagramSocket}-Objekt schreibt man dann die empfangenen Daten über den Aufruf \code{receive(p: DatagramPacket)}\footnote{
+``receive``: \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/DatagramSocket.html#receive(java.net.DatagramPacket)} - abgerufen 20.2.2024
+}.\\
+
+Nachrichten über UDP werden immer in Form eines \code{DatagramPacket} konstruiert.
+
+\noindent
+Umwandeln eines Objektes in ein Byte-Array und darauffolgendes deserialisieren:
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    frame=lines,
+    framesep=2mm]{java}
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    ObjectOutputStream oos = new ObjectOutputStream(baos);
+    oos.writeObject(new String("Hello World"));
+
+    byte[] b = baos.toByteArray();
+    System.out.println(Arrays.toString(b));
+
+    ByteArrayInputStream bais = new ByteArrayInputStream(b);
+    ObjectInputStream ois = new ObjectInputStream(bais);
+    System.out.println((String)ois.readObject());
+\end{minted}\\
+
+\noindent
+Bei gemeinsam genutzten RMI-Objekten muss man an das synchroniseren der Objekte denken, wenn auf gemeinsam genutzte
+Daten lesend und schreibend zugegriffen wird.\\
+
+\noindent
+Bei TCP-Sockets sollte man daran denken, bei \code{readLine()} auf \code{null} zu überprüfen, um das Ende des Datenstroms des Clients zu erkennen (die Verbindung kann dann beendet werden).\\
+
+\noindent
+Eine Endlosschleife im Konstruktor verhindert, dass das Objekt auch zurückgegeben wird - bei der Registrierung bei RMI kann das unerkannt zu Problemen führen - Endlosschleifen sollten deshalb in Threads ausgelagert werden - das kann auch problemlos im Konstruktor passieren:
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    frame=lines,
+    framesep=2mm]{java}
+    class Looper {
+
+        public Looper() {
+            // ggfl. als Daemon-Thread starten.
+            // ein Aufruf von init() hingegen würde die Rückkehr
+            // aus dem Konstruktor verhindern
+            new Thread(this::init).start();
+        }
+
+        private void init() {
+            while (true) {
+                 ...
+            }
+        }
+    }
+\end{minted}

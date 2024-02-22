@@ -1,0 +1,78 @@
+\section{Dienstag}
+
+\subsection*{ToggleGroups}
+\code{RadioButton}s lassen sich über eine \code{ToggleGroup}\footnote{
+``Class ToggleGroup``: \url{https://docs.oracle.com/javase/8/javafx/api/javafx/scene/control/ToggleGroup.html} - abgerufen 20.2.2024
+} gruppieren:
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    frame=lines,
+    framesep=2mm]{java}
+    RadioButton one = new RadioButton("one");
+    RadioButton two = new RadioButton("two");
+    RadioButton three = new RadioButton("three");
+
+    ToggleGroup radioButtonGroup = new ToggleGroup();
+    radioButtonGroup.getToggles().addAll(one, two, three);
+\end{minted}\\
+
+\subsection*{StringProperty an IntegerProperty binden}
+
+\begin{center}\code{Bindings.convert(observableValue: ObservableValue<?>): StringExpression}\end{center}
+ermöglicht es, bsp. ein JavaFX-\code{Label} an eine \code{SimpleIntegerProperty} zu binden\footnote{
+``convert``: \url{https://docs.oracle.com/javase/8/javafx/api/javafx/beans/binding/Bindings.html#convert-javafx.beans.value.ObservableValue-} - abgerufen 20.2.2024
+}.\\
+
+\noindent
+Das Folgende Beispiel bindet 3 Labels an drei verschiedene \code{SimpleIntegerProperty}s.\\
+Die Summe dieser Properties wird in dem Label code{totalLabel} angezeigt:
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    frame=lines,
+    framesep=2mm]{java}
+    Label lineCountLabel = new Label();
+    Label rectangleCountLabel = new Label();
+    Label circleCountLabel = new Label();
+    Label totalLabel = new Label();
+
+    lineCountLabel.textProperty().bind(Bindings.convert(lineCountProperty));
+    rectangleCountLabel.textProperty().bind(Bindings.convert(rectangleCountProperty));
+    circleCountLabel.textProperty().bind(Bindings.convert(circleCountProperty));
+
+    totalLabel.textProperty().bind(
+        Bindings.convert(lineCountProperty.add(rectangleCountProperty).add(circleCountProperty))
+    );
+\end{minted}\\
+
+\subsection*{Stage Owner}
+
+Mit \code{initOwner(owner: Window)}\footnote{
+``initOwner``: \url{https://docs.oracle.com/javase/8/javafx/api/javafx/stage/Stage.html#initOwner-javafx.stage.Window-} - abgerufen 20.2.2024
+} läßt sich der \textbf{Owner} eines Windows festlegen.
+Das Fenster, auf das \code{initOwner()} aufgerufen wurde, wird dann bspw. geschlossen, wenn der Owner geschlossen wird:
+
+\blockquote[{\url{https://docs.oracle.com/javase/8/javafx/api/javafx/stage/Stage.html} - abgerufen 20.2.2024}]{
+    A stage can optionally have an owner Window. When a window is a stage's owner, it is said to be the parent of that stage. When a parent window is closed, all its descendant windows are closed. The same chained behavior applied for a parent window that is iconified. A stage will always be on top of its parent window. The owner must be initialized before the stage is made visible.
+}
+
+\subsection*{ObservableList: removeAll() vs. clear()}
+
+Als Alternative zu der Methode \code{removeAll(c: Collection<?>)} des Interface \code{java.util.List<E>}\footnote{
+``Interface List<E>``: \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html} - abgerufen 20.2.2024
+} bietet die davon abgeleitete Schnittstelle \code{ObservableList<E>} aus dem Package \code{javafx.collections} die Methode
+\code{removeAll(elements:E...)}\footnote{
+    ``removeAll``\url{https://docs.oracle.com/javase/8/javafx/api/javafx/collections/ObservableList.html#removeAll-E...-} - abgerufen 20.2.2024
+} an, die einen Aufruf mit \textbf{variabler Argumentanzahl}\footnote{
+    ``8.4.1. Formal Parameters - VariableArityParameter``:  \url{https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-VariableArityParameter} - abgerufen 20.2.2024
+} erlaubt.\\
+
+\noindent
+Hierbei ist zu beachten, dass ein Aufruf von \code{removeAll()} ohne Argumente \textit{nicht} automatisch alle Objekte aus der Liste löscht, wie man aufgrund der semantischen Bedeutung der Methode vermuten könnte.\\
+Hierzu sollte stattdessen die Methode \code{clear()}\footnote{
+``clear``: \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html#clear()} - abgerufen 20.2.2024
+} verwendet werden.
