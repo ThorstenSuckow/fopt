@@ -32,9 +32,10 @@ public class Gaestebuch extends HttpServlet {
     public void init() {
         entries = new ArrayList<>();
 
+        entries.add(new Entry("influencer04Ich glaube", "folgt mir für mehr rezepte", LocalDateTime.now()));
         entries.add(new Entry("Max", "Super Webseite, bookmarked!", LocalDateTime.now()));
-        entries.add(new Entry("Maria", "Essen spät geliefert (20Min nach Anruf!!!1) kalt angekommen 3/5", LocalDateTime.now()));
-        entries.add(new Entry("Checker", "folgt mir für mehr rezepte", LocalDateTime.now()));
+        entries.add(new Entry("bestller32", "Essen spät geliefert (20Min nach Anruf!!!1) kalt angekommen 3/5", LocalDateTime.now()));
+
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) {
