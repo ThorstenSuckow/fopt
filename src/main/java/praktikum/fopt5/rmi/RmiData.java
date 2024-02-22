@@ -13,12 +13,12 @@ public class RmiData extends UnicastRemoteObject implements Data {
     }
 
     @Override
-    public int getValue() throws RemoteException {
+    public synchronized int getValue() throws RemoteException {
         return value;
     }
 
     @Override
-    public void setValue(int value) throws RemoteException {
+    public synchronized void setValue(int value) throws RemoteException {
         this.value = value;
     }
 }
