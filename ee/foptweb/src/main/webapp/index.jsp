@@ -35,6 +35,7 @@
 <ul>
   <li><a href="praktischephase/taschenrechner">Taschenrechner</a></li>
   <li><a href="praktischephase/gaestebuch">Gästebuch</a></li>
+  <li><a href="praktischephase/wiki">Wiki</a></li>
 </ul>
 </body>
 </html>
