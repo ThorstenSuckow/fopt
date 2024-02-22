@@ -1,0 +1,24 @@
+\section{Donnerstag}
+
+\code{String}s können auch als Ausdruck in einem \code{switch}-Statement verwendet werden - die Überprüfung der übergebenen String-Objekte wird dann so durchgeführt, als würde die \code{String.equals}-Methode angewendet werden\footnote{``String in switch statements``: \url{https://docs.oracle.com/javase/8/docs/technotes/guides/language/strings-switch.html} - abgerufen 22.2.2024
+}.\\
+
+
+\noindent
+Das Attribut für angewählte \textit{radio}-/\textit{checkbox}-Inputs ist \code{checked}\footnote{
+s. bspw. \url{https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/radio#checked} - abgerufen 22.2.2024
+}.\\
+
+\noindent
+\code{Cookie}s werden über die Methode \code{addCookie(cookie: Cookie)}\footnote{
+``addCookie``: \url{https://jakarta.ee/specifications/platform/8/apidocs/javax/servlet/http/httpservletresponse#addCookie-javax.servlet.http.Cookie-} - abgerufen 22.2.2024
+} der Klasse \code{HttpServletResponse} gesetzt, abgefragt über \code{getCookies(): Cookie[]}\footnote{
+``getCookies``: \url{https://jakarta.ee/specifications/platform/8/apidocs/javax/servlet/http/httpservletrequest#getCookies--} - abgerufen 22.2.2024
+} der Klasse \code{HttpServletRequest}.
+Sind keine Cookies gesetzt, liefert die Methode \code{null} zurück.
+
+
+\noindent
+Das Session-Objekt wird über das \textit{request}-Objekt (Klasse \code{HttpServletRequest}) über \code{getSession(): HttpSession}\footnote{
+``getSession``: \url{https://jakarta.ee/specifications/platform/8/apidocs/javax/servlet/http/httpservletrequest#getSession--} - abgerufen 22.2.2024
+} angefragt\footnote{\code{false}, damit nicht automatisch eine Session erzeugt wird, falls keine vorhanden.}.
