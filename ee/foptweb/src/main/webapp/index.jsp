@@ -31,5 +31,9 @@
 <ul>
   <li><a href="zusatzaufgaben/pizza-servlet">zusatzaufgabe Pizza Bestelldienst</a></li>
 </ul>
+<h2>Praktische Phase</h2>
+<ul>
+  <li><a href="praktischephase/taschenrechner">Taschenrechner</a></li>
+</ul>
 </body>
 </html>
