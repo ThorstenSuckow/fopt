@@ -98,6 +98,7 @@ Zur Lösung sind verschiedene Strategien denkbar:
 \noindent
 Die Strategien können nur dann sinnvoll eingesetzt werden, falls kein Thread unerwünscht lange auf seinen Zugriff warten muss.\\
 Kann eine gewisse Wartezeit für Leser/Schreiber nicht garantiert werden, bietet sich eine strengere Strategie an: Zugriffswünsche landen in einer Warteschlange, immer der zuerst eingefügte wird abgearbeitet (\textbf{FIFO}).
+Erfolgt auf eine Schreiboperation mehrere Leseoperationen, können diese parallel bearbeitet werden.
 
 
 \subsection{Schablonen zur Nutzung der Synchronisationsprimitive und Konsistenzbetrachtungen}
