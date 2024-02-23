@@ -105,7 +105,7 @@ In Java besitzt jedes Objekt eine \textbf{Sperre}, die in der Klasse \code{Objec
 \noindent
 Wenn eine Methode, die nicht als \staticcode{static} gekennzeichnet ist, mit \code{synchronized}\footnote{
     Java Language Specification - 8.4.3.6. synchronized Methods: \url{https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.4.3.6} - abgerufen 25.01.2024
-} gekennzeichnet wird, dann wird das Objekt für andere Threads $t_2..t_n$ gesperrt, wenn ein Thread $t_1$ auf die Methode zugreift.\\
+} gekennzeichnet wird, un ein Thread $t_1$ auf diese \code{synchronized} Methode zugreift, dann wird das Objekt für andere Threads $t_2..t_n$ gesperrt, die gleichzeitig auf andere \code{synchronized} Methoden zugreifen wollen.\\
 Hierbei wird die Sperre gesetzt, bevor die Methode ausgeführt wird - ist bereits eine Sperre gesetzt, dann kann der Thread nicht auf die Methode zugreifen und wird in die \textbf{Warteschlange} des Objektes für die betreffende Methode eingereiht, der aufrufende Thread ist dann \textbf{blockiert}.
 Solange der Thread blockiert ist, wird er (wie bei \staticcode{sleep()}) nicht mehr beim Umschalten berücksichtigt und verbraucht so keine Rechenzeit (vgl.~\cite[26]{Oec22}).
 \\

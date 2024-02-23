@@ -27,9 +27,15 @@ Mit Hilfe der Schnittstellen \code{Executor} und \code{ExecutorService} kann man
 \code{ExecutorService} enthält Methoden, mit denen man das Ergebnis erteilter Aufträge über ein \code{Future}-Objekt (später) abholen kann.\\
 
 \noindent
-Eine wichtige Klassen, die die \code{ExecutorSchnittstelle} implementiert, ist die Klasse \code{ThreadPool}: Mit ihr kann es es sich sparen, selbst Threads erzeugen und starten zu müssen (s. a. \cite[146]{Oec22}).\\
+Eine wichtige Klassen, die die \code{ExecutorSchnittstelle} implementiert, ist die Klasse \code{ThreadPool}:
+Mit ihr kann man es sich sparen, selbst Threads erzeugen und starten zu müssen (s. a. \cite[146]{Oec22}).
+Die Vorteile sind, dass man nicht selber Threads erzeugen muss, sondern diese vom Thread Pool verwaltet werden.
+Eine einfache Implementierung wird in \cite[144]{Oec22} gezeigt, bei der eine Art Message Queue mit Feldern von \code{Runnable}
+Objekten arbeitet - diese Objekte werden in einzeln entnommen und gestartet, ist ein Thread zu Ende, wird der Platz in der
+Message Queue für den nächsten Auftrag freigemacht.
+\\
 
-\subsubsection{Locks und Conditions}
+\subsubsection{Locks und Conditions}\label{subsubsec:locksconditions}
 \code{Lock}s und \code{Condition}s sind eine Alternative für \code{synchronized}, \code{wait()},\code{notify()} und \code{notifyAll()}.\\
 
 \noindent
@@ -64,10 +70,11 @@ Man kann sich zu eine \code{Lock} beliebig viele \code{Condition}s geben lassen,
 \end{tcolorbox}
 
 \subsection*{Atomic-Klassen}
-Die \code{Atomic}-Klassen bieten eine Objekthülle für verschiedene Datentypen (\code{Boolean}, \code{Integer}, \code{Long}\ldots) und ermöglichen einen Thread-sicheren lesenden/schreibenden Zugriff auf die umhüllten Werte.\\
+Die \code{Atomic}-Klassen bieten eine Objekthülle für verschiedene Datentypen (\code{Boolean}, \code{Integer}, \code{Long}\ldots) und ermöglichen einen Thread-sicheren parallelen lesenden/schreibenden Zugriff auf die gekapselten Werte.
+Neben Methoden zum Ändern von Daten über \textit{get}/\textit{set} besitzen die Klassen Methoden zum Vergleich und Ändern auf einen Schlag, d.h, in \textit{atomarer (unteilbarer)} Weise (s. \code{compareAndSet(expect:int, update: int)} in \cite[157]{Oec22}).\\
 
 \noindent
-Mit den \code{Atomic}-Klassen lassen sich auch \code{lock-free} Synchronisation realisieren, die zwar eine Form des aktiven Wertes darstellen, unter Umständen aber effizienter sein können, als eine durch eine Sperre erfolgte Umschaltung auf einen andern Thread.\\
+Mit den \code{Atomic}-Klassen lassen sich auch \code{lock-free} Synchronisation realisieren, die zwar eine Form des aktiven Wartens darstellen, unter Umständen aber effizienter sein können, als eine durch eine Sperre erfolgte Umschaltung auf einen andern Thread.\\
 
 \subsection*{Synchronisationsklassen}
 Zu den \textbf{Synchronisationsklassen} zählen die Klassen
@@ -104,10 +111,11 @@ Aufträge werden durch Objekte der generischen Klasse \code{ForkJoinTask} reprä
 \noindent
 \code{RecursiveAction}/\code{RecursiveTask} sind aus \code{ForkJoinTask} abgeleitet: \code{RecursiveAction} ist für Aufträge ohne Resultat gedacht (bspw. sortieren), \code{RecursiveTask} für Aufträge mit Ergebnis.\\
 
-\noindent
+\begin{tcolorbox}
 Ein Thread eines \code{ForkJoinPools} kann weitere Aufträge bearbeiten, sobald er mit \code{join()} auf das Ende eines anderen Auftrages wartet - er ist durch das Warten also nicht blockiert; dadurch kann ein \code{ForkJoinPool} auch mit wenigen Threads baumartig verzweigte Berechnungen durchführen - das ist mit einem normalen \code{ThreadPool} nicht möglich (vgl.~\cite[168]{Oec22})\footnote{
     ebenda wird dies als der wesentliche Unterschied zwischen \textit{ForkJoinPool} und \textit{ThreadPoolExecutor} bezeichnet.
 }.\\
+\end{tcolorbox}
 
 \noindent
 Alle Threads des \code{ForkJoinPool}s sind \textbf{Daemon}-Threads.\\
