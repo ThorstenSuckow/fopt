@@ -97,7 +97,7 @@
 
 \subsection{Ergänzungen}
 \begin{tcolorbox}
-    Das ausschlaggebende Kriterium für die Verwendung von \code{notify()} / \code{notifyAll()} ist nicht die Anzahl der wartenden Threads in den Warteschlangen eines passiven Objektes, sondern die Anzahl der Threads, die ihre \textit{while-wait-Schleife} verlassen können (s. a. Abbildung~\ref{fig:notifynotifyall}).
+    Das ausschlaggebende Kriterium für die Verwendung von \code{notify()} / \code{notifyAll()} ist nicht die Anzahl der wartenden Threads in den Warteschlangen eines passiven Objektes, sondern ob es mehrere Threads gibt die aufgrund einer Zustandsänderung des Objektes ihre \textit{while-wait-Schleife} verlassen können (s. a. Abbildung~\ref{fig:notifynotifyall}).
 \end{tcolorbox}
 
 \begin{figure}
@@ -106,3 +106,107 @@
     \caption{Merkregel für die Verwendung von notify()/notifyAll() mit den besprochenen Aufgaben als Beispiel. I.d.R. wird notify() nur genutzt, wenn es nur einen Thread gibt, der die while-wait-Schleife verlassen kann, und es gleichzeitig nur eine Wartebedingung gibt. (Quelle: eigene)}
     \label{fig:notifynotifyall}
 \end{figure}
+
+
+\subsection*{Lösung für das leser-Schreiber-Problem}
+
+Für das Leser-Schreiber-Problem gibt es eine Methode, die einen Wächter enthält.
+Der Wächter entscheidet, ob ankommende Threads in die Warteschlange geschickt werden oder aus der Warteschlange in den lesenden/schreiben Bereich gelassen werden dürfen.\\
+
+\noindent
+Wichtig ist die korrekte Beachtung der Wartebedingungen bei den unterschiedlichen Lösungsmöglichkeiten.\\
+
+\noindent
+Im Folgenden ein Beispiel für eine Lösung mit einer Warteschlange für die eintreffenden Aufgaben, es wird also jeweils der erste Eintrag aus einer Liste entfernt, falls der Eintrag in \code{doRead()} einem Leser entspricht, in \code{doWrite()} einem Schreiber.\\
+In der \code{doRead()} wird darüberhinaus noch ein erneutes \code{notifyAll()} aufgerufen, um weitere \textbf{Leser} aus der Warteschlange zu holen - gleichzeitiger Zugriff mehrerer Leser ist ja erlaubt.\\
+Hingegen ist die Wartebedingung in der \code{doWrite()} dergestalt, dass nur geschrieben werden darf, wenn es sonst
+\begin{itemize}
+    \item keinen aktiven Leser gibt
+    \item keinen aktiven Schreiber gibt (es darf immer nur \textit{ein} Schreiber gleichzeitig aktiv sein)
+\end{itemize}
+
+
+
+\noindent
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    fontsize=\small,
+    frame=lines,
+    framesep=2mm]{java}
+    class Book {
+
+        public function read() {
+            canRead();
+            try {
+                doRead();
+            } finally {
+                endRead();
+            }
+        }
+
+        public function write() {
+            canWrite();
+            try {
+                doWrite();
+            } finally {
+                endWrite();
+            }
+        }
+
+        private synchronized void canWrite() {
+            queue.add(Thread.currentThread());
+
+            // only write if there is no reader, no other writer
+            // and the first in queue is a writer
+            while (!(queue.get(0) instanceof Writer) ||
+                    activeReaders > 0 || activeWriters > 0) {
+                try {
+                    this.wait();
+                } catch (InterruptedException e) {
+
+                }
+            }
+            activeWriters++;
+            queue.removeFirst();
+        }
+
+        private synchronized void canRead() {
+            queue.add(Thread.currentThread());
+            // read if first in queue is reader and no writer is active
+            while (!(queue.get(0) instanceof Reader) || activeWriters > 0) {
+                try {
+                    this.wait();
+                } catch (InterruptedException e) {
+
+                }
+            }
+            activeReaders++;
+            queue.removeFirst();
+            // notifyAll() to let other READERS pass the sentinel
+            notifyAll();
+        }
+
+        private void doRead() {
+            ...
+        }
+
+        private void doWrite() {
+            ...
+        }
+
+        private synchronized void endWrite() {
+            activeWriters--;
+            notifyAll();
+        }
+
+        private synchronized void endRead() {
+            activeReaders--;
+            notifyAll();
+        }
+
+
+    }
+
+\end{minted}\\
