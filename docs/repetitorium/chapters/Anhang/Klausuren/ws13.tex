@@ -153,79 +153,18 @@ Ein \code{ThreadPoolExecutor}\footnote{
 
 \subsection*{Client sendet Kommandos in einer Schleife, und empfängt Kommandos in einer zweiten}
 
-Der Client $C$ verbindet sich zu dem Server $S$ und sendet in einer Schleife Kommandos an den Server, in einer zweiten
-empfängt er die Antworten des Servers.\\
-Der Programmcode dazu könnte so aussehen:
-
-\begin{minted}[mathescape,
-    linenos,
-    numbersep=5pt,
-    gobble=2,
-    fontsize=\small,
-    frame=lines,
-    framesep=2mm]{java}
-    // Client
-    public void run() {
-        try (Socket client = socket) {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(client.getInputStream()));
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(client.getOutputStream()));
-
-            for (int i = 0; i < cmd.length; i++) {
-                writer.write(cmd[i]);
-                writer.newLine();
-            }
-            writer.flush();
-
-            for (int i = 0; i < cmd.length; i++) {
-                String response = server.readLine();
-                processResponse(response);
-            }
-        } catch (Exception e) {
-            // ...
-        }
-    }
-\end{minted}
-
-Bei der TCP-Kommunikation sind schreibende Zugriffe nicht blocking, wohl aber lesende (s. Abschnitt~\ref{sec:sockettcp}).\\
-Es macht deshalb keinen Unterschied, wenn die schreibenden Zugriffe in einer Schleife sind, und die lesenden ebenfalls.\\
-Angenommen, ein schreibender Zugriff $w$ benötigt eine Zeit von $0$, ein lesender Zugriff $1$.\\
-Bei $4$ schreibenden Zugriffen und $5$ lesenden Zugriffen addiert sich die benötigte Zeit zu $4*0 + 5*1 = 5$ - es ist im Endeffekt egal, in welcher Reihenfolge die Befehle ausgeführt werden - offenbar wächst die benötigte Zeit linear zu der Anzahl der lesenden Aufrufe.\\
-Die Kommunikation zwischen Client und Server ist durch die Nutzung ein und desselben Sockets des Clients ohnehin \textit{sequentiell}.
-Die Parallelität wirkt sich nur auf die Bearbeitung weiterer Clients aus.
-
-
-\noindent
-Wird nun statische und/ oder dynamische Parallelität (und = Mischform), so kann es durchaus sein, dass die Anfragen vom Client eher beantwortet werden, weil der Rechner mehr Resourcen hat, aber auch hier ist eine schnellere Abarbeitung nicht garantiert.
-Bestünde eine Iteration der Kommunikation aus \textit{senden - empfangen - senden - empfangen ...} so kann es sein, dass die Kommunkationskette beim letzten \textit{empfangen} wegen der Last des Servers zum Halt kommt.
-Gleiches kann aber auch durchaus passieren, wenn zuerst gesendet wird, und dann in einer Schleife empfangen wird.\\
-Bis auf größere Kapazitäten des Servers, der dadurch in der Lage ist, mehrere Clients gleichzeitig zu bedienen, hat man dadurch also nicht viel gewonnen.
-
 \subsection*{Wie kann die Datenstromorientierung des beschriebenen TCP-Clients zum Problem werden}
-TCP besitzt die folgenden Eigenschaften:
 
-\begin{itemize}
-    \item es ist verlässlich durch Fluss- / Überlastkontrolle
-    \item es ist datenstromorientiert
-    \item es ist verbindungsorientiert
-\end{itemize}
-
-Gerade die Fluss-/ Überlastkontrolle könnte für den Client zum Problem werden, wenn er zuviele Nachrichten hintereinander sendet.\\
-\noindent
-Als Lösung könnte man ggf. versuchen, kürzere Nachrichten in einer größeren Nachricht zu sammeln, und diese an den Server zu schicken.\\
-\noindent
-Als Alternative böte sich ggfl. an, dass man eine Art ``Lastkontrolle`` auf dem Client implementiert, und immer nur $n$-Nachrichten hintereinander schickt.
+\subsection*{Wie kann eine Laufzeitreduktion erreicht werden}
 
 \begin{tcolorbox}[colback=red!20,color=white,title=Anmerkung]
     Die Auswirkungen von Fluss-/Überlastkontrolle wurden im WS2023/2024 nicht ausführlich behandelt.\\
-    Auch im Lehrbuch bzw. im Skript finden sich nicht viele Informationen hierzu.
+    Auch im Lehrbuch bzw. im Skript finden sich nicht viele Informationen hierzu.\\
+    Im Präsenzpraktikum des Semesters wurden diesbzgl. jedoch einige Beispiele gezeigt.\\
+    In der Klausur im SS19 wurde in Aufgabe 7 eine ähnliche Aufgabe gestellt, zu der siehe Abschnitt~\ref{ch:klausurss19} Ergänzungen erhält.
+    Die Ergänzungen beinhalten die Antworten zu den in der Aufgabe gestellten Fragen.\\
 \end{tcolorbox}
 
-\subsection*{Wie kann eine Laufzeitverbesserung erreicht werden}
-Man könnte ggfl. zwei verschiedene Thread-Klassen implementieren, die beide eine separate Socket-Verbindung zu dem Server aufbauen.\\
-Dabei sendet der eine Client-Thread nur Daten, und der andere Client-Thread empfängt die Daten.\\
-Hierzu müßte sich der empfangende Client-Thread, der sendet, zunächst identifzieren.
-Der empfangende Client-Thread identifiziert sich mit denselben Daten.
-Dadurch sollte der Server in der Lage sein, die zu sendenden Nachrichten auch den entsprechenden ``empfangenden`` Verbindungen zuordnen zu können..\\
 
 
 \section{Aufgabe 4}
