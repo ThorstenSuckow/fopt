@@ -43,7 +43,13 @@
     \item RMI:
     \begin{itemize}
         \item Stub, Skeleton
-        \item ``Kochrezept``
+        \item ``Kochrezept``:
+        \begin{enumerate}
+            \item Interface definieren (extends Remote, Methoden mit throws Remote Exception-Klausel deklarieren)
+            \item Interface implementieren (extends UnicastRemoteObject, Konstruktoren müssen mit throws RemoteException deklariert sein)
+            \item Server programmieren (Objekte von 2 erzeugen und bei der RMI-Registry anmelden)
+            \item Client programmieren (Objekte - die Stubs - aus der Registry über Naming.lookup() holen, Casting auf das in Schritt 1 definierte Interface, Methoden aufrufen)
+        \end{enumerate}
     \end{itemize}
     \item Parallelität bei RMI
     \item Wertübergabe für Parameter und Rückgabewerte:
