@@ -64,7 +64,7 @@
 \end{itemize}
 
 \subsection{Notizen}
-Das Interface \code{AutoCloseable} wird u.a. für die Implementierung der UDPSocket\footnote{\cite[269, Listing 5.1]{Oec22}}/TCPSocket\footnote{\cite[286, Listing 5.7]{Oec22}}-Klassen genutzt, um sie mit \textbf{try-with-resources} nutzen zu können.\\
+Das Interface \code{AutoCloseable} wird u.a. für die Implementierung der UDPSocket\footnote{\cite[269, Listing 5.1]{Oec22}}/ TCPSocket\footnote{\cite[286, Listing 5.7]{Oec22}}-Klassen genutzt, um sie mit \textbf{try-with-resources} nutzen zu können.\\
 
 \noindent
 Objekte, die man mittels \code{bind()} \code{rebind()} in der RMI-Registry registriert, \textit{müssen} das \code{Remote}-Interface implementieren\footnote{
@@ -244,3 +244,17 @@ Zur Nachrichtenübermittlung sendet ein Client in einer äußeren Schleife $n$ N
 In einer inneren Schleife wartet der Client auf Antworten - da über Multicast kommuniziert wird, muss das über \code{while (true)} realisiert werden, da unklar ist, wieviele Antworten ankommen.\\
 Auch hier muss ein \textit{Socket-Timeout} gesetzt sein , damit der Client nicht hängenbleibt, falls ein Rechner nicht antwortet (s. \cite[279, Listing 5.6]{Oec22}).
 
+\subsection*{MVP-Prinzip für verteilte Anwendungen}
+
+Das Model ist i.d.R. das Remote Object, gleichzeitige lesende / schreibende Zugriffe auf gemeinsame Daten müssen \textit{synchronisiert} werden.\\
+Der Presenter ruft Methoden auf dem RMI-Objekt auf - die Aufrufe sollten in Threads ausgelagert werden.\\
+Sollen die Ergebnisse der Aufrufe in der UI dargetsellt werden, sollte die Aktualisierung der View mit den Daten Über \code{Platform.runLater()} erfolgen.
+
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.35]{chapters/Anhang/Präsenzphase/img/rmimvp}
+    \caption{Das MVP-Architekturmuster in einer verteilten Anwendung. Das Model wird i.d.R. als \textit{remote object} realisiert, mit dem der Presenter kommuniziert.
+    Wird auch der Presenter exportiert, ist das Model dazu in der Lage, die Presenter der Clients über entsprechende Schnittstellen direkt zu beeinflussen (in der Skizze über die bidirektionale Verbindung Presenter - Model dargestellt)\footnote{s. hierzu auch die Implementierung des Chat-Clients in \cite[349, Bild 6.12]{Oec22}}. (Quelle: eigene)}
+    \label{fig:rmimvp}
+\end{figure}

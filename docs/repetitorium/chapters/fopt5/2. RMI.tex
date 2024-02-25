@@ -383,7 +383,7 @@ Wird ein \textbf{Stub} angefordert, der eine asynchrone Operation ausführt, und
 \end{itemize}
 
 \begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
-    Methodenaufrufe auf ein RMI-Objekt finden parallel statt durch mehrere Clients - beim Zugriff auf gemeinsame Daten muss entsprechend synchronisiert werden\footnote{
+    Methodenaufrufe auf ein RMI-Objekt finden parallel statt durch mehrere Clients - beim gleichzeitigen Zugriff auf gemeinsame Daten muss entsprechend synchronisiert werden\footnote{
         s.a. ``3.2 Thread Usage in Remote Method Invocations``: Die Spezifikationen scheinen hier keinen Hinweis darauf zu geben, dass es eine Garantie für die Threads gibt. Steht das im Widerspruch zu der Aussage im Buch (\cite[330]{Oec22})? \url{https://docs.oracle.com/en/java/javase/21/docs/specs/rmi/arch.html#thread-usage-in-remote-method-invocations} - abgerufen 2.2.2024
     }.
 \end{tcolorbox}
