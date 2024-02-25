@@ -1,0 +1,23 @@
+\section{Batch Mode}
+
+Unter \textit{Batch Mode} verstehen wir im Kurs das Senden von Anfragen hintereinander, ohne auf die Antworten zu warten.\\
+Die Antworten werden später gesammelt.\\
+Generell ist das im Zusammenspiel mit einem sequentiellen Server schneller, da eine Anfrage nicht von einer Antwort abhängig ist, also nicht zuerst auf eine Antwort gewartet werden muss, bevor die Anfrage geschickt werden kann (dies schränkt aber auch gleichzeitig das Anwendungsgebiet ein).\\
+Es ist durchaus möglich, dass bei Nutzung des Batch-Modus sowohl Client als auch Server zum stehen kommen, wenn nämlich zuerst viele Anfragen geschickt, dann alle Antworten eingesammelt werden sollen:\\
+
+\begin{itemize}
+    \item Bei dem Client kommen viele Nachrichten an, während er noch sendet.
+    \item Die ankommenden Nachrichten für den Client werden gepuffert, bis sie ausgelesen werden (TCP- / OS-seitig).
+    \item Läuft der Puffer voll, sorgt die Flusskontrolle (TCP) dafür, dass dem Sender mitgeteilt wird, dass keine Nachrichten mehr empfangen werden können, der Server sendet nicht mehr.
+    \item Die zu sendenden Nachrichten des Servers werden in einen Puffer geschrieben.
+    \item Der Sende-Puffer des Senders läuft voll.
+    \item Bei dem nächsten Sende-Aufruf blockiert der Server, empfangene Nachrichten landen im Empfangspuffer
+    \item Der Empfangspuffer des Servers läuft voll, der Client buffert die zu sendenden Nachrichten.
+    \item Beide Anwendungen blockieren.
+\end{itemize}
+
+\noindent
+Eine Lösung hierfür ist, sowohl Senden als auch Empfangen auf Client-Seite von zwei verschiedenen Threads durchführen zu lassen.
+
+\noindent
+Siehe hierzu auch Aufgabe \ref{sec:ss19_aufgabe8}.

@@ -42,7 +42,7 @@ Der Kreis soll erst ausgefüllt werden, wenn die Maustaste gelöst wird.
     }
 \end{minted}
 
-\section{Aufgabe 8}
+\section{Aufgabe 8}\label{sec:ss19_aufgabe8}
 
 In der Abbildung \ref{fig:batchmodus} ist links der sequentielle Modus dargestellt, bei dem nach dem Senden einer Nachricht auf die Antwort des Servers gewartet wird, bevor eine neue Nachricht geschickt wird.
 Dies wird i.d.R. verwendet, wenn das Senden einer neuen Nachricht abhängig ist von einem Ergebnis, die über die Server-Antwort übermittelt wird, oder wenn mit dem Server interagiert wird (Request abhängig vom Response).\\
@@ -62,7 +62,7 @@ In dieser Form des Batch-Modus besteht allerdings die Gefahr, dass es zu Verklem
     \item Beide Anwendungen blockieren.
 \end{itemize}
 
-\\noindent
+\noindent
 Um dieses Problem beim Batch-Modus zu umgehen, werden für das Senden und Empfangen zwei Threads auf Client-Seite erstellt: Ein Thread sendet, ein Thread empfängt. \\
 Dadurch kann von dem Client immer wieder sein Empfangspuffer geleert werden, der Server wird beim Senden nicht blockiert.
 

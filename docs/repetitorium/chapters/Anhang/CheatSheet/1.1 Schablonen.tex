@@ -1,0 +1,32 @@
+\section{Methodenschablonen}
+
+\subsection{Leser}
+
+Der Leser verwendet kein \code{notify()} / \code{notifyAll()}, da er den Objektzustand nicht ändert.
+
+\begin{itemize}
+    \item mit \code{wait()} - Leser muss darauf warten, dass der Objektzustand gewisse Bedingungen erfüllt
+    \item ohne \code{wait()} - Leser ist von keinem Objektzustand abhängig.
+\end{itemize}
+
+
+\subsection{Schreiber}
+
+\begin{itemize}
+    \item \textbf{ohne} \code{notify()} oder \code{notifyAll()}
+    \begin{itemize}
+        \item ohne \code{wait()} - Objektzustand muss keine Bedingung erfüllen, damit es geändert werden kann.
+        \item mit \code{wait()} - Schreiber muss auf einen best. Objektzustand warten, damit das Objekt geändert werden kann.
+        \item[] $\rightarrow$ es müssen keine wartenden Threads darüber benachrichtigt werden, dass sich der Objektzustand geändert hat.
+    \end{itemize}
+    \item \textbf{mit} \code{notify()} oder \code{notifyAll()}
+    \begin{itemize}
+        \item ohne \code{wait()} - Objektzustand muss keine Bedingung erfüllen, damit es geändert werden kann.
+        \item mit \code{wait()} - Schreiber muss auf einen best. Objektzustand warten, damit das Objekt geändert werden.
+        \item[] $\rightarrow$ in beiden Fällen wird \code{notify()} oder \code{notifyAll()} aufgerufen, damit evtl. wartende Threads ihre Wartebedingungen zum lesen/schreiben des Objektes erneut überprüfen können.
+    \end{itemize}
+
+\end{itemize}
+
+
+

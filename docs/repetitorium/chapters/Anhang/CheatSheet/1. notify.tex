@@ -1,0 +1,48 @@
+\section{notify() / notifyAll()}
+
+\subsection*{notify() verwendet man...}
+\begin{itemize}
+    \item wenn es nur eine Wartebedingung für einen oder mehrere Threads gibt
+    \item[] \textbf{UND}
+    \item wenn es nur einen Thread, der davon profitiert, die \textit{while-wait-Schleife} zu verlassen
+\end{itemize}\\
+
+\noindent
+Beispiele:\\
+
+\noindent
+\code{SynchStack}: Es gibt eine Wartebedingung (\code{isEmpty()}) und nur \textit{einen} Thread, der davon profitiert, aus der Warteschleife entlassen zu werden: Sind mehrere Threads $n$ in der Warteschlange,  haben $n$ Aufrufe zu \code{pop()} ergeben, dass der Stack leer gewesen ist.\\
+War der Stack leer, und es erfolgt ein Aufruf von \code{notify()} \textit{nach} einem \code{push()}, wird \textit{einer} dieser Threads aus der Warteschlange geholt, damit er seine Operation durchführen kann - danach wird der Stack wieder leer sein, also würden nicht mehrere Threads davon profitieren, aus der Warteschlange geholt zu werden.\\
+(Sind genug Elemente im Stack, und es wird \code{notify()} aufgerufen, ist der Aufruf ohnehin ohne Effekt, da sich keine Threads in der Warteschlange befinden).
+
+\subsection*{notifyAll() verwendet man...}
+\begin{itemize}
+    \item wenn sich mehrere Threads mit unterschiedlichen Wartebedingungen in der Warteschlange befinden.
+    \item[] \textbf{ODER}
+    \item wenn es mehrere Threads gibts die davon profitieren, die \textit{while-wait-Schleife} zu verlassen
+\end{itemize}\\
+
+\noindent
+Beispiele:\\
+
+\noindent
+\code{BoundedCounter}: Ein Thread, der davon profitiert, aus der Warteschlange herausgelassen zu werden; mehrere Wartebedingungen.\\
+Ähnlich dem SynchStack, aber jetzt gibt es mehrere Wartebedingungen.\\
+Wird \code{up()} aufgerufen, kann es sein, dass die Threads, die \code{down()} aufrufen wollen, in der Warteschlange sind.
+Auch hier sind es genausoviele, wie die Wartebedingung \code{value==min} ergeben hat.\\
+Nur einer profitiert nun davon, den Wert wieder herunterzählen zu können, weil der \code{value} nach einem \code{up()} \code{min+1} sein wird.
+\textbf{Oder} es existiert andersherum ein Thread, der vom Hochzählen profitiert.\\
+Es befinden sich aber niemals Threads in der Warteschlange, die auf ein hochzählen \textit{und} herunterzählen warten.\\
+
+\noindent
+\code{ital. Ampel}: Mehrere Threads, die davon profitieren, aus der Warteschlange herausgelassen zu werden (nebeneinander fahrende Autos), eine Wartebedingungen (Ampel: rot)\\
+
+\noindent
+\code{EventSet}: Mehrere Threads, die davon profitieren, aus der Warteschlange herausgelassen zu werden (\textit{waitAND}, \textit{waitOR}), mehrere Wartebedingungen (alle \code{true}, mind. einer \code{true}).
+
+
+
+
+
+
+

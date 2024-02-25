@@ -1,0 +1,32 @@
+\section{Session, Cookies und ServletContext}
+
+\subsection{Cookies}
+
+\begin{itemize}
+    \item werden aus dem \code{HttpServletRequest}-ausgelesen (\code{getCookies()}, HTTP-Protokoll: \textit{Cookie}-Header) und über das \code{HttpServletResponse}-Objekt an den Client gesendet (Hinzufügen eines Cookies: \code{addCookie()}, HTTP-Protokoll: \textit{Set-Cookie})
+    \item existierende Cookies des Clients sind im \code{Cookie}-Header
+    \item i.d.R. sendet der Client einmal gesetzte Cookies mit jeder Anfrage mit, es sei denn, sie sind zwischenzeitlich gelöscht (manuell / automatisch durch einstellbar lange Zeit)
+\end{itemize}
+
+
+\subsection{Session}
+\begin{itemize}
+    \item von einem \code{HttpServletRequest} bekommt man immer dasselbe \code{HttpSession}-Objekt, wenn die Http-Anfragen von demselben Benutzer stammt.
+    \item es lassen sich beliebige anwendungsabhängige Daten in einem Session-Objekt ablegen.
+    \item klassisches Einsatzgebiet: Warenkörbe in Online-Shops.
+    \item Zugriff auf Session muss synchronisiert sein, da ein Nutzer mehrere HTTP-Anfragen für ein und dieselbe Session senden kann.
+    \item Sessions und die damit verbundenen Daten werden automatsiche glöscht, wenn die Session eine (einstellbar lange) Zeit nicht mehr aktiv gewesen ist.
+    \item eine Session wird i.d.R. über ein \textit{Session-Cookie} realisiert, in dem ein \textit{Wert} gespeichert ist (Schlüssel: \textit{JSESSIONID}), über den das Sitzungsobjekt auf dem Server assoziiert ist
+\end{itemize}
+
+
+\subsection{ServletContext}
+\begin{itemize}
+    \item Anwendungsglobale Daten lassen sich in einem \code{ServletContext}-Objekt ablegen
+    \item dieses Objekt enthält eine Attributliste, die man mit \code{getAttribute()} / {\code{setAttribute()} / \code{removeAttribute()} auslesen / anpassen kann.
+    \item es können Objekte beliebigen Typs gespeichert werden.
+    \item wenn von Servlets Daten in einem \textit{ServletContext}-Objekt gespeichert werden sollen, kann über die Annotation \code{WebServlet} und deren Parameter \code{loadOnStartup} eine gewünschte Initialisierungsreihenfolge angeben (Standard = $-1$, wird nicht automatisch initialisiert, sondern erst bei Bedarf).
+    \item die Methode \code{init()} eines Servlets wird aufgerufen, wenn das Servlet initialisiert wurde.
+    Hier kann über \code{getServletContext()} auf das \textit{ServletContext}-Objekt zugegriffen werden.
+\end{itemize}
+
