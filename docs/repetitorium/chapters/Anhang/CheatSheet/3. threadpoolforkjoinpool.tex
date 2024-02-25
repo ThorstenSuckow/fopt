@@ -1,0 +1,19 @@
+\section{Thread-Pool und ForkJoinPool}
+
+\subsection{Thread-Pool}
+
+\begin{itemize}
+    \item es muss nicht für jeden Auftrag eine neuer Thread erstellt werden.
+    \item Anzahl der Threads ist nach oben beschränkt (nicht zwingend konstant, kann schwanken).
+    \item Threads teilen sich die Aufträge - ein Thread kann einen anderen Auftrag bearbeiten, sobald er fertig ist.
+\end{itemize}
+
+\subsection{ForkJoinPool}
+
+\begin{itemize}
+    \item realisiert einen Thread-Pool, der speziell für baumartige Berechnungen gedacht ist
+    \item ermöglicht baumartige Berechnungen.
+    \item alle Threads des ForkJoinPools sind Hintergrund-Threads.
+    \item ein Threads eines ForkJoinPools kann weitere Aufträge bearbeiten, sobald er mit \code{join} auf das Ende eines anderen Auftrages wartet: Ein Thread des Pools, der einen neuen Auftrag erteilt und auf dessen Ende wartet, ist während des Wartens nicht für andere Aufträge blockiert.
+    \item[] $\rightarrow$ Threads in einem ForkJoinPool können Aufträge in den Pool werfen, die sie zur Berechnung benötigen, und während des Wartens andere Aufträge ausführen
+\end{itemize}

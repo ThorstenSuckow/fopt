@@ -86,7 +86,7 @@
             \item[] (Verklemmung entsteht, wenn es einen Zyklus von Threads gibt, so dass ein Thread auf ein Betriebsmittel wartet, welches der im Zyklus nachfolgende Thread besitzt. Btriebsmittel können z.B. passive Objekte sein. Voraussetzung ist, dass Betriebsmittel nur unter gegenseitigem Ausschluss benutzbar sind, einem Thread nicht entzogen werden können und dass Threads bereits Betriebsmittel besitzen und weitere anfordern.)
             \item Vermeidung:
             \begin{itemize}
-                \item Anforderung "auf einen Schlag"
+                \item Anforderung ``auf einen Schlag``
                 \item Anforderung in festgelegter Reihenfolge
                 \item[] (Bsp.: Alle Philosophen bis auf einen fordern zuerst linke, dann rechte Gabel an.)
                 \item Weitere Verfahren: Wound-Wait- und Wait-Die-Verfahren, Bankier-Algorithmus
@@ -103,7 +103,7 @@
 \begin{figure}
     \centering
     \includegraphics[scale=0.5]{chapters/Anhang/Präsenzphase/img/notifynotifyall}
-    \caption{Merkregel für die Verwendung von notify()/notifyAll() mit den besprochenen Aufgaben als Beispiel. I.d.R. wird notify() nur genutzt, wenn es nur einen Thread gibt, der die while-wait-Schleife verlassen kann, und es gleichzeitig nur eine Wartebedingung gibt. (Quelle: eigene)}
+    \caption{Merkregel für die Verwendung von notify()/notifyAll() mit den besprochenen Aufgaben als Beispiel. I.d.R. wird notify() nur genutzt, wenn es nur einen Thread gibt, der die while-wait-Schleife verlassen kann, und es gleichzeitig nur eine Wartebedingung für einen oder mehrere Threads gibt. (Quelle: eigene)}
     \label{fig:notifynotifyall}
 \end{figure}
 

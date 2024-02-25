@@ -63,7 +63,8 @@ Man kann sich zu eine \code{Lock} beliebig viele \code{Condition}s geben lassen,
     \item Während \code{notify()}/\code{notifyAll()} nach dem Prinzip ``\textit{einer oder alle}`` funktionieren, kann für ein Lock mehrere conditions definiert werden, die feingranuliert das Warteschlangenverhalten basierend auf unterschiedlichen Bedingungen erlauben.
      So können bspw. zwei verschiedene Conditions für das Erzeuger-/Verbraucherproblem umgesetzt werden, die einmal die Wartebedingung für einen vollen Puffer repräsentieren, und einmal die Wartebedingung für einen leeren Puffer(\code{await()}, um den aktuellen Thread in die Warteschlange einzureihen).
      Mittels \code{signal()} / \code{signalAll()} können gezielt die durch die conditions in der Warteschlange befindlichen Threads aus derselben geholt werden.
-    \item Bevor eine Sperre gesetzt wird, kann überprüft werden, ob die Gewährung der Sperre zu einer Verklemmung führen könnte\footnote{s. hierzu ``3.12 Vermeidung von Verklemmungen``, \cite[192 ff.]{Oec22}}.
+    \item Bevor eine Sperre gesetzt wird, könnte überprüft werden, ob die Gewährung der Sperre zu einer Verklemmung führen könnte\footnote{s. hierzu ``3.12 Vermeidung von Verklemmungen``, \cite[192 ff.]{Oec22}}.
+    \item Es können Locks für verschiedene Kontexte definiert werden (bspw. \textit{read}-/\textit{write}-Lock)
     \item soll in einer Methode eine Sperre über \code{unlock()} aufgelöst werden, muss sichergestellt sein, dass eine evtl. vorher auftretende Exception nicht das frühzeitige Verlassen der aufrufenden Methode verursacht.
     Deshalb sollte \code{unlock()} - je nach Implementierung - in einem \code{finally}-Block aufgerufen werden.
 \end{itemize}

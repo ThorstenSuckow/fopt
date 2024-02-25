@@ -1,6 +1,70 @@
 \section{Mittwoch}
 
-Das Interface \code{AutoCloseable} wird u.a. für die Implementierung der UDPSocket\footnote{\cite[269, Listing 5.1]{Oec22}}/TCPSocket\footnote{\cite[286, Listing 5.7]{Oec22}}-Klassen genutzt, um sie mit \textbf{try-with-resources} nutzen zu können.\\
+\subsection{Lehrinhalte FOPT5}
+
+\subsubsection{Notizen zu den Lehrinhalten FOPT5}
+
+\begin{itemize}
+    \item Grundlagen der Rechnernetze:
+    \begin{itemize}
+        \item Schichtenmodell
+        \item Protokolle
+        \item IP-Adressen und DNS-Namen
+        \item Transportprotokolle TCP und UDP, Portnummern
+    \end{itemize}
+    \item Socket-Schnittstelle:
+    \begin{itemize}
+        \item Schicht5-Schicht4-Grenze
+        \item Client-Server
+    \end{itemize}
+    \item Kommunikation über UDP:
+    \begin{itemize}
+        \item DatagramSocket, DatagramPacket
+        \item Beachtung der Unzuverlässigkeit von UDP
+        \item[] (wegen der Unzuverlässigkeit von UDP kann es sein, dass ein client hängen bleibt, weil nie die Antwort des Servers ankommt - deshalb kann ein Timeout über \code{setSoTimeout()}\footnote{
+        ``setSoTimeout``: \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/DatagramSocket.html#setSoTimeout(int)} - abgerufen 24.02.2024
+        } gesetzt werden. Es wird dann eine \code{SocketTimeoutException} geworfen, falls das timeout vor dem receive eintritt).
+    \end{itemize}
+    \item Multicast-Kommunikation
+    \item Kommunikation über TCP:
+    \begin{itemize}
+        \item Socket, ServerSocket, Klassen aus dem Package java.io
+        \item[] (TCP ist datenstromorientiert - Sendeoperationen und Empfangsoperationen stehen nicht in einem $1:1$-Verhältnis, eine Sendeoperation kann mehrere Empfangsoperationen haben, mehrere Sendeoperationen können eine Empfangsoperation haben.\\
+        Also muss man erkennen, was eine logische Dateneinheit ist.
+        Deshalb hat der Kurs vereinbart, dass ein newline-symbol \textbf{\\n} genutzt wird, um Nachrichtengrenzen zu erkennen.
+        Bei UDP ist das nicht notwendig, da UDP nachrichtenorientiert ist.)
+    \end{itemize}
+    \item Sequenzielle und parallele Server:
+    \begin{itemize}
+        \item Statische Parallelität
+        \item Dynamische Parallelität
+        \item Mischformen
+    \end{itemize}
+    \item RMI:
+    \begin{itemize}
+        \item Stub, Skeleton
+        \item ``Kochrezept``:
+        \begin{enumerate}
+            \item Interface definieren (extends Remote, Methoden mit throws Remote Exception-Klausel deklarieren)
+            \item Interface implementieren (extends UnicastRemoteObject, Konstruktoren müssen mit throws RemoteException deklariert sein)
+            \item Server programmieren (Objekte von 2 erzeugen und bei der RMI-Registry anmelden)
+            \item Client programmieren (Objekte - die Stubs - aus der Registry über Naming.lookup() holen, Casting auf das in Schritt 1 definierte Interface, Methoden aufrufen)
+        \end{enumerate}
+    \end{itemize}
+    \item Parallelität bei RMI
+    \item Wertübergabe für Parameter und Rückgabewerte:
+    \begin{itemize}
+        \item falls Objekte serialisierbar und nicht exportiert sind
+    \end{itemize}
+    \item Referenzübergabe für Parameter und Rückgabewerte:
+    \begin{itemize}
+        \item falls Objekte exportiert sind
+    \end{itemize}
+    \item MVP-Prinzip für verteilte Anwendungen
+\end{itemize}
+
+\subsection{Notizen}
+Das Interface \code{AutoCloseable} wird u.a. für die Implementierung der UDPSocket\footnote{\cite[269, Listing 5.1]{Oec22}}/ TCPSocket\footnote{\cite[286, Listing 5.7]{Oec22}}-Klassen genutzt, um sie mit \textbf{try-with-resources} nutzen zu können.\\
 
 \noindent
 Objekte, die man mittels \code{bind()} \code{rebind()} in der RMI-Registry registriert, \textit{müssen} das \code{Remote}-Interface implementieren\footnote{
@@ -124,3 +188,73 @@ Eine Endlosschleife im Konstruktor verhindert, dass das Objekt auch zurückgegeb
         }
     }
 \end{minted}
+
+
+\subsection*{Beispiel für UDP-Kommunikation}
+Der folgende Quelltext setzt für den Client ein Socket-Timeout. Dadurch soll verhindert werden, dass der Client unverhältnismäßig lange (evtl. bis zum runterfahren der Anwendung) auf eine Antwort wartet, da auch das Lesen bei UDP blocking ist.
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    fontsize=\small,
+    frame=lines,
+    framesep=2mm]{java}
+    try (DatagramSocket s = new DatagramSocket()) {
+                // setzen des Timeouts
+                s.setSoTimeout(250);
+
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ObjectOutputStream oos = new ObjectOutputStream(baos);
+                oos.writeObject("Hello World");
+
+                byte[] message = baos.toByteArray();
+                DatagramPacket p = new DatagramPacket(
+                    message, message.length, InetAddress.getLocalHost(), 8888);
+
+                s.send(p);
+
+                DatagramPacket response = new DatagramPacket(new byte[64], 64);
+                s.receive(response);
+                ByteArrayInputStream bais = new ByteArrayInputStream(response.getData());
+                ObjectInputStream ois = new ObjectInputStream(bais);
+                System.out.println("[client]: received " + ois.readObject());
+
+            } catch (Exception e) {
+                System.out.println("[client] " + e);
+            }
+\end{minted}
+
+\subsection*{Multicast-Kommunikation}
+
+Mittels Multicast können sich mehrere Server auf eine Multicast-Adresse aufschalten.
+Mehrere Rechner sind somit in der Lage, die Nachrichten einzelner Clients zu empfangen.
+Damit die Nachrichten eines Clients an mehrere Server geht, muss der Client an die entsprechende Multicast-Adresse senden.
+Server schalten sich mit Hilfe eines \code{MulticastSocket}s auf die Multicast-IP-Adresse auf.\\
+
+\noindent
+Multicast funktioniert i.d.R. nur in einem lokalen Netz.\\
+
+\noindent
+UDP mit Multicast kann bspw. dazu verwendet werden, um in einem Netz einen Server auszumachen, mit dem dann weiter über TCP-kommuniziert wird.\\
+Hierzu sendet ein Client eine Anfrage an die Multicast-Adresse, bekommt von den aufgeschalteten Servern eine Antwort und kennt dadurch die IP-Adressen der Rechner (zumindest einen Teil, da UDP unzuverlässig.)\\
+
+\noindent
+Zur Nachrichtenübermittlung sendet ein Client in einer äußeren Schleife $n$ Nachrichten.\\
+In einer inneren Schleife wartet der Client auf Antworten - da über Multicast kommuniziert wird, muss das über \code{while (true)} realisiert werden, da unklar ist, wieviele Antworten ankommen.\\
+Auch hier muss ein \textit{Socket-Timeout} gesetzt sein , damit der Client nicht hängenbleibt, falls ein Rechner nicht antwortet (s. \cite[279, Listing 5.6]{Oec22}).
+
+\subsection*{MVP-Prinzip für verteilte Anwendungen}
+
+Das Model ist i.d.R. das Remote Object, gleichzeitige lesende / schreibende Zugriffe auf gemeinsame Daten müssen \textit{synchronisiert} werden.\\
+Der Presenter ruft Methoden auf dem RMI-Objekt auf - die Aufrufe sollten in Threads ausgelagert werden.\\
+Sollen die Ergebnisse der Aufrufe in der UI dargetsellt werden, sollte die Aktualisierung der View mit den Daten Über \code{Platform.runLater()} erfolgen.
+
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.35]{chapters/Anhang/Präsenzphase/img/rmimvp}
+    \caption{Das MVP-Architekturmuster in einer verteilten Anwendung. Das Model wird i.d.R. als \textit{remote object} realisiert, mit dem der Presenter kommuniziert.
+    Wird auch der Presenter exportiert, ist das Model dazu in der Lage, die Presenter der Clients über entsprechende Schnittstellen direkt zu beeinflussen (in der Skizze über die bidirektionale Verbindung Presenter - Model dargestellt)\footnote{s. hierzu auch die Implementierung des Chat-Clients in \cite[349, Bild 6.12]{Oec22}}. (Quelle: eigene)}
+    \label{fig:rmimvp}
+\end{figure}

@@ -1,0 +1,37 @@
+\section{Statisch und Dynamisch Parallele TCP / UDP Server}
+
+\subsection{Statisch Parallel}
+
+Bei statischer Parallelität werden Felder von Threads konstanter Größe verwendet.
+\subsubsection{TCP}
+
+\begin{itemize}
+    \item jedes Feld enthält einen Thread, der dasselbe \code{ServerSocket}-Objekt übergeben bekommt
+    \item die \code{run()}-Methode wartet mit \code{accept()} auf Verbindungseingang und bedient die Verbindungen
+\end{itemize}
+
+
+\subsubsection{UDP}
+
+\begin{itemize}
+    \item jedes Feld enthält einen Thread, der dasselbe \code{DatagramSocket}-Objekt übergeben bekommt
+    \item die \code{run()}-Methode wartet mit \code{receive(: DatagramPacket)} auf Nachrichten und bearbeitet diese
+\end{itemize}
+
+\subsection{Dynamisch Parallel}
+
+
+\subsubsection{TCP}
+
+\begin{itemize}
+    \item für jeden Verbindungseingang mit \code{accept()} wird ein neuer Thread erstellt, der die Verbindung in der \code{run()}-Methode
+    bedient
+\end{itemize}
+
+
+\subsubsection{UDP}
+
+\begin{itemize}
+    \item für jeden Nachricht wird zur Bearbeitung ein neuer Thread erstellt, der das originäre \code{DatagramSocket}-Objekt übergeben bekommt,
+    über das Antworten an die Clients gesendet werden können.
+\end{itemize}
