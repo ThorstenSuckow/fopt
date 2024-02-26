@@ -219,7 +219,7 @@ Cookies, die die Lebensdauer einer Browsersitzung überdauern sollen, sollten mi
 Threads in Servlets können die Antwortzeiten einer Anfrage verzögern, da pro Servlet i.d.R. nur ein Objekt dieses Servlets existiert.\\
 
 \noindent
-Länger andauernde Aufträge sollten deshalb mit den Benutzern assoziiert sein, diese ausgelöst haben, und in Sessions referenziert werden.\\
+Länger andauernde Aufträge sollten deshalb mit den Benutzern assoziiert sein, von denen diese ausgelöst wurden, und über Sessions referenziert werden.\\
 
 \noindent
 Zur Überprüfung des Fortschritts eines Auftrages kann dann eine Seite aufgerufen werden, die die Sitzungsdaten ausliest und mit ihrer Hilfe des Fortschritts des Threads überprüft (bspw. \code{isAlive()} der Klasse \code{Thread}).\\
