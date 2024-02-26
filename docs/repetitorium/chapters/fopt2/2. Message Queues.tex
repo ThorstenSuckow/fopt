@@ -1,6 +1,5 @@
 \subsection{Message Queues}\label{sec:messagequeues}
 
-\subsection{Verallgemeinerung des Erzeuger-Verbraucher-Problems}
 
 Bei \textbf{Message Queues} bleiben Nachrichten als Einheiten erhalten (\textbf{nachrichtenorientierte Kommunikation}, bspw. \textbf{UDP}\footnote{User Datagram Protocol}).\\
 
@@ -51,7 +50,7 @@ Da alle Philosophen auf eine Freigabe der Gabeln warten, kommt keiner dazu, zu e
 \end{figure}
 
 \noindent
-Diese Verklemmungssituation läßt sich bspw. durch Semaphorgruppen lösen, wobei ein Philosoph jeweils zwei Gabeln \textbf{auf einen Schlag} anfordert, oder auch durch $n$ Semaphore, wobei jeder Semaphor eine Gabel repräsentiert, und ein zusätzlicher Semaphor als ``Essenserlaubnis``, die den ``Gabel-Semaphoren`` vorgeschaltet ist, wie im folgenden Beispiel:
+Diese \textbf{Verklemmungssituation} läßt sich bspw. durch Semaphorgruppen lösen, wobei ein Philosoph jeweils zwei Gabeln \textbf{auf einen Schlag} anfordert, oder auch durch $n$ Semaphore, wobei jeder Semaphor eine Gabel repräsentiert, und ein zusätzlicher Semaphor als ``Essenserlaubnis``, die den ``Gabel-Semaphoren`` vorgeschaltet ist, wie im folgenden Beispiel:
 
 \begin{minted}[mathescape,
     linenos,
@@ -117,7 +116,7 @@ Wenn mehrere Threads schreibend auf ein Objekt zugreifen, muss die durchgehende 
 In einigen Fällen ist die Änderung des Zustands an eine bestimmte Bedingung geknüpft, die als \textbf{Wartebedingung} überprüft werden kann - diese Bedingung sollte in einer \code{while}-Schleife als Ausdruck verwendet werden, damit die Bedingung nach Freigabe erneut überprüft werden kann (sie kann zwischenzeitlich wieder geändert worden sein).\\
 
 \noindent
-Wenn nach einer Zustandsänderung wartende Threads weiterlaufen können, sollten diese im Anschluss mittels \code{notify()}/\code{notifyAll()} wieder geweckt werden - je nach Implementierung unterscheidet sich das aber, bspw. wenn \textbf{Additive Semaphore} genutzt werden: Die Zustandsänderung des Zählers bewirkt nicht gleich für alle Threads ein weiterlaufen.\\
+Wenn nach einer Zustandsänderung wartende Threads weiterlaufen können, sollten diese im Anschluss mittels \code{notify()}/\code{notifyAll()} wieder geweckt werden - je nach Implementierung unterscheidet sich das aber, bspw. wenn \textbf{Additive Semaphore} genutzt werden: Die Zustandsänderung des Zählers bewirkt nicht gleich für alle Threads ein Verlassen ihrer \textit{while-wait-Schleife}.\\
 
 \noindent
 Komplexe Wartebedingungen implementiert man in einer eigenen Methode.\\
@@ -135,11 +134,34 @@ Es ist darauf zu achten, dass nach der Initialisierung und bei jeder Freigabe ei
 \noindent
 Weiter stellt \cite[138 ff.]{Oec22} 6 Schablonen vor, die für verschiedene Kategorien von \code{synchronized}-Methoden verwendet werden können:
 
+
+\subsection*{Leser}
+
+Der Leser verwendet kein \code{notify()} / \code{notifyAll()}, da er den Objektzustand nicht ändert.
+
 \begin{itemize}
-    \item lesende Methoden ohne \code{wait()}
-    \item lesende Methoden mit \code{wait()}
-    \item schreibende Methoden ohne \code{wait()} und ohne \code{notify()}/\code{notifyAll()}
-    \item schreibende Methoden mit \code{wait()}, aber ohne \code{notify()}/\code{notifyAll()}
-    \item schreibende Methoden ohne \code{wait()}, aber mit \code{notify()}/\code{notifyAll()}
-    \item schreibende Methoden mit \code{wait()} und mit \code{notify()}/\code{notifyAll()}
+    \item mit \code{wait()} - Leser muss darauf warten, dass der Objektzustand gewisse Bedingungen erfüllt
+    \item ohne \code{wait()} - Leser ist von keinem Objektzustand abhängig.
 \end{itemize}
+
+
+\subsection*{Schreiber}
+
+\begin{itemize}
+    \item \textbf{ohne} \code{notify()} oder \code{notifyAll()}
+    \begin{itemize}
+        \item ohne \code{wait()} - Objektzustand muss keine Bedingung erfüllen, damit es geändert werden kann.
+        \item mit \code{wait()} - Schreiber muss auf einen bestimmten Objektzustand warten, damit das Objekt geändert werden kann.
+        \item[] $\rightarrow$ es müssen keine wartenden Threads darüber benachrichtigt werden, dass sich der Objektzustand geändert hat.
+    \end{itemize}
+    \item \textbf{mit} \code{notify()} oder \code{notifyAll()}
+    \begin{itemize}
+        \item ohne \code{wait()} - Objektzustand muss keine Bedingung erfüllen, damit es geändert werden kann.
+        \item mit \code{wait()} - Schreiber muss auf einen bestimmten Objektzustand warten, damit das Objekt geändert werden kann.
+        \item[] $\rightarrow$ in beiden Fällen wird \code{notify()} oder \code{notifyAll()} aufgerufen, damit evtl. wartende Threads ihre Wartebedingungen zum lesen/schreiben des Objektes erneut überprüfen können.
+    \end{itemize}
+
+\end{itemize}
+
+
+
