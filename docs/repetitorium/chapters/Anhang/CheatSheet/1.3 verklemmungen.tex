@@ -1,0 +1,15 @@
+\section{Verklemmungen (Deadlocks)}
+
+ \subsection{Bedingungen für das Vorliegen einer Verklemmung}
+Verklemmung entsteht, wenn es einen Zyklus von Threads gibt, so dass ein Thread auf ein Betriebsmittel wartet, welches der im Zyklus nachfolgende Thread besitzt.\\
+Betriebsmittel können z.B. passive Objekte sein.\\
+Voraussetzung ist, dass Betriebsmittel nur unter gegenseitigem Ausschluss benutzbar sind, einem Thread nicht entzogen werden können und dass Threads bereits Betriebsmittel besitzen und weitere anfordern.
+
+
+Vermeidung:
+\begin{itemize}
+    \item Anforderung ``auf einen Schlag``
+    \item Anforderung in festgelegter Reihenfolge
+    \item[] (Bsp.: Alle Philosophen bis auf einen fordern zuerst linke, dann rechte Gabel an.)
+    \item Weitere Verfahren: Wound-Wait- und Wait-Die-Verfahren, Bankier-Algorithmus
+\end{itemize}

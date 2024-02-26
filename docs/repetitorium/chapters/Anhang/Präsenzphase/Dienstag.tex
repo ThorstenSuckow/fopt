@@ -184,7 +184,7 @@ ermöglicht es, bsp. ein JavaFX-\code{Label} an eine \code{SimpleIntegerProperty
 
 \noindent
 Das Folgende Beispiel bindet 3 Labels an drei verschiedene \code{SimpleIntegerProperty}s.\\
-Die Summe dieser Properties wird in dem Label code{totalLabel} angezeigt:
+Die Summe dieser Properties wird in dem Label \code{totalLabel} angezeigt:
 \begin{minted}[mathescape,
     linenos,
     numbersep=5pt,
@@ -197,11 +197,16 @@ Die Summe dieser Properties wird in dem Label code{totalLabel} angezeigt:
     Label totalLabel = new Label();
 
     lineCountLabel.textProperty().bind(Bindings.convert(lineCountProperty));
-    rectangleCountLabel.textProperty().bind(Bindings.convert(rectangleCountProperty));
+    rectangleCountLabel.textProperty().bind(Bindings.convert(
+        rectangleCountProperty
+    ));
     circleCountLabel.textProperty().bind(Bindings.convert(circleCountProperty));
 
     totalLabel.textProperty().bind(
-        Bindings.convert(lineCountProperty.add(rectangleCountProperty).add(circleCountProperty))
+        Bindings.convert(
+            lineCountProperty.add(rectangleCountProperty).add(
+                circleCountProperty
+            ))
     );
 \end{minted}\\
 
@@ -257,6 +262,7 @@ Wird \code{undo()} aufgerufen, und es befindet sich links der logischen Position
             for (int i = actions.size() - 1; i >= currentPos; i--) {
                 actions.remove(i);
             }
+            actions.add(a);
             currentPos++;
         }
         public function undo() {

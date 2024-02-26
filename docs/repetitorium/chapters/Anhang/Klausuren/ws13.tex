@@ -44,7 +44,7 @@
             }
 
             if (opened) {
-                this.notify();
+                this.notifyAll();
             }
         }
 
@@ -64,7 +64,7 @@
 
 \begin{itemize}
     \item Es wird eine Wartebedingung benötigt, und zwar für die Methode \code{warten()}; ankommende Threads werden
-    in die Warteschlange des Zahlenschloss-Objektes geschickt, wenn \code{opened} auf false gesetzt ist, ansonsten
+    in die Warteschlange des Zahlenschloss-Objektes geschickt, wenn \code{opened} auf \code{false} gesetzt ist, ansonsten
     verlassen diese direkt die Methode wieder.\\
     Die Methode \code{drehen} benötigt keine separate Wartebedingung.
     Es reicht aus, sicherzustellen, dass das Zahlenschloss nicht gleichzeitig von anderen Threads benutzt werden kann:
@@ -74,14 +74,14 @@
     die pro Radnummer verwendet werden\footnote{
         der gleichzeitige Zugriff auf unterschiedliche Arrays-Indizes ist erlaubt, s. `´17.4.1. Shared Variables``: \url{https://docs.oracle.com/javase/specs/jls/se21/html/jls-17.html#jls-1.4.1} - abgerufen 14.2.2024
     }.
-    \item Es gibt nur eine Wartebedingung, von daher sollte \code{notify()} genügen.\\
-    Wenn wir allerdings davon ausgehen, dass mehrere Threads über die Methode \code{warten()} in die Warteschlange des Objektes eingereiht worden sind,  sollte \code{notifyAll()} verwendet werden (siehe hierzu auch Abschnitt \ref{subsec:notifyAll}).
-    Dennoch ist nicht garantiert, dass auch alle Threads aus der Warteschlange gelangen, denn es kann sein, dass ein anderer Thread die Methode \code{drehen()} betritt, dort die
-    Zahlenkombination ändert und \code{opened} wieder auf \code{false} gesetzt wird. \\
-    Ein anderer Thread, der nun in  \code{warten()} an die Reihe kommt, überprüft die Wartebedingung, und wird wieder in die Warteschlange eingereiht.
-    Es ist also durchaus möglich, dass ein Thread nicht mehr aus der Methode \code{warten()} herauskommt.\\
-    Dies könnte bspw. dadurch verhindert werden, dass die Threads in eine Queue gepackt werden, und in \code{drehen()} eine Wartebedingung eingefügt wird, die erst erfüllt ist,
+    \item Es gibt eine Wartebedingung, nämlich, ob das Zahlenschloss geöffnet oder geschlossen ist.\\
+    Da mehrere Threads über die Methode \code{warten()} in die Warteschlange des Objektes eingereiht worden sind, und mehrere Threads auch davon profitieren, ihre Warteschlange zu verlassen (da sie im Folgenden ihre \textit{while-wait-Schleife} verlassen können), sollte \code{notifyAll()} verwendet werden (siehe hierzu auch Abschnitt \ref{subsec:notifyAll})\footnote{
+    Wie bei dem Ampelbeispiel ist nicht garantiert, dass auch alle Threads aus der Warteschlange gelangen, denn es kann sein, dass ein anderer Thread die Methode \textit{drehen()} betritt, dort die Zahlenkombination ändert und \textit{opened} wieder auf \textit{false} gesetzt wird.
+    Ein anderer Thread, der nun in  \textit{warten()} an die Reihe kommt, überprüft die Wartebedingung, und wird wieder in die Warteschlange eingereiht.
+    Es ist also durchaus möglich, dass ein Thread nicht mehr aus der Methode \textit{warten()} herauskommt.\\
+    Dies könnte bspw. dadurch verhindert werden, dass die Threads in eine Queue gepackt werden, und in \textit{drehen()} eine Wartebedingung eingefügt wird, die erst erfüllt ist,
     wenn die Queue geleert wurde oder aus ihr entnommen wurde, in der Reihenfolge, in der die Threads in die Queue eingereiht worden sind (\textit{FIFO}) (s. a. Abschnitt~\ref{subsec:readerwriterproblem}).
+    }.\\
     \item Bei der Teilaufgabe mit der Schleife muss die komplette Schleife synchronisiert werden, was man durch ein \code{synchronized}-Statement erreicht\footnote{siehe Abschnitt~\ref{subsec:synchronizedstatement}.}
     \begin{minted}[mathescape,
         linenos,

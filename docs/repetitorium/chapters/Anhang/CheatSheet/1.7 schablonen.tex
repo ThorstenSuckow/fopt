@@ -22,7 +22,7 @@ Der Leser verwendet kein \code{notify()} / \code{notifyAll()}, da er den Objektz
     \item \textbf{mit} \code{notify()} oder \code{notifyAll()}
     \begin{itemize}
         \item ohne \code{wait()} - Objektzustand muss keine Bedingung erfüllen, damit es geändert werden kann.
-        \item mit \code{wait()} - Schreiber muss auf einen best. Objektzustand warten, damit das Objekt geändert werden.
+        \item mit \code{wait()} - Schreiber muss auf einen best. Objektzustand warten, damit das Objekt geändert werden kann.
         \item[] $\rightarrow$ in beiden Fällen wird \code{notify()} oder \code{notifyAll()} aufgerufen, damit evtl. wartende Threads ihre Wartebedingungen zum lesen/schreiben des Objektes erneut überprüfen können.
     \end{itemize}
 
