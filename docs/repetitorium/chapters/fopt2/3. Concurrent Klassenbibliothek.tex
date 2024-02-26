@@ -70,7 +70,8 @@ Man kann sich zu eine \code{Lock} beliebig viele \code{Condition}s geben lassen,
     \item soll in einer Methode eine Sperre über \code{unlock()} aufgelöst werden, muss sichergestellt sein, dass eine evtl. vorher auftretende Exception nicht das frühzeitige Verlassen der aufrufenden Methode verursacht.
     Deshalb sollte \code{unlock()} - je nach Implementierung - in einem \code{finally}-Block aufgerufen werden.
 \end{itemize}
-\end{tcolorbox}
+\end{tcolorbox}\\
+
 
 \subsection*{Atomic-Klassen}
 Die \code{Atomic}-Klassen bieten eine Objekthülle für primitive Datentypen (\code{Boolean}, \code{Integer}, \code{Long}\ldots) und ermöglichen einen Thread-sicheren parallelen lesenden/schreibenden Zugriff auf die gekapselten Werte.
@@ -153,3 +154,98 @@ Das folgende Beispiel ist \cite[168, Listing 3.25]{Oec22} entnommen und beinhalt
         }
     }
 \end{minted}\\
+
+
+\subsection{Notizen}
+Wenn eine \code{synchronized}-Implementierung migriert wird zu \code{Lock}s / \code{Condition}s, sollte zunächst in alle bisherigen \code{synchronized}-Methoden Aufrufe zu \code{lock()} und \code{unlock()} hinzugefügt werden.\\
+
+\noindent
+Das folgende Beispiel zeigt eine \textit{SynchStack}-Implementierung mit \code{Lock}s und \code{Condition}s:
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    fontsize=\small,
+    frame=lines,
+    framesep=2mm]{java}
+    public class SynchStack {
+        private List<Integer> stack;
+        private Lock lock;
+        private Condition isEmpty;
+        public SynchStack() {
+            stack = new ArrayList<>();
+            lock = new ReentrantLock();
+            isEmpty = lock.newCondition();
+        }
+
+        public int pop() {
+            try {
+                lock.lock(); // lock()!
+
+                if (stack.isEmpty()) {
+                    try {
+                        isEmpty.await();
+                    } catch (InterruptedException ignored) {}
+                }
+                return stack.removeLast();
+            } finally {
+                lock.unlock(); // unlock()!
+            }
+        }
+
+        public void push(int i) {
+            try {
+                lock.lock(); // lock()!
+                stack.add(i);
+                isEmpty.signal();
+            } finally {
+                lock.unlock(); // unlock()!
+            }
+        }
+    }
+\end{minted}
+
+\noindent
+Im Folgenden ein Beispiel für die \textit{SynchStack}-Implementierung mit Mutex-Semaphore.\\
+Es werden zwei Semaphore benutzt: \code{isAccessed} kontrolliert den Zugriff auf die Liste an sich: \code{isEmpty} kontrolliert den Zugriff auf eine leere Liste.
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    fontsize=\small,
+    frame=lines,
+    framesep=2mm]{java}
+    class SynchStack {
+        private List<Integer> stack;
+        private MutexSemaphore isEmpty;
+        private MutexSemaphore isAccessed;
+
+        public SynchStack() {
+            this(new MutexSemaphore(true));
+            stack = new ArrayList<>();
+        }
+
+        public SynchStack(MutexSemaphore sem) {
+            stack = new ArrayList<>();
+            isEmpty = sem;
+            isAccessed = new MutexSemaphore(false);
+        }
+
+        public int pop() {
+            isEmpty.p();
+            isAccessed.p();
+            int i = stack.removeLast();
+            isAccessed.v();
+            return i;
+        }
+
+        public void push(int i) {
+            isAccessed.p();
+            stack.add(i);
+            isAccessed.v();
+            isEmpty.v();
+        }
+    }
+\end{minted}
