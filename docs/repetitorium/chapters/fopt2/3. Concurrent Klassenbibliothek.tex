@@ -27,11 +27,13 @@ Mit Hilfe der Schnittstellen \code{Executor} und \code{ExecutorService} kann man
 \code{ExecutorService} enthält Methoden, mit denen man das Ergebnis erteilter Aufträge über ein \code{Future}-Objekt (später) abholen kann.\\
 
 \noindent
-Eine wichtige Klassen, die die \code{ExecutorSchnittstelle} implementiert, ist die Klasse \code{ThreadPool}:
+Eine wichtige Klasse, die die \code{Executor}-Schnittstelle implementiert, ist die Klasse \code{ThreadPoolExecutor}\footnote{
+``Class ThreadPoolExecutor``: \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/ThreadPoolExecutor.html} - abgerufen 26.02.2024
+}:
 Mit ihr kann man es sich sparen, selbst Threads erzeugen und starten zu müssen (s. a. \cite[146]{Oec22}).
-Die Vorteile sind, dass man nicht selber Threads erzeugen muss, sondern diese vom Thread Pool verwaltet werden.
+Die Vorteile sind, dass man nicht selber Threads erzeugen muss, sondern diese vom Thread-Pool verwaltet werden.
 Eine einfache Implementierung wird in \cite[144]{Oec22} gezeigt, bei der eine Art Message Queue mit Feldern von \code{Runnable}
-Objekten arbeitet - diese Objekte werden in einzeln entnommen und gestartet, ist ein Thread zu Ende, wird der Platz in der
+Objekten arbeitet - diese Objekte werden einzeln entnommen und gestartet; ist ein Thread zu Ende, wird der Platz in der
 Message Queue für den nächsten Auftrag freigemacht.
 \\
 
@@ -46,8 +48,8 @@ Message Queue für den nächsten Auftrag freigemacht.
 \noindent
 \code{Condition}s sind Objekte, die man sich von einem \code{Lock}-Objekt geben lassen kann und die mit diesem \code{Lock}-Objekt assoziiert sind.\\
 Auf \code{Condition}s kann man mit \code{await()} warten\\
-\$rightarrow\ wie bei \code{wait()} sorgt \code{await()} dafür, dass der Thread dabei blockiert wird und die Sperre auf den mit der \code{Condition} assoziierten \code{Lock} freigegeben wird.\\
-\code{signal()} bzw. \code{signalAll()} sorgen dafür, dass durch eine \code{Condition} blockierte Threads geweckt werden.\\
+$\rightarrow$ wie bei \code{wait()} sorgt \code{await()} dafür, dass der Thread dabei blockiert wird und die Sperre auf den mit der \code{Condition} assoziierten \code{Lock} freigegeben wird.\\
+\code{signal()} bzw. \code{signalAll()} sorgen dafür, dass die aufgrund einer \code{Condition} in Warteschlangen befindliche Threads dort herausgenommen werden.\\
 
 \noindent
 Man kann sich zu eine \code{Lock} beliebig viele \code{Condition}s geben lassen, was eine sehr fein granulierte Modellierung der Bedingung(en) ermöglicht.\\
@@ -71,11 +73,11 @@ Man kann sich zu eine \code{Lock} beliebig viele \code{Condition}s geben lassen,
 \end{tcolorbox}
 
 \subsection*{Atomic-Klassen}
-Die \code{Atomic}-Klassen bieten eine Objekthülle für verschiedene Datentypen (\code{Boolean}, \code{Integer}, \code{Long}\ldots) und ermöglichen einen Thread-sicheren parallelen lesenden/schreibenden Zugriff auf die gekapselten Werte.
+Die \code{Atomic}-Klassen bieten eine Objekthülle für primitive Datentypen (\code{Boolean}, \code{Integer}, \code{Long}\ldots) und ermöglichen einen Thread-sicheren parallelen lesenden/schreibenden Zugriff auf die gekapselten Werte.
 Neben Methoden zum Ändern von Daten über \textit{get}/\textit{set} besitzen die Klassen Methoden zum Vergleich und Ändern auf einen Schlag, d.h, in \textit{atomarer (unteilbarer)} Weise (s. \code{compareAndSet(expect:int, update: int)} in \cite[157]{Oec22}).\\
 
 \noindent
-Mit den \code{Atomic}-Klassen lassen sich auch \code{lock-free} Synchronisation realisieren, die zwar eine Form des aktiven Wartens darstellen, unter Umständen aber effizienter sein können, als eine durch eine Sperre erfolgte Umschaltung auf einen andern Thread.\\
+Mit den \code{Atomic}-Klassen läßt sich auch eine \code{lock-free} Synchronisation realisieren, die zwar eine Form des aktiven Wartens darstellen, unter Umständen aber effizienter sein können, als eine durch eine Sperre erforderliche Umschaltung auf einen anderen Thread.\\
 
 \subsection*{Synchronisationsklassen}
 Zu den \textbf{Synchronisationsklassen} zählen die Klassen
@@ -94,10 +96,10 @@ Zu den \textbf{Synchronisationsklassen} zählen die Klassen
 Die \code{concurrent}-Bibliothek wurde in Java 7 um das \textbf{Fork-Join-Framework} erweitert.\\
 
 \noindent
-Eine zentrale Klasse davon ist \code{ForkJoinPool}, der wie der \code{ThreadPoolExecutor} ein \code{ThreadPool} realisiert und \code{ExecutorService} implementiert.\\
+Eine zentrale Klasse davon ist \code{ForkJoinPool}, der wie der \code{ThreadPoolExecutor} einen Thread-Pool realisiert und \code{ExecutorService} implementiert.\\
 
 \noindent
-\$rightarrow\ dieser \code{ThreadPool} ist speziell für baumartige Berechnungen gedacht.
+$\rightarrow$ dieser Thread-Pool ist speziell für baumartige Berechnungen gedacht.
 
 \begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
     Ein Objekt von \code{RecursiveTask} / \code{RecursiveAction} stellt einen Knoten des Berechnungsbaumes dar.
@@ -113,7 +115,7 @@ Aufträge werden durch Objekte der generischen Klasse \code{ForkJoinTask} reprä
 \code{RecursiveAction}/\code{RecursiveTask} sind aus \code{ForkJoinTask} abgeleitet: \code{RecursiveAction} ist für Aufträge ohne Resultat gedacht (bspw. sortieren), \code{RecursiveTask} für Aufträge mit Ergebnis.\\
 
 \begin{tcolorbox}
-Ein Thread eines \code{ForkJoinPools} kann weitere Aufträge bearbeiten, sobald er mit \code{join()} auf das Ende eines anderen Auftrages wartet - er ist durch das Warten also nicht blockiert; dadurch kann ein \code{ForkJoinPool} auch mit wenigen Threads baumartig verzweigte Berechnungen durchführen - das ist mit einem normalen \code{ThreadPool} nicht möglich (vgl.~\cite[168]{Oec22})\footnote{
+Ein Thread eines \code{ForkJoinPools} kann weitere Aufträge bearbeiten, sobald er mit \code{join()} auf das Ende eines anderen Auftrages wartet - er ist durch das Warten also nicht blockiert; dadurch kann ein \code{ForkJoinPool} auch mit wenigen Threads baumartig verzweigte Berechnungen durchführen - das ist mit einem normalen Thread-Pool nicht möglich (vgl.~\cite[168]{Oec22})\footnote{
     ebenda wird dies als der wesentliche Unterschied zwischen \textit{ForkJoinPool} und \textit{ThreadPoolExecutor} bezeichnet.
 }.\\
 \end{tcolorbox}
@@ -122,7 +124,7 @@ Ein Thread eines \code{ForkJoinPools} kann weitere Aufträge bearbeiten, sobald 
 Alle Threads des \code{ForkJoinPool}s sind \textbf{Daemon}-Threads.\\
 
 \noindent
-Vorgehen bei der Implementierung - \textbf{Divide \& Conquer}: Prüfen, ob Berechnung klein genug, um direkt zu bearbeiten, falls nein, neue \code{ForkJoinTasks} erzeugen und durch \code{fork()} dem \textbf{ThreadPool} übergeben, mit \code{join()} auf auf die Bearbeitung warten und dann Teilergebnisse zu Gesamtergebnis kombinieren.\\
+Vorgehen bei der Implementierung - \textbf{Divide \& Conquer}: Prüfen, ob Berechnung klein genug, um direkt zu bearbeiten, falls nein, neue \code{ForkJoinTasks} erzeugen und durch \code{fork()} dem Thread-Pool übergeben, mit \code{join()} auf die Bearbeitung warten und dann Teilergebnisse zu Gesamtergebnis kombinieren.\\
 
 \noindent
 Das folgende Beispiel ist \cite[168, Listing 3.25]{Oec22} entnommen und beinhaltet die Implementierung von \code{compute()}\footnote{
