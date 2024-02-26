@@ -17,7 +17,7 @@ Folgende Bedingungen müssen erfüllt sein, damit es zu einer \textbf{Verklemmun
          \begin{figure}
             \centering
             \includegraphics[scale=0.4]{chapters/fopt2/img/cyclic}
-            \caption{Betriebsmittelgraph. Quelle: in Anlehnung an \cite[192, Bild 3.9]{Oec22}}
+            \caption{Betriebsmittelgraph. (Quelle: in Anlehnung an \cite[192, Bild 3.9]{Oec22})}
             \label{fig:cyclic}
         \end{figure}
     \end{itemize}
@@ -57,7 +57,7 @@ Anfordern von Betriebsmittel auf einen Schlag (s. \textbf{Semaphorgruppe}), dami
 
 \noindent
 Betriebsmittel gemäß einer vorgegebenen Reihenfolge anfordern, damit keine Verklemmungen entstehen können.\\
-Bspw. durch Nummerierung der Betriebsmittel in \ul{aufsteigender Reihenfolge}, so dass ein Thread nur Betriebsmittel des Typs $s$ anfordern darf, wenn er keine Betriebsmittel des Typs $s$ oder $t > s$ hält\footnote{
+Bspw. durch Nummerierung der Betriebsmittel in \textit{aufsteigender Reihenfolge}, so dass ein Thread nur Betriebsmittel des Typs $s$ anfordern darf, wenn er keine Betriebsmittel des Typs $s$ oder $t > s$ hält\footnote{
     dann werden ihm nur Betriebsmittel vom Typ $t < s$ zugeteilt.
 }).\\
 Umsetzung beim Philosophenproblem: Alle Philosophen bis auf einen fordern zunächst links, dann rechts an, und einer in umgekehrter Richtung (man erhält dann immer eine verklemmungsfreie Lösung, vgl.~\cite[197]{Oec22}).\\

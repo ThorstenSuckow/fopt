@@ -177,7 +177,7 @@ Wie beim  \code{ServletContextAttributeListener} gibt es auch den\\ \code{HttpSe
 
 \noindent
 Session werden in der Regel über \textbf{Cookies} realisiert, deren Kennung\\ \textbf{JSESSIONID} auf dem Client gespeichert ist und bei Anfragen im \textbf{Cookie-Header} mitgesendet werden.\\
-$\rightarrow$ Die Anforderung zur Speicherung der Cookie-Daten kommt \ul{über den Response} im Header \code{Set-Cookie}\footnote{
+$\rightarrow$ Die Anforderung zur Speicherung der Cookie-Daten kommt \textit{über den Response} im Header \code{Set-Cookie}\footnote{
     `´Set-Cookie``: \url{https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie}
 } (die Kennung lässt sich auch über die Methode \code{getId()} von \code{HttpSession} erfragen).\\
 

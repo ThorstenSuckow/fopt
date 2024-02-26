@@ -80,20 +80,20 @@ Das primäre Stage-Objekt wird von der Platform vorgegeben, nachfolgenden Stage-
 Der \textbf{JavaFX Application Thread} ist auch zuständig für die Ereignisbehandlung - insgesamt gibt es nur einen solchen Thread für die Verwaltung von UI-Elementen und deren Ereignisse. \\
 
 \noindent
-Mit der \ul{statischen Methode} \begin{center}\code{javafx.application.Platform.runLater(runnable: Runnable)}\end{center} lassen sich Aktionen am \textbf{JavaFX Application Thread} \textit{anmelden} bzw. in dessen \textit{Warteschlange} einreihen.\\
+Mit der \textit{statischen Methode} \begin{center}\code{javafx.application.Platform.runLater(runnable: Runnable)}\end{center} lassen sich Aktionen am \textbf{JavaFX Application Thread} \textit{anmelden} bzw. in dessen \textit{Warteschlange} einreihen.\\
 
 \subsection*{Regel 1}
-Die Durchführung der Ereignisbehandlung sollte in \ul{möglichst kurzer Zeit} abgeschlossen sein, auf \code{sleep()} und \code{wait()} sollte möglichst verzichtet werden.
+Die Durchführung der Ereignisbehandlung sollte in \textit{möglichst kurzer Zeit} abgeschlossen sein, auf \code{sleep()} und \code{wait()} sollte möglichst verzichtet werden.
 
 \subsection*{Regel 2}
-Der Zugriff auf grafische Elemente der Oberfläche darf \ul{ausschließlich} durch den \textbf{JavaFX Application Thread} erfolgen.\\
+Der Zugriff auf grafische Elemente der Oberfläche darf \textit{ausschließlich} durch den \textbf{JavaFX Application Thread} erfolgen.\\
 Wenn ein anderer Thread auf die Oberfläche zugreifen möchte, beauftragt der dazu den \textbf{JavaFX Application Thread} durch den Aufruf der Methode\\ \code{Platform.runLater()}.\\
 Der Auftrag muss in Form eines \code{Runnable}-Objektes übergeben werden.\\
 
 \noindent
 Um Threads, die mit der UI interagieren, mit Beendigung des Hauptprogramms zu beenden, sollte man sie als Daemon-Thread deklarieren\footnote{
 ``Ein Java-Programm ist zu Ende, wenn alle Threads zu Ende sind - Hintergrund-Threads werden dabei nciht beachtet, nur Vordergrund-Threads (vgl.~\cite[89]{Oec22}).
-} (Aufruf der Methode \code{setDaemon(true)} auf ein Objekt der Klasse \code{Thread}, \ul{bevor} der Thread gestartet wurde).\\
+} (Aufruf der Methode \code{setDaemon(true)} auf ein Objekt der Klasse \code{Thread}, \textit{bevor} der Thread gestartet wurde).\\
 
 \noindent
 \code{Runnable}s werden in der Reihenfolge durchgeführt, in denen sie mit\\ \code{Platform.runLater()} angemeldet worden sind.

@@ -24,7 +24,7 @@ Für RMI ist ein Protokoll auf Schicht 5 definiert, das Daten, deren Reihenfolge
 Die \textbf{Verteilungstransparenz} wird bei \textbf{RMI} über \textbf{Stubs} und \textbf{Skeletons} realisiert.\\
 
 \noindent
-Ein \textbf{Stub} implementiert dieselbe Schnittstelle wie das Objekt, das über Fern-Methodenaufrufe \ul{auf dem Server gesteuert werden soll}.
+Ein \textbf{Stub} implementiert dieselbe Schnittstelle wie das Objekt, das über Fern-Methodenaufrufe \textit{auf dem Server gesteuert werden soll}.
 
 \noindent
 Ein \textbf{Skeleton} nimmt die Nachrichten, die vom \textbf{Stub} über die aufgebaute \textbf{TCP}-Verbindung gesendet werden, entgegen und ruft die Methoden auf dem entsprechenden Server-Objekt auf.\\
@@ -119,7 +119,7 @@ s.a. ``An Overview of RMI Applications``: \url{https://docs.oracle.com/javase/tu
     \noindent
     Es wird eine Klasse geschrieben, die die im ersten Schritt definierte Schnittstelle implementiert.\\
     \noindent
-    Einem Objekt davon muss \ul{von außen über RMI} nutzbar sein - es muss exportiert werden können.
+    Einem Objekt davon muss \textit{von außen über RMI} nutzbar sein - es muss exportiert werden können.
     Dazu kann die implementierende Klasse von \code{UnicastRemoteObject} abgeleitet werden.\\
     Es muss ein expliziter Konstruktor existieren, der mit \code{throws RemoteException} gekennzeichnet wird. \\
     $\rightarrow$ Es muss mindestens ein expliziter Standard-Konstruktor existieren, der diese Bedingung erfüllt\footnote{
@@ -169,7 +169,7 @@ Der Client fragt vom Server über
 
 \noindent
 das Objekt ab, auf das er zugreifen möchte, und bekommt dann ein Objekt vom Typ \code{java.rmi.Remote} zurück.\\
-Das Objekt muss noch zu dem Typen gecasted werden, der in ``Schnittstelle definieren`` in Punkt~\ref{itm:intdef} (s. vorheriger Abschnitt) implementiert wurde, um entsprechende Methoden der implementierten Schnittstelle aufrufen zu können - \ul{das über }\code{lookup()}\ul{ zurückgegebene Objekt ist das \textbf{Stub-Objekt}}.\\
+Das Objekt muss noch zu dem Typen gecasted werden, der in ``Schnittstelle definieren`` in Punkt~\ref{itm:intdef} (s. vorheriger Abschnitt) implementiert wurde, um entsprechende Methoden der implementierten Schnittstelle aufrufen zu können - \code{lookup()} zurückgegebene Objekt ist das \textbf{Stub-Objekt}.\\
 
 \noindent
 Bevor der Server auf dem entsprechenden Rechner gestartet wird, muss auf diesem Rechner über die Konsole noch \code{rmiregistry} aufgerufen werden, damit die \textbf{Registry} zur Verfügung steht, sofern das nicht wie im folgenden Beispiel über das Programm geschieht.
@@ -310,7 +310,7 @@ Wenn ein Server herunterfährt, sollte man auch mittels \staticcode{unbind()} di
 Eine weitere statische Methode ist \staticcode{list():String[]}, die einem ein Feld mit allen Einträgen der Registry zurückliefert.\\
 
 \noindent
-Die Kommunikation zwischen \ul{Client und Server}, \ul{Client und Registry} sowie \ul{Server und Registry} findet über \textbf{TCP-Sockets} statt.\\
+Die Kommunikation zwischen \textit{Client und Server}, \textit{Client und Registry} sowie \textit{Server und Registry} findet über \textbf{TCP-Sockets} statt.\\
 
 \noindent
 Die \textbf{Registry} startet standardmäßig auf Port $1099$.\\
@@ -377,7 +377,7 @@ Ein \textbf{Skeleton} ist ein paralleler \textbf{TCP-Server} (vgl.\cite[329]{, O
 Wird ein \textbf{Stub} angefordert, der eine asynchrone Operation ausführt, und dieser Stub wird in einen Thread ausgelagert, verhält sich der Stub \textit{intelligent}:
 
 \begin{itemize}
-    \item \ul{wenn mehrere Threads erzeugt werden}, und ``parallel`` gearbeitet wird, werden die Operationen auch parallel ausgeführt, und zwar indem mehrere Verbindungen aufgebaut werden (dadurch werden auf Server-Seite mehrere Threads erzeugt).
+    \item \textit{wenn mehrere Threads erzeugt werden}, und ``parallel`` gearbeitet wird, werden die Operationen auch parallel ausgeführt, und zwar indem mehrere Verbindungen aufgebaut werden (dadurch werden auf Server-Seite mehrere Threads erzeugt).
     \item wird auf Client-Seite keine parallele Ausführung durch die Erzeugung von Threads erzwungen, findet die Abarbeitung der Operation(en) sequentiell statt, es wird dann auch nur eine Verbindung dafür aufgebaut.
     \item ein einzelner Stub ist also auch dazu in der Lage, parallele Aufrufe auf dem Server zu erzeugen
 \end{itemize}
@@ -409,8 +409,8 @@ Diese Kopie wird dann auf dem Server in der entsprechenden Methode aufgerufen:
 \end{tcolorbox}
 
 \begin{itemize}
-    \item wird das Objekt auf dem Server geändert, ändert sich nur \ul{dieses} Objekt auf dem Server, nicht aber das auf dem Client.
-    \item \ul{als Rückgabewert} kann das geänderte Objekt aber vom Client verwendet werden
+    \item wird das Objekt auf dem Server geändert, ändert sich nur \textit{dieses} Objekt auf dem Server, nicht aber das auf dem Client.
+    \item \textit{als Rückgabewert} kann das geänderte Objekt aber vom Client verwendet werden
 \end{itemize}
 
 Datenstrukturen werden unter Verwendung von \code{java.io.Serializable} serialisiert {bzw.} deserialisiert; Objekte, die als ``Foge von Bytes`` serialisiert werden sollen, müssen dabei \code{java.io.Serializable} implementieren  - das gilt auch für die Objekte, die mit dem zu serialisierenden Objekt assoziiert sind (vgl.~\cite[332]{Oec22}).\\
