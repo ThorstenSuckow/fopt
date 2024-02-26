@@ -1,4 +1,4 @@
-\section{Session, Cookies und ServletContext}
+\section{Sessions, Cookies und ServletContext}
 
 \subsection{Cookies}
 
@@ -9,13 +9,13 @@
 \end{itemize}
 
 
-\subsection{Session}
+\subsection{Sessions}
 \begin{itemize}
     \item von einem \code{HttpServletRequest} bekommt man immer dasselbe \code{HttpSession}-Objekt, wenn die Http-Anfragen von demselben Benutzer stammt.
     \item es lassen sich beliebige anwendungsabhängige Daten in einem Session-Objekt ablegen.
     \item klassisches Einsatzgebiet: Warenkörbe in Online-Shops.
     \item Zugriff auf Session muss synchronisiert sein, da ein Nutzer mehrere HTTP-Anfragen für ein und dieselbe Session senden kann.
-    \item Sessions und die damit verbundenen Daten werden automatsiche glöscht, wenn die Session eine (einstellbar lange) Zeit nicht mehr aktiv gewesen ist.
+    \item Sessions und die damit verbundenen Daten werden automatsiche gelöscht, wenn die Session eine (einstellbar lange) Zeit nicht mehr aktiv gewesen ist.
     \item eine Session wird i.d.R. über ein \textit{Session-Cookie} realisiert, in dem ein \textit{Wert} gespeichert ist (Schlüssel: \textit{JSESSIONID}), über den das Sitzungsobjekt auf dem Server assoziiert ist
 \end{itemize}
 

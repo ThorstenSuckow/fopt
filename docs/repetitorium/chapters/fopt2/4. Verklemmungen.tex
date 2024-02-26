@@ -1,4 +1,4 @@
-\subsection{Ursachen für Verklemmungen}\label{sec:deadlockreason}
+\section{Verklemmungen}\label{sec:deadlockreason}
 
 \begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
     Ein \textbf{Betriebsmittel} ist ein Objekt, auf das ein Thread unter Umständen warten muss, bevor er es benutzen kann; es kann auch ein Objekt sein, dessen Nutzung durch höchstens einen Thread zu einem Zeitpunkt über Semaphore oder Locks realisiert wird (vgl.~\cite[186]{Oec22}).
@@ -13,10 +13,10 @@ Folgende Bedingungen müssen erfüllt sein, damit es zu einer \textbf{Verklemmun
     \item Threads besitzen bereits Betriebsmittel und fordern weitere an.
     \item Folgende Bedingung gilt genau dann, wenn eine Verklemmung konkret vorliegt:
     \begin{itemize}
-        \item[] Es gibt eine zyklische Kette von Threads, von denen jeder mindestens ein Betriebsmittel besitzt, das der nächste Thread in der Kette benötigt (s. Abbildung~\ref{fig:cyclic}).
+        \item[] Es gibt eine zyklische Kette von Threads, von denen jeder mindestens ein Betriebsmittel besitzt, das der nächste Thread in der Kette benötigt.
          \begin{figure}
             \centering
-            \includegraphics[scale=0.5]{chapters/fopt2/img/cyclic}
+            \includegraphics[scale=0.4]{chapters/fopt2/img/cyclic}
             \caption{Betriebsmittelgraph. Quelle: in Anlehnung an \cite[192, Bild 3.9]{Oec22}}
             \label{fig:cyclic}
         \end{figure}

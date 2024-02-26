@@ -15,7 +15,7 @@ Bei statischer Parallelität werden Felder von Threads konstanter Größe verwen
 
 \begin{itemize}
     \item jedes Feld enthält einen Thread, der dasselbe \code{DatagramSocket}-Objekt übergeben bekommt
-    \item die \code{run()}-Methode wartet mit \code{receive(: DatagramPacket)} auf Nachrichten und bearbeitet diese
+    \item die \code{run()}-Methode wartet mit \code{receive(p: DatagramPacket)} auf Nachrichten und bearbeitet diese
 \end{itemize}
 
 \subsection{Dynamisch Parallel}
