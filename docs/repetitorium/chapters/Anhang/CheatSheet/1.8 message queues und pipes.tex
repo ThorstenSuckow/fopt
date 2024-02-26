@@ -1,0 +1,20 @@
+\section{Message Queues und Pipes}
+
+\textbf{Message Queues} $\righarrow$ Nachrichtenorientiert (UDP)\\
+
+\noindent
+\textbf{Pipes} $\righarrow$ Datenstromorientiert (TCP)\\
+
+\noindent
+Das Senden bei Pipes erfolgt i.d.R. als unteilbare Aktion.
+\begin{itemize}
+    \item Wenn die Nachricht größer ist als der \ul{im Puffer verbleibende Platz}, wird gewartet, bis der Platz frei ist - dann wird \textbf{auf einen Schlag} in den Puffer kopiert
+    \item Ist die Nachricht länger als \ul{die Größe des Puffers}, wird die Nachricht geteilt und in Portionen gesendet - dadurch kann es vorkommen, dass Nachrichtenteile durchgemischt werden; sind die Nachrichtenteile nicht größer als die Pufferlänge, befinden sie sich komplett im Puffer;  umgekehrt ist es möglich, dass Stücke von Nachrichtenteilen ``durchgemischt`` werden (vgl.~\cite[117 f.]{Oec22}).
+\end{itemize}
+
+Beim Empfangen wird nur so lange gewartet, bis der Puffer nicht mehr leer ist:
+\begin{itemize}
+    \item der Empfänger gibt an, wie viele Bytes ($n$) er lesen möchte.
+    \item ist der Puffer komplett leer, wird mit dem Lesen gewartet, bis Daten im Puffer sind.
+    \item Es werden $n$ Daten aus dem Puffer gelesen - sind weniger als $n$ Daten im Puffer, werden auch nur soviele Daten gelesen (die Daten werden hierbei in ein Feld passender Länge kopiert).
+\end{itemize}
