@@ -1,0 +1,25 @@
+\section{JavaFX}
+
+
+\subsection{Kochrezept für JavaFX-Anwendungen}
+
+\begin{itemize}
+    \item Klasse erstellen, die von \code{Application} ableitet
+    \item in der \code{main(String... args)}-Method \code{launch(args)} aufrufen
+    \item \code{start(Stage primaryStage)} überschreiben:
+    \begin{itemize}
+        \item Interaktionselemente und Containerelemente definieren (``Aufbau der Baumstruktur``)
+        \item Ereignisbehandlung implementieren
+        \item root-Element der im vorherigen Schritt definierten Elemente der \code{Scene} übergeben, die über \code{primaryStage.setScene()} in die Stage eingefügt wird
+        \item \code{primaryStage} mit Titel und ggf. Dimensionen konfigurieren, dann \code{show()} auf der Stage aufrufen.
+    \end{itemize}
+\end{itemize}
+
+\subsection*{Notizen }
+
+\begin{itemize}
+    \item Shapes, die dynamisch erstellt werden (bspw. durch Mausereignisse), auch dem betreffenden Container
+    (bspw. Pane) hinzufügen
+    \item \code{VBox.setVgrow(container, Priority.ALWAYS)} sorgt dafür, dass ein Container an die vertikale Größe des Elterncontainers angepaßt wird
+    \item Rückgabewert von \code{CheckBox.}\code{selectedProperty()} ist vom Typ \code{Property<Boolean>}, die formalen Parameter für einen \textit{ChangeListener} lauten dann folglich \code{ObservableValue<? extends Boolean> obs}, \code{boolean oldValue}, \code{boolean newValue}
+\end{itemize}

@@ -79,7 +79,7 @@ Die \code{Runnable}-Schnittstelle ist ein \textbf{Functional Interface}\footnote
 \end{minted}\\
 
 Das \textbf{Pausieren von Threads} kann mittels der statischen Methode\footnote{
-    statisch, weil der \ul{gerade aktive Thread} ``schlafen`` gelegt wird.
+    statisch, weil der \textit{gerade aktive Thread} ``schlafen`` gelegt wird.
 }
 \begin{center}
 \staticcode{sleep(milis:long):void} (\code{throws java.lang.InterruptedException})
@@ -177,7 +177,7 @@ Die Verwendung von \code{volatile} führt dazu, das Zugriff auf die Daten immer 
 
 $\rightarrow$ für Variablen, die in \code{synchronized} Blöcken/Methoden stehen, geschieht dies automatisch.
 
-\subsection{Ende von Java-Threads}
+\subsection{Ende von Java-Threads}\label{subsec:threadend}
 
 Ein Thread ist \textbf{beendet}, wenn seine \code{run}- (bzw. die \code{main}-Methode im Falle des Ursprungs-Threads) beendet ist (vgl.~\cite[33]{Oec22}).\\
 

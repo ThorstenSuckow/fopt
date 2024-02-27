@@ -32,7 +32,7 @@ Symbole für Sichtbarkeiten in einem Klassendiagramm:
 \end{itemize}\\
 
 \noindent
-Ein Klassendiagramm besteht aus 3 vertikal angeordneten Blöcken:\\
+Eine Klasse in einem Klassendiagramm wird durch ein Rechteck dargestellt, das aus 3 vertikal angeordneten Blöcken bestehen kann:\\
 
 \begin{enumerate}
     \item Klassenname / Schnittstellenname\footnote{
@@ -49,12 +49,12 @@ Ein Klassendiagramm besteht aus 3 vertikal angeordneten Blöcken:\\
     \item Methoden
     \begin{itemize}
         \item[] \code{[Sichtbarkeit] [Name]([Parameterliste]):[Rückgabetyp]}
-        \item[] \code{Parameterliste}: \code{[Name]:Typ}, kommasepariert
+        \item[] Parameterliste := \code{[Name]:Typ}, kommasepariert
     \end{itemize}
 \end{enumerate}\\
 
 \noindent
-\ul{Statische Attribute und Methoden werden unterstrichen.}\\
+Statische Attribute und Methoden werden \ul{unterstrichen}.\\
 
 \noindent
 Klassen und Schnittstellen, die zu einem \textbf{Package} gehören, können in einem Rechteck zusammengefasst werden, das mit dem Package-Namen beschriftet ist.
@@ -75,8 +75,9 @@ Assoziationen sind einfache Pfeile, die in Richtung der verwendeten Klasse/ Schn
 
 \noindent
 Klassendiagramme sind statisch; eine mögliche Dynamik kann über \textbf{Kardinalitäten} dargestellt werden.\\
-In der folgenden Abbildung~\ref{fig:association} referenziert im Beispiel b) ein \code{Company}-Objekt genau ein oder kein \code{Employee}-Objekt.\\
-Im Beispiel c) referenziert ein \code{Company}-Objekt genau ein \code{Employee}-Objekt.\\
+In der folgenden Abbildung~\ref{fig:association} referenziert im Beispiel b) ein \code{Company}-Objekt genau ein \code{Employee}-Objekt.\\
+Im Beispiel c) referenziert ein \code{Company}-Objekt genau ein oder kein \code{Employee}-Objekt.\\
+
 
 \noindent
 Werden mehrere \code{Employee}-Objekte zur Laufzeit erzeugt, kann man deren Beziehungen zu den \code{Company}-Objekten ebenfalls durch Kardinalitäten ausdrücken:\\
@@ -132,7 +133,7 @@ Wird hingegen ein Bezeichner vor den Doppelpunkt gestellt, wird auf ein konkrete
 \begin{figure}
     \centering
     \includegraphics[scale=0.5]{chapters/fopt3/img/objectdiagram}
-    \caption{Beispiel für ein Objektdiagram (ohne Attribute und Methoden). (Quelle: eigene)}
+    \caption{Beispiel für ein Objektdiagramm (ohne Attribute). (Quelle: eigene)}
     \label{fig:objectdiagram}
 \end{figure}
 
@@ -155,7 +156,8 @@ $\rightarrow$ Objektdiagramme sind nur zu einem bestimmten Zeitpunkt während de
 $\rightarrow$ In einem Klassendiagramm modelliert man die Aspekte, die bei einer bestimmten Betrachtung betont werden sollen.\\
 
 \noindent
-Es ist auch möglich, Assoziationen in beide Richtungen zu modellieren, wie Abbildung~\ref{fig:bidirectionalassociation} zeigt. Das Nacholgende Listing demonstriert eine mögliche Implementierung.
+Es ist auch möglich, Assoziationen in beide Richtungen zu modellieren, wie Abbildung~\ref{fig:bidirectionalassociation} zeigt.
+Folgendes Listing demonstriert eine mögliche Implementierung:
 
 \begin{figure}
     \centering
@@ -181,12 +183,13 @@ Es ist auch möglich, Assoziationen in beide Richtungen zu modellieren, wie Abbi
 \end{minted}\\
 
 \noindent
-    Bei einer bidirektionalen Assoziation, die über ein Klassendiagramm modelliert ist, muss nicht unbedingt die Instanz auf die referenzierende Instanz zurückverweisen - hierbei kann es sich auch um ein unterschiedliches Objekt handeln.\\
+    Bei einer bidirektionalen Assoziation muss nicht unbedingt ein Objekt auf das referenzierende Objekt zurückverweisen - hierbei kann es sich auch um ein unterschiedliches Objekt desselben Typen handeln.\\
 
 \begin{figure}
     \centering
     \includegraphics[scale=0.5]{chapters/fopt3/img/bidirectionalassocexample}
-    \caption{Beispiele für bidirektionale Assoziation. In b) ist die Situation dargestellt, bei denen auf die referenzierende Klasse nicht unbedingt von der referenzierten Klasse zurückverwiesen werden muss. (Quelle: eigene)}
+    \caption{Beispiele für bidirektionale Assoziation. In b) ist die Situation dargestellt, bei denen auf das referenzierende Objekt nicht unbedingt von dem
+    referenzierten Objekt zurückverwiesen werden muss (s. Abbildung~\ref{fig:bidirectionalassociation} für das korrespondierende Klassendiagramm) (Quelle: eigene)}
     \label{fig:bidirectionalassocexample}
 \end{figure}
 
@@ -214,7 +217,7 @@ Assoziationen können auch \textbf{reflexiv} sein:
 \begin{figure}
     \centering
     \includegraphics[scale=0.5]{chapters/fopt3/img/reflexive}
-    \caption{Beispiel für eine Klasse, die sich selbst referenziert. Die Refenz muss nicht unbedingt auf dieselbe Instanz verweisen, aber zumindest auf denselben Typen. (Quelle: eigene)}
+    \caption{Beispiel für eine Klasse, die sich selbst referenziert. Die Referenz muss nicht unbedingt auf dieselbe Instanz verweisen, aber zumindest auf denselben Typen. (Quelle: eigene)}
     \label{fig:reflexive}
 \end{figure}
 
@@ -250,7 +253,7 @@ Das Skript zu FOPT 3 geht bei der Benutzt-Beziehung nicht sehr in die Tiefe, auc
 
 \textbf{Implementierungsbeziehungen} werden durch einen offenen Pfeil und eine gestrichelte Linie Richtung der implementierten Schnittstelle dargestellt (s. Abbildung~\ref{fig:inheritance} b).\\
 
-In Java können Schnittstellen gleichzeitig von mehreren Schnittstellen erben, was in (s. Abbildung~\ref{fig:inheritance} b) dargestellt ist, und im folgenden Listing demonstriert wird.\\
+In Java können Schnittstellen gleichzeitig von mehreren Schnittstellen erben, was in (s. Abbildung~\ref{fig:inheritance} c) dargestellt ist, und im folgenden Listing demonstriert wird.\\
 
 \begin{minted}[mathescape,
     numbersep=5pt,
@@ -318,7 +321,7 @@ Als Beispiel sei folgender Code gegeben, der in dem Sequenzdiagramm in Abbildung
 \end{figure}
 
 \noindent
-Die Kästchen auf der $x$-Achse symbolisieren \textbf{Objekte}, \ul{nicht} Klassen.\\
+Die Kästchen auf der $x$-Achse symbolisieren \textbf{Objekte}, \textit{nicht} Klassen.\\
 
 \noindent
 Gestrichelte vertikale Linien unter den Objekten stellen die Lebenszeit der involvierten Objekte dar.\\

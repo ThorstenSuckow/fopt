@@ -1,0 +1,23 @@
+\section{RMI}
+
+Mit \textbf{RMI} (\textit{Remote Method Invocation}) kann man in Java verteilte Anwendungen realisieren.\\
+Hierzu wird auf einem Server ein Registrierungsdienst gestartet (die \textbf{RMI-Registry}), über den sog. \textbf{Remote/ RMI Objekt} zur Verfügung gestellt werden, die von Programmen, die auf dem Server laufen, oder von entfernten Programmen benutzt werden können.\\
+Die Handhabung der RMI Objekte entspricht regulären Objekt-/Methodenzugriffen in Java - obwohl die Objekte einer anderen JVM-Instanz gehören und sich nicht denselben Prozess {bzw.} Adressraum teilen wie das Client-Programm, kann man mit ihnen arbeiten wie mit lokalen Objekten, die in derselben JVM-Instanz laufen - es müssen allerdings zusätzlich besondere Typen von Ausnahmen (\code{RemoteException}) bei der Implementierung und bei der Verwendung berücksichtigt werden.\\
+
+\subsection*{RMI Objekt}
+Ein \textbf{RMI Objekt}, dass unter einem bestimmten Bezeichner in der Registry registriert wird, muss eine Schnittstelle implementieren, die zur Nutzung des entfernten Objektes verinbart wurde.\\
+Diese Schnittstelle ist von \code{Remote} abgeleitet.\\
+Zusätzlich muss das RMI Objekt von außen nutzbar sein, weshalb es exportiert werden muss.
+Das wird realisiert, indem das RMI Objekt von \code{UnicastRemoteObject} ableitet.
+Jeder Konstruktor solch einer Klasse muss eine \code{throws}-Klausel deklariert haben, die eine \code{RemoteException} w
+
+\subsection*{Stubs}
+Die Kommunikation zu den RMI Objekten wird über TCP realisiert: Clients, die auf entfernte RMI Objekte zugreifen wollen, fragen das Objekt unter einem vereinbarten Bezeichner ab und bekommen von der Registry sogenannte \textbf{Stubs} zur Verfügung gestellt: Stellvertreterobjekte, die sowohl die Schnittstelle der Remote Objekte bereitstellen als auch die Logik für den Verbindungsauf- bzw. -abbau und die Kommunikation zu den entfernten Objekten.\\
+
+\subsection*{Skeletons}
+\textbf{Skeletons} auf der Serverseite, die als parallele TCP Server implementiert sind, nehmen die Anfragen der Stubs als Stellvertreterobjekte für die auf dem Server registrierten Objekte entgegen und leiten diese an die entsprechenden Server-Objekte weiter.
+Das Ergebnis wird dann an den Stub zurückgesendet.\\
+
+
+\noindent
+Da es mehrere Clients geben kann, die gleichzeitig ein und dasselbe Remote Object anfragen, sollten gemeinsame Daten, auf die sowohl lesend als auch schreibend zugegriffen werden, synchronisiert werden.
