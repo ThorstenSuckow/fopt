@@ -3,3 +3,27 @@
 Mit dem Interrupt Flag ist es möglich, die ``Blockade``\footnote{
 bzgl. der Begrifflichkeit ``Blockade`` siehe Abschnitt~\ref{subsec:threadend}
 } eines Threads zu unterbrechen, bspw. weil er sich gerade in \code{join()}, \code{wait()} oder \code{sleep()} befindet.
+
+\begin{itemize}
+    \item \code{isInterrupted()} setzt nicht den \textit{interrupted} status des Threads zurück.
+\end{itemize}
+
+\begin{minted}[mathescape,
+    linenos,
+    numbersep=5pt,
+    gobble=2,
+    fontsize=\small]{java}
+    public void run() {
+
+        try {
+            while (!isInterrupted() {
+                Thread.sleep(1000);
+            }
+
+        } catch (InterruptedException e) {
+            ...
+        }
+
+
+    }
+\end{minted}
