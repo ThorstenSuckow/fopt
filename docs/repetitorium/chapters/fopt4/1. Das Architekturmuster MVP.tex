@@ -92,7 +92,7 @@ Der Auftrag muss in Form eines \code{Runnable}-Objektes übergeben werden.\\
 
 \noindent
 Um Threads, die mit der UI interagieren, mit Beendigung des Hauptprogramms zu beenden, sollte man sie als Daemon-Thread deklarieren\footnote{
-``Ein Java-Programm ist zu Ende, wenn alle Threads zu Ende sind - Hintergrund-Threads werden dabei nciht beachtet, nur Vordergrund-Threads (vgl.~\cite[89]{Oec22}).
+``Ein Java-Programm ist zu Ende, wenn alle Threads zu Ende sind - Hintergrund-Threads werden dabei nicht beachtet, nur Vordergrund-Threads (vgl.~\cite[89]{Oec22}).
 } (Aufruf der Methode \code{setDaemon(true)} auf ein Objekt der Klasse \code{Thread}, \textit{bevor} der Thread gestartet wurde).\\
 
 \noindent
