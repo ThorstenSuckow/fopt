@@ -6,7 +6,9 @@
 
 \begin{itemize}
     \item Teil der concurrent-Klassenbibliothek in Java.
-    \item ermöglicht das Setzen \code{lock()} / Entfernen \code{unlock()} von Sperren im Code auch über Methoden hinweg (\code{synchronized} sperrt eine Methode ), aber nur \textit{von ein und demselben} Thread\footnote{Lehrbuch: das kann als Vor-/Nachteil gesehen werden - \cite[149]{Oec22}}.
+    \item ermöglicht das Setzen \code{lock()} / Entfernen \code{unlock()} von Sperren im Code auch über Methoden hinweg\footnote{
+        grob formuliert wirkt sich \textit{synchronized} auf eine Methode aus
+    }, aber nur \textit{von ein und demselben} Thread\footnote{Lehrbuch: das kann als Vor-/Nachteil gesehen werden - \cite[149]{Oec22}}.
     \item man kann auf das Setzen einer Sperre befristet warten.
     \item man kann das Warten eines Threads auf das Setzen einer Sperre durch \code{interrupt()} unterbrechen.
     \item man kann Locks für unterschiedliche Kontexte erstellen, bspw. Lese- und Schreibsperren.
