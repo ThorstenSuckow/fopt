@@ -30,7 +30,7 @@ Der Pfad, unter dem ein Servlet letztendlich auf dem Webserver erreichbar ist, k
 }.\\
 
 \noindent
-Ein Servlet benötigt keine \code{main}-Methode, die \code{do...()}-Methoden werden automatische aufgerufen (durch den sogenannten \textbf{Servlet-Container} des Webservers).
+Ein Servlet benötigt keine \code{main}-Methode, die \code{do...()}-Methoden werden automatisch aufgerufen (durch den sogenannten \textbf{Servlet-Container} des Webservers).
 
 \begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
     Es ist ohne Weiteres möglich, die \code{do...()}-Methoden untereinander aufzurufen, bspw. kann \code{doPost()} die Methode \code{doGet()} aufrufen - vorausgesetzt, die Parameter (\code{HttpServletRequest} und \code{HttpServletResponse}) werden korrekt übergeben.
