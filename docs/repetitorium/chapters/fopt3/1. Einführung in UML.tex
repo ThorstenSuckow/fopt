@@ -181,12 +181,13 @@ Es ist auch möglich, Assoziationen in beide Richtungen zu modellieren, wie Abbi
 \end{minted}\\
 
 \noindent
-    Bei einer bidirektionalen Assoziation, die über ein Klassendiagramm modelliert ist, muss nicht unbedingt die Instanz auf die referenzierende Instanz zurückverweisen - hierbei kann es sich auch um ein unterschiedliches Objekt handeln.\\
+    Bei einer bidirektionalen Assoziation muss nicht unbedingt ein Objekt auf das referenzierende Objekt zurückverweisen - hierbei kann es sich auch um ein unterschiedliches Objekt desselben Typen handeln.\\
 
 \begin{figure}
     \centering
     \includegraphics[scale=0.5]{chapters/fopt3/img/bidirectionalassocexample}
-    \caption{Beispiele für bidirektionale Assoziation. In b) ist die Situation dargestellt, bei denen auf die referenzierende Klasse nicht unbedingt von der referenzierten Klasse zurückverwiesen werden muss. (Quelle: eigene)}
+    \caption{Beispiele für bidirektionale Assoziation. In b) ist die Situation dargestellt, bei denen auf das referenzierende Objekt nicht unbedingt von dem
+    referenzierten Objekt zurückverwiesen werden muss (s. Abbildung~\ref{fig:bidirectionalassociation} für das korrespondierende Klassendiagramm) (Quelle: eigene)}
     \label{fig:bidirectionalassocexample}
 \end{figure}
 
@@ -250,7 +251,7 @@ Das Skript zu FOPT 3 geht bei der Benutzt-Beziehung nicht sehr in die Tiefe, auc
 
 \textbf{Implementierungsbeziehungen} werden durch einen offenen Pfeil und eine gestrichelte Linie Richtung der implementierten Schnittstelle dargestellt (s. Abbildung~\ref{fig:inheritance} b).\\
 
-In Java können Schnittstellen gleichzeitig von mehreren Schnittstellen erben, was in (s. Abbildung~\ref{fig:inheritance} b) dargestellt ist, und im folgenden Listing demonstriert wird.\\
+In Java können Schnittstellen gleichzeitig von mehreren Schnittstellen erben, was in (s. Abbildung~\ref{fig:inheritance} c) dargestellt ist, und im folgenden Listing demonstriert wird.\\
 
 \begin{minted}[mathescape,
     numbersep=5pt,
