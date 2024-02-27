@@ -1,0 +1,42 @@
+\section{MVP}
+
+
+\subsection{Unterschied Architektur- / Entwurfsmuster}
+
+\textbf{Entwurfsmuster} werden i.d.R. zur Lösung kleinere Teilbereiche von Software eingesetzt, indem sie das Zusammenwirken von Klassen und Schnittstellen beschreiben.\\
+
+\noindent
+\textbf{Architekturmuster} werden für die gesamte Software oder größere Teile einer Software eingesetzt und sind wie ein Bauplan für ganze Programmteile bzw. Teilbereiche einer Software zu verstehen.\\
+
+\noindent
+Architekturmuster helfen dabei, Anwendungen zu strukturieren, systematisch zu testen und fördern das Verständnis der Implementierung durch Strukturierung durch bestimmte Muster.
+
+\subsection{MVP}
+
+\subsection*{Model}
+Das \textbf{Model} ist verantwortlich für
+
+\begin{itemize}
+    \item die Geschäftslogik
+    \item Bereitstellung und das Ändern relevanter Daten für die Anwendung
+    \item die Wahrung von Konsistenzbedingungen
+\end{itemize}
+
+\noindent
+Das Model kennt bei MVP weder \textbf{Presenter} noch \textbf{View}
+
+\subsection*{View}
+Die \textbf{View} ist die Darstellungskomponente der Software und baut und verändert sie. \\
+Benutzerinteraktionen werden an den Presenter weitergeleitet.\\
+Mehrere Views können Teile des Models repräsentieren.\\
+Die View kennt bei MVP nicht das \textbf{Model}.
+
+
+\subsection*{Presenter}
+Der \textbf{Presenter} vermittelt zwischen Model und View.
+Er wird auch \textit{Ablaufsteuerungskomponente} oder \textit{Präsentationskomponente} genannt und weist die View zur Anzeige und zum Ändern von Daten an, die er aus dem Modell bezieht.\\
+Er nimmt in dem Muster eine \textbf{Vermittlerrolle} zwischen Model und View ein.\\
+Er kann \textbf{Validierungslogik} beinhalten und implementiert die Ablaufsteuerung für vom Anwender ausgeführte Aktionen.\\
+
+
+
