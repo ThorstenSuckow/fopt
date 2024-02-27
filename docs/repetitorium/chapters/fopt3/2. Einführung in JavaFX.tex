@@ -146,9 +146,9 @@ Properties können miteinander gekoppelt werden, um gegenseitige Zustandsänderu
 Die Kopplung (das \textbf{Binding}) kann \textbf{unidirektional} oder \textbf{bidirektional} erfolgen.\\
 
 \noindent
-Bei \textbf{unidirektionalem} Binding bewirkt die Änderung des Wertes einer Property die Änderung des Wetes der anderen Property, aber nur in eine Richtung.\\
+Bei \textbf{unidirektionalem} Binding bewirkt die Änderung des Wertes einer Property die Änderung des Wertes der anderen Property, aber nur in eine Richtung.\\
 Wird versucht, über die andere Richtung eine Wertzuweisung durchzuführen, wird eine Exception geworfen.\\
-Eine JavaFX-Property kann über \code{right.bind(left)} gekoppelt werden (lies: ``binde right an left``).\\
+Eine JavaFX-Property kann über \textit{right.bind(left)} gekoppelt werden (lies: ``binde right an left``).\\
 
 \noindent
 Ein \textbf{bidirektionales} Binding bewirkt die Änderung der Properties in beide Richtungen, allerdings muss hier die Methode \begin{center}\code{+bindBidirectional(other: Property<T>):void}\end{center} genutzt werden: \code{right.bindBidirectional(left)} (bzw. \code{left.bindBidirectional(right)}).
@@ -157,7 +157,7 @@ Ein \textbf{bidirektionales} Binding bewirkt die Änderung der Properties in bei
 \begin{figure}
     \centering
     \includegraphics[scale=0.5]{chapters/fopt3/img/javafx/binding}
-    \caption{Unidirektionales (a) und Bidirektionales (b) Binding in JavaFX. Die Properties sind vom Typ SimpleIntegerProperty. (Quelle: eigene)}
+    \caption{Unidirektionales (a) und Bidirektionales (b) Binding in JavaFX. Die Properties sind vom Typ \textit{SimpleIntegerProperty}. (Quelle: eigene)}
     \label{fig:binding}
 \end{figure}
 
@@ -180,7 +180,7 @@ $\rightarrow$ für den Zugriff auf die Kindelemente eines Containers in JavaFX r
 \begin{figure}
     \centering
     \includegraphics[scale=0.5]{chapters/fopt3/img/javafx/nodeparent}
-    \caption{Parent ist in JavaFX eine Container-Klasse. getChildren() liefert eine beobachtbare Liste mit Kindelementen zurück. (Quelle: eigene)}
+    \caption{Parent ist in JavaFX eine Container-Klasse. \textit{getChildren()} liefert eine beobachtbare Liste mit Kindelementen zurück. (Quelle: eigene)}
     \label{fig:nodeparent}
 \end{figure}
 
@@ -189,7 +189,7 @@ $\rightarrow$ für den Zugriff auf die Kindelemente eines Containers in JavaFX r
 Die grafische Benutzeroberfläche besitzt eine baumartige Struktur.\\
 
 \noindent
-Elemente die Nachfolger in diesem Baum sind, sind \textbf{Container-Elemente}, die ein bestimmtes \textbf{Layout} realisieren für die darin enthaltenen Elemente.\\
+Elemente, die Nachfolger besitzen, sind i.d.R. \textbf{Container-Elemente}, die ein bestimmtes \textbf{Layout} für die darin enthaltenen Elemente realisieren.\\
 
 \noindent
 Elemente, die keinen Nachfolger besitzen, können unter dem Begriff \textbf{Interaktionselemente} zusammengefaßt werden (\code{Label}s, \code{Button}s, ...).
@@ -236,14 +236,14 @@ Die Klasse \code{Control} ist (über mehrere Klassen) von \code{Node} abgeleitet
 \begin{figure}
     \centering
     \includegraphics[scale=0.5]{chapters/fopt3/img/javafx/control}
-    \caption{Die Klasse Control ist direkt von Region abgeleitet. (Quelle: eigene)}
+    \caption{Die Klasse \textit{Control} ist direkt von \textit{Region} abgeleitet. (Quelle: eigene)}
     \label{fig:control}
 \end{figure}
 
 
 
 \noindent
-Wichtige Interaktionslemente sind bspw. die von der abstrakten Klasse \code{Labeled} sogenannten \textbf{Command Buttons} und \textbf{Choice Buttons}.\\
+Wichtige Interaktionslemente sind bspw. die von der abstrakten Klasse \code{Labeled} abgeleiteten \textbf{Command Buttons} und \textbf{Choice Buttons}.\\
 Zu den Choice Buttons gehören bspw. \code{CheckBox}, \code{ToggleButton}, \code{RadioButton}.\\
 Zu den Command Buttons gehören u.a. \code{Button} und \code{Hyperlink}.\\
 
