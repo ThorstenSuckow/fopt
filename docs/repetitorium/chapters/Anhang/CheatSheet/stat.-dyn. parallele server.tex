@@ -18,6 +18,28 @@ Bei statischer Parallelität werden Felder von Threads konstanter Größe verwen
     \item die \code{run()}-Methode wartet mit \code{receive(p: DatagramPacket)} auf Nachrichten und bearbeitet diese
 \end{itemize}
 
+\subsubsection*{Notizen}
+Bei Verwendung von try-with-resources, das eine Referenz eines existierenden DatagramSockets in einer lokalen Variable speichert,
+sollte in der while-Schleife des Threads über ein Abfangen \textit{aller} Ausnahmen das Schließen des DatagramSockets (und damit des kompletten Servers)
+verhindert werden:
+
+\begin{minted}[mathescape,
+    fontsize=\small]{java}
+    try (DatagramSocket s = originDatagramSocket) {
+        while (true) {
+            try {
+                ...
+                s.receive(datagramPacket);
+            } catch (Exception e) {
+                ... // Verhindert das Schliessen
+                    // des DatagramSockets
+            }
+        }
+    } catch (Exception e) {
+        ...
+    }
+\end{minted}
+
 \subsection{Dynamisch Parallel}
 
 
