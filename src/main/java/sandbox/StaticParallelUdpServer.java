@@ -29,7 +29,7 @@ public class StaticParallelUdpServer extends Thread {
 
                     String message = (String) ois.readObject();
 
-                    System.out.println("[server]received: " + message);
+                    System.out.println("[server] received: " + message);
 
                     DatagramPacket answer = new DatagramPacket(p.getData(), p.getLength(), p.getAddress(), p.getPort());
                     s.send(answer);
