@@ -203,28 +203,28 @@ Der folgende Quelltext setzt für den Client ein Socket-Timeout. Dadurch soll ve
     frame=lines,
     framesep=2mm]{java}
     try (DatagramSocket s = new DatagramSocket()) {
-                // setzen des Timeouts
-                s.setSoTimeout(250);
+        // setzen des Timeouts
+        s.setSoTimeout(250);
 
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                ObjectOutputStream oos = new ObjectOutputStream(baos);
-                oos.writeObject("Hello World");
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
+        oos.writeObject("Hello World");
 
-                byte[] message = baos.toByteArray();
-                DatagramPacket p = new DatagramPacket(
-                    message, message.length, InetAddress.getLocalHost(), 8888);
+        byte[] message = baos.toByteArray();
+        DatagramPacket p = new DatagramPacket(
+            message, message.length, InetAddress.getLocalHost(), 8888);
 
-                s.send(p);
+        s.send(p);
 
-                DatagramPacket response = new DatagramPacket(new byte[64], 64);
-                s.receive(response);
-                ByteArrayInputStream bais = new ByteArrayInputStream(response.getData());
-                ObjectInputStream ois = new ObjectInputStream(bais);
-                System.out.println("[client]: received " + ois.readObject());
+        DatagramPacket response = new DatagramPacket(new byte[64], 64);
+        s.receive(response);
+        ByteArrayInputStream bais = new ByteArrayInputStream(response.getData());
+        ObjectInputStream ois = new ObjectInputStream(bais);
+        System.out.println("[client]: received " + ois.readObject());
 
-            } catch (Exception e) {
-                System.out.println("[client] " + e);
-            }
+    } catch (Exception e) {
+        System.out.println("[client] " + e);
+    }
 \end{minted}
 
 \subsection*{Multicast-Kommunikation}
