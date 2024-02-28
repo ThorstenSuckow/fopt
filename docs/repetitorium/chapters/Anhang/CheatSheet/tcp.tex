@@ -29,25 +29,3 @@
         ... // Fehlerbehandlung
     }
 \end{minted}
-
-\subsection*{Objekt empfangen}
-\begin{itemize}
-    \item \code{DatagramPacket} \code{p} erzeugen (Argumente \code{new byte[n] b}, \code{n} übergeben, mit n = Länge)
-    \item mit \code{DatagramSocket}s \code{receive(p)} empfangen
-    \item \code{ByteArrayInputStream} \code{bais} erzeugen (\code{p.getData()} übergeben)
-    \item \code{ObjectInputStream} \code{ois} erzeugen (\code{bais} übergeben)
-    \item \code{ois.readObject()} aufrufen, \code{ClassNotFoundException} berücksichtigen
-    \item streams schliessen
-\end{itemize}
-
-
-\begin{minted}[mathescape,
-     fontsize=\small]{java}
-    DatagramPacket p = new DatagramPacket(new byte[128], 128);
-    // empfangen...
-    ByteArrayInputStream bais = new ByteArrayInputStream(p.getData());
-    ObjectInputStream ois = new ObjectInputStream(bais);
-    Object o = ois.readObject();
-    ois.close();
-    bais.close();
-\end{minted}
