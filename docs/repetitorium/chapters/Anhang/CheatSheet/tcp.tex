@@ -19,13 +19,17 @@
 
 \begin{minted}[mathescape,
     fontsize=\small]{java}
-    try (...) {
-        while (true) {
-            ... // empfangen, senden
-                // exception beendet die Schleife, Verbindung zum
-                // Client/Server wird geschlossen
+    while (true) {
+        try (Socket s = serverSocket.accept();
+            ... // weitere Autocloseable-Resourcen
+            ) {
+            while (true) {
+                ... // empfangen, senden
+                    // exception beendet die Schleife,
+                    // Verbindung wird geschlossen
+            }
+        } catch (Exception e) {
+            ... // Fehlerbehandlung
         }
-    } catch (Exception e) {
-        ... // Fehlerbehandlung
     }
 \end{minted}
