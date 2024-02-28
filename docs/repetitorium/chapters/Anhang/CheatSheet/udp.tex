@@ -1,0 +1,66 @@
+\section{UDP}
+
+\textbf{UDP} (\textit{User Datagram Protocol}) ist
+
+\begin{itemize}
+    \item verbindungslos
+    \item nachrichtenorientiert
+    \item unzuverlässig
+\end{itemize}
+
+
+\section*{Notizen}
+
+\begin{itemize}
+    \item DatagramPacket \textbf{receiving}: \code{DatagramPacket(byte[], int length, InetAddress address, int port)};
+    \item DatagramPacket \textbf{sending}: \code{DatagramPacket(byte[], int length)};
+    \item \code{ObjectInputStream.readObject()} wirft eine \textbf{checked exception} vom Typ \code{ClassNotFoundException}
+\end{itemize}
+
+\subsection*{Objekt senden}
+\begin{itemize}
+    \item \code{ByteArrayOutputStream} \code{baos} erzeugen (Länge p)
+    \item \code{ObjectOutputStream} \code{oos} erzeugen (\code{baos} übergeben)
+    \item \code{oos.writeObject()} mit Argument aufrufen, dann \code{oos.flush()}
+    \item \code{baos.toByteArray()} aufrufen, in byte-Array \code{msg} speichern
+    \item Streams schliessen
+    \item DatagramPacket erzeugen und \code{msg} als Inhalt/Längenvorgabe übergeben, außerdem Empfänger-Adresse und Port
+    \item über DatagramSocket versenden
+\end{itemize}
+
+
+\begin{minted}[mathescape,
+    fontsize=\small]{java}
+    String message = "Hello world!"
+    ByteArrayOutputStream baos = new ByteArrayOutputStream(128);
+    ObjectOutputStream oos = new ObjectOutputStream(baos);
+    oos.writeObject(message);
+    oos.flush();
+    oos.close();
+    baos.close();
+    byte[] msg = baos.toByteArray();
+    DatagramPacket p = new DatagramPacket(msg, msg.length);
+    // senden...
+\end{minted}
+
+\subsection*{Objekt empfangen}
+\begin{itemize}
+    \item \code{DatagramPacket} \code{p} erzeugen (Argumente \code{new byte[n] b}, \code{n} übergeben, mit n = Länge)
+    \item mit \code{DatagramSocket}s \code{receive(p)} empfangen
+    \item \code{ByteArrayInputStream} \code{bais} erzeugen (\code{p.getData()} übergeben)
+    \item \code{ObjectInputStream} \code{ois} erzeugen (\code{bais} übergeben)
+    \item \code{ois.readObject()} aufrufen, \code{ClassNotFoundException} berücksichtigen
+    \item streams schliessen
+\end{itemize}
+
+
+\begin{minted}[mathescape,
+     fontsize=\small]{java}
+    DatagramPacket p = new DatagramPacket(new byte[128], 128);
+    // empfangen...
+    ByteArrayInputStream bais = new ByteArrayInputStream(p.getData());
+    ObjectInputStream ois = new ObjectInputStream(bais);
+    Object o = ois.readObject();
+    ois.close();
+    bais.close();
+\end{minted}
