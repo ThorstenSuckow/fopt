@@ -17,4 +17,5 @@ Beim Empfangen wird nur so lange gewartet, bis der Puffer nicht mehr leer ist:
     \item der Empfänger gibt an, wie viele Bytes ($n$) er lesen möchte.
     \item ist der Puffer komplett leer, wird mit dem Lesen gewartet, bis Daten im Puffer sind.
     \item Es werden $n$ Daten aus dem Puffer gelesen - sind weniger als $n$ Daten im Puffer, werden auch nur soviele Daten gelesen (die Daten werden hierbei in ein Feld passender Länge kopiert).
+    \item $\rightarrow$ der Empfänger beginnt nicht erst mit dem Lesen, wenn $n$ Daten vorhanden sind
 \end{itemize}
