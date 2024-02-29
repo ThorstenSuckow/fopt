@@ -9,7 +9,9 @@ Die Handhabung der RMI Objekte entspricht regulären Objekt-/Methodenzugriffen i
 Ein \textbf{RMI Objekt}, dass unter einem bestimmten Bezeichner in der Registry registriert wird, muss eine Schnittstelle implementieren, die zur Nutzung des entfernten Objektes vereinbart wurde.\\
 Diese Schnittstelle ist von \code{Remote} abgeleitet.\\
 Zusätzlich muss das RMI Objekt von außen nutzbar sein, weshalb es exportiert werden muss.
-Das wird realisiert, indem das RMI Objekt von \code{UnicastRemoteObject} ableitet.
+Das wird realisiert, indem das RMI Objekt von \code{UnicastRemoteObject} ableitet, oder zur Laufzeit exportiert wird\footnote{
+hierfür ist es zwingend erforderlich, dass die Klasse des Objektes auch das Interface \textit{Remote} implementiert.
+}.
 Jeder Konstruktor solch einer Klasse muss eine \code{throws}-Klausel deklariert haben, die eine \code{RemoteException} wirft.\\
 Es muss mindestens ein Konstruktor in dieser Form vorhanden sein.
 
