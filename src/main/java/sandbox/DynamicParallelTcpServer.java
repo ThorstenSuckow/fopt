@@ -35,7 +35,7 @@ public class DynamicParallelTcpServer extends Thread {
                     System.out.println("[server(" + getName() + ")] client disconnect!");
                     break;
                 }
-
+                System.out.println("[server(" + getName() + ")] received " + msg);
                 w.write(msg);
                 w.newLine();
                 w.flush();
