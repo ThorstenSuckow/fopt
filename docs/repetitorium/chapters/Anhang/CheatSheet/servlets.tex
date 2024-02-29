@@ -4,3 +4,12 @@
 Da ein Parametername mehrmals vorkommen kann (einmal gesendet als Post, während im Query-String derselbe Parameter vorhanden ist), kann man über \code{HttpServletRequest.}\code{getParameterValues(name: String):String[]} ein Feld aller Werte abfragen, die für diesen Parameternamen gesendet wurden.\\
 Ist der spezifizierte Parametername nur einmal vorhanden, hat der Rückgabewert die Länge $1$.\\
 Mit \code{getParameterMap():Map<String,String[]>} gelangt man an eine Map, bestehend aus allen Parameternamen und ihrer Werte.
+
+\subsection{Servlets erstellen}
+\begin{enumerate}
+    \item von Klasse \code{HttpServlet} ableiten
+    \item Annotation \code{@WebServlet} mit Parameter \code{urlPatterns} implementieren (der zugehörige Wert \textit{muss} mit einem Slash \textbf{/} beginnen)
+    \item \code{doGet} / \code{doPost} überschreiben
+    \item in den Methoden, die eine Ausgabe erzeugen, über  \code{HttpServletResponse.}\code{setContentType()} den ``Content-Type`` für die Response setzen
+    \item über \code{HttpServletResponse} mit \code{getWriter()} den \code{PrintWriter} anfordern, Daten an \code{print()} übergeben, mit \code{flush()} Ausgabe beenden (IOException beachten)
+\end{enumerate}

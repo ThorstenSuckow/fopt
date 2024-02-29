@@ -74,7 +74,7 @@ Host: www.conjoon.org
     \end{minted}
     \item Wird der Header \textit{Connection: keep-alive}\footnote{
     s. ``RFC 2068 - 19.7.1 Compatibility with HTTP/1.0 Persistent Connections``: \url{https://www.rfc-editor.org/rfc/rfc2068#section-19.7.1} - abgerufen 3.2.2024
-    } mitgesendet, teilt der Client dem Server mit, dass die Verbindung zum Herunterladen weiterer Daten geöffnet bleiben soll.
+    } mitgesendet, teilt der Client dem Server mit, dass die Verbindung zum Herunterladen weiterer Daten geöffnet bleiben soll (\textit{close} als default für HTTP/1.0-Requests, \textit{keep-alive} als default für HTTP/1.1-Requests).
     \item Bei einer HTTP-Response weist die Antwort-Zeile \textit{Connection: close} daraufhin, dass die Verbindung nicht persistent ist und mit der Bearbeitung der Antwort geschlossen wird\footnote{
     s. ``RFC 2068 - 14.10 Connection``: \url{https://www.rfc-editor.org/rfc/rfc2068#section-14.10} - abgerufen 3.2.2024
     }.
