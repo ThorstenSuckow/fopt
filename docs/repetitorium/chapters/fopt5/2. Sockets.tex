@@ -18,7 +18,7 @@ Der Socket empfängt nur Nachrichten, die an diesen Port adressiert wurden.\\
 Bei \textbf{Client/Server-Anwendungen} geht die Initiative vom Client aus, der eine Anfrage an einen Server schickt.\\
 Der Server antwortet an die in der Nachricht enthaltenen IP-Adresse und Quellportnummer.
 
-\begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
+
 I.d.R verwendet ein Client eine beliebige freie Portnummer.\\
 
 \noindent
@@ -26,13 +26,11 @@ Dienste laufen auf Servern auf wohlbekannten Portnummern, bspw. ``https`` auf Po
 s. a. ``Hypertext Transfer Protocol Secure``: \url{https://de.wikipedia.org/wiki/Hypertext_Transfer_Protocol_Secure} - abgerufen 30.01.2024
 }.\\
 Ein Server, der unter einer bestimmten Portnummer laufen soll, kann nur gestartet werden, wenn die Portnummer nicht schon belegt ist.
-\end{tcolorbox}\\
 
 \newpage
 \noindent
 Beispiel für eine Programmstruktur für eine Kommunikation zwischen UDP-Client und -Server:
 \begin{minted}[mathescape,
-
     numbersep=5pt,
     gobble=2,
     frame=none,
@@ -78,7 +76,7 @@ $\rightarrow$ für einen Port kann es somit mehrere Sockets geben.\\
 
 
 \noindent
-Beispiel für eine Programmstruktur für eine Kommunikation zwischen UDP-Client und -Server:
+Beispiel für eine Programmstruktur für eine Kommunikation zwischen TCP-Client und -Server:
 \begin{minted}[mathescape,
     numbersep=5pt,
     gobble=2,
@@ -119,7 +117,7 @@ Beispiel für eine Programmstruktur für eine Kommunikation zwischen UDP-Client 
 \end{minted}\\
 
 \noindent
-Es gibt bei \textbf{TCP} höchstens eine Verbindung von einem Port auf einem Rechner zu einem anderen Port auf einen anderen Rechner, aber es können mehrere Verbindungen von einem Port zu unterschiedlichen Ports des Zielrechners existieren, bzw. es kann ein Rechner mehrere Verbindungen zu einem bestimmten Port auf einem unterschiedlichen Zielrechner erstellen (s. Abbildung~\ref{fig:tcpconnections}).
+Es gibt bei \textbf{TCP} höchstens eine Verbindung von einem Port auf einem Rechner zu einem anderen Port auf einen anderen Rechner, aber es können mehrere Verbindungen mit diesen Parametern zu unetrschiedlichen Rechnern gleichzeitig existieren, lies: Eine Verbindung zu einem Port kann gleichzeitig von mehreren verschiedenen Rechnern hergestellt werden (s. Abbildung~\ref{fig:tcpconnections}).
 
 
 \begin{figure}
@@ -149,11 +147,11 @@ Die Java-Klassenbibliothek enthält u.a. im Package \code{java.net} Implementier
 \code{DatagramPacket} wird mit der IP-Adresse und Portnummer des Partners konfiguriert $\rightarrow$ für zu sendende Pakete ist das die Ziel-Adresse und Ziel-Portnummer, für empfangene Pakete ist das die Quelladresse und Quell-Portnummer.\\
 
 \noindent
-Ein \code{DatagramPacket} repräsentiert Daten in Form eines Feldes des Typs \code{byte} und einer Länge, die höchstens so groß sein kann wie die Feldlänge - ist die Länge kleiner als die Feldlänge, wurde nur die angegebene Länge als relevant betrachtet.\\
+Ein \code{DatagramPacket} repräsentiert Daten in Form eines Feldes des Typs \code{byte} und einer Länge, die höchstens so groß sein kann wie die Feldlänge - ist die angegebene Länge $n$ kleiner als die angegebene Feldlänge $f_n$, wird nur die angegebene Länge $n$ als relevant betrachtet.\\
 
 \noindent
-Server verwenden für die Kommunikation bei der Erzeugung von \code{DatagramSocket} i.d.R. eine feste Portnummer, auf der der Service laufen soll.\\
-Clients verwenden i.d.R. den parameterlosen Konstruktor, ein freier Port wird dann zugeteilt.
+Server geben bei der Erzeugung eines \code{DatagramSocket} eine feste Portnummer an, über die der Service erreichbar sein soll.\\
+Clients verwenden i.d.R. den parameterlosen Konstruktor - ein freier Port wird dann zugeteilt.
 
 \begin{minted}[mathescape,
     numbersep=5pt,
@@ -304,7 +302,10 @@ Beispiel für das Lesen von Daten über einen Socket mittels eines \code{Buffere
 \end{minted}\\
 
 \noindent
-Das Ende eines Datenstroms wird durch den Rückgabewert \code{null} angezeigt (bei Dateioperationen {bspw.} als Ende der Datei; TCP-Verbindung: Client hat die Verbindung geschlossen usw.).
+Das Ende eines Datenstroms wird in diesem Fall durch den Rückgabewert \code{null} angezeigt (bei Dateioperationen {bspw.} als Ende der Datei; TCP-Verbindung: Client hat die Verbindung geschlossen usw.).\\
+Wie das Ende eines Stroms bekanntgegeben wird, ist abhängig von der jeweiligen Methode der genutzten Stream-Klasse - so meldet \code{readLine} von \code{BufferedReader} bspw. \code{null}, wenn das Ende des Datenstroms erreicht ist, \code{read()}\footnote{
+    ``Class FilterInputStream``: \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/FilterInputStream.html#read()} - abgerufen 22.2.2024
+} der Klasse \code{FilterInputStream} in dem Fall hingegen \code{-1}.\\
 
 \begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
     Das Empfangen von Daten ist eine blockierende Operation\footnote{Bsp.: Der Client wartet so lange, bis die Nachricht, getrennt durch \textit{newline}, bei ihm ankommt}.\\
@@ -337,7 +338,7 @@ $\rightarrow$ Möglichkeiten hierzu: \textbf{sequenzielle} durch \textbf{paralle
 \subsection*{Statische Parallelität}
 Fixe Anzahl von Threads (``Verbindungen``) die von einem Server genutzt werden können.\\
 
-$\rightarrow$ \textbf{Statische Parallelität} kann über ein Feld von Threads realisiert werden, oder einen \textbf{ThreadPool}\footnote{
+$\rightarrow$ \textbf{Statische Parallelität} kann über ein Feld von Threads realisiert werden, oder einen \textit{Thread-Pool}\footnote{
 ``Thread Pools``: \url{https://docs.oracle.com/javase/tutorial/essential/concurrency/pools.html} - abgerufen 31.01.2024
 }, bei dem \code{corePoolSize} $=$ \code{maxPoolSize} gilt (s.a.~\cite[146]{Oec22}).\\
 
@@ -345,7 +346,7 @@ $\rightarrow$ \textbf{Statische Parallelität} kann über ein Feld von Threads r
 Statische Parallelität erlaubt es einem Server, eine \textit{fixe} Anzahl von Verbindungen gleichzeitig zu bedienen.\\
 Hierbei wird ein Feld von Threads erstellt, wobei jeder Thread das \code{ServerSocket}-Objekt als Referenz übergeben bekommt.
 In der \code{run()}-Methode wird dann über \code{accept()} in einer Endlosschleife auf eingehende Verbindungen gewartet, die dann so lange bedient werden, bis sich ein Client wieder abmeldet (oder eine andere Abbruchbedingung erfüllt ist, wie z.B. ein \code{SocketTimeout}).\\
-Das sich ein Client abmeldet, bekommt man bspw. dadurch mit, dass \code{null} beim Lesen von einer Nachricht des Clients zurückgegeben wird (vgl. \cite[286]{Oec22}
+Einen client-seitigen Verbindungsabbruch bekommt man {bspw.} dadurch mit, dass \code{null} beim Lesen von einer Nachricht des Clients zurückgegeben wird (vgl. \cite[286]{Oec22}).\\
 
 \noindent
 Im Folgenden ein Implementierungsbeispiel für \textbf{Statische Parallelität}:

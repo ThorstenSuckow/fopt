@@ -14,7 +14,8 @@ Wenn man eine verteilte Java-Anwendung entwickeln soll, bei der Kommunikationspr
 
 \noindent
 \textbf{Remote Method Invocation} (RMI) stellt eine Schnittstelle zur Nutzung der Internetprotokolle \textbf{TCP} und \textbf{UDP} bereit.\\
-Für RMI ist ein Protokoll auf Schicht 5 definiert, das Daten, deren Reihenfolge und Codierung bei Methodenaufrufen und Methodenrückkehr festlegt (vgl.\cite[402]{Oec22}).
+Für RMI ist ein Protokoll auf Schicht 5 definiert.
+Das Protokoll legt Reihenfolge und Codierung für Daten bei Methodenaufrufen und Methodenrückkehr fest (vgl.\cite[402]{Oec22}).
 
 \noindent
 \textbf{RMI} verfolgt den Ansatz, OOP auch für die Kommunikation zwischen verteilten Anwendungen zu realisieren, wobei der Aspekt der Verteilung für die Entwickler weitestgehend transparent bleibt
@@ -170,7 +171,7 @@ Der Client fragt vom Server über
 
 \noindent
 das Objekt ab, auf das er zugreifen möchte, und bekommt dann ein Objekt vom Typ \code{java.rmi.Remote} zurück.\\
-Das Objekt muss noch zu dem Typen gecasted werden, der in ``Schnittstelle definieren`` in Punkt~\ref{itm:intdef} (s. vorheriger Abschnitt) implementiert wurde, um entsprechende Methoden der implementierten Schnittstelle aufrufen zu können - \code{lookup()} zurückgegebene Objekt ist das \textbf{Stub-Objekt}.\\
+Das Objekt muss noch zu dem Typen gecasted werden, der in ``Schnittstelle definieren`` in Punkt~\ref{itm:intdef} (s. vorheriger Abschnitt) implementiert wurde, um entsprechende Methoden der implementierten Schnittstelle aufrufen zu können (das über \code{lookup()} zurückgegebene Objekt ist das \textbf{Stub-Objekt}).\\
 
 \noindent
 Bevor der Server auf dem entsprechenden Rechner gestartet wird, muss auf diesem Rechner über die Konsole noch \code{rmiregistry} aufgerufen werden, damit die \textbf{Registry} zur Verfügung steht, sofern das nicht wie im folgenden Beispiel über das Programm geschieht.
@@ -292,7 +293,7 @@ Folgendes Beispiel stellt die Verwendung in vereinfachter Form nochmal dar:
 \begin{tcolorbox}
     Generell ist zu berücksichtigen, dass RMI-Aufrufe blocking sind.\\
     Wird also aus einem Programm heraus ein RMI-Methodenaufruf durchgeführt, und ist eine grafische Benutzeroberfläche abhängig von den Rückgabewerten, sollte der Aufruf in einem Thread sttatfinden.\\
-    Die Antwort des RMI-Methodenaufrufes sollten dann über \code{Runnable}s and \code{Platform.runLater()} übergeben werden - der Übergabeparameter landet bekanntlich in einer event queue, deren Einträge dann zu einem in der Zukunft ilegenden unbestimmten Zeitpunkt auf dem \textbf{JavaFX Application Thread} aufgerufen werden.\\
+    Die Antwort des RMI-Methodenaufrufes sollten dann über \code{Runnable}s and \code{Platform.runLater()} übergeben werden - der Übergabeparameter landet bekanntlich in einer event queue, deren Einträge dann zu einem in der Zukunft liegenden unbestimmten Zeitpunkt auf dem \textbf{JavaFX Application Thread} aufgerufen werden.\\
     Werden gleichzeitig mehrere Methoden ein und desselben RMI-Objektes von unterschiedlichen Clients aufgerufen, sollten die Methoden \code{synchronized} sein, falls es die Implementierung des passiven Objektes erfordert.
 \end{tcolorbox}
 
@@ -318,7 +319,8 @@ Die \textbf{Registry} startet standardmäßig auf Port $1099$.\\
 
 \noindent
 Ein Server startet auf einer beliebigen freien Portnummer; während der Registrierung werden einem Objekt weitere Informationen zugeordnet, wie Portnummer und eine \textit{Objekt-Id-Kennung}, damit man das Objekt erreichen kann.\\
-Wenn der Client mittels \staticcode{java.rmi.Naming.lookup(name:String)} einen Eintrag aus der Registry anfordert, enthält das zurückgegebene Objekt diese Informationen, und der Client kann diese Informationen zur Verbindungsherstellung nutzen.
+Wenn der Client mittels \staticcode{java.rmi.Naming.lookup(name:String)} einen Eintrag aus der Registry anfordert, enthält das zurückgegebene Objekt diese Informationen.
+Diese Informationen können dann zur Verbindungsherstellung genutzt werden.
 
 \begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
     Ein Server kann mehrere Objekte beherbergen, die alle unter ein und derselben Portnummer erreichbar sind (vgl.~\cite[324]{Oec22}).
@@ -397,7 +399,7 @@ Wird ein \textbf{Stub} angefordert, der eine asynchrone Operation ausführt, und
 
 \subsection{Wertübergabe für Parameter und Rückgabewerte}\label{sec:valuermi}
 
-Bei \textbf{RMO} können Objektparameter oder Objektrückgabewerte als \textbf{Wert} oder \textbf{Referenz} übergeben werden.\\
+Bei \textbf{RMI} können Objektparameter oder Objektrückgabewerte als \textbf{Wert} oder \textbf{Referenz} übergeben werden.\\
 
 \noindent
 Bei der Übergabe als Wert wird eine Kopie des Objektes erzeugt, und zwar rekursiv bei gleichzeitiger Vermeidung von Zyklen.\\
@@ -411,7 +413,7 @@ Diese Kopie wird dann auf dem Server in der entsprechenden Methode aufgerufen:
 
 \begin{itemize}
     \item wird das Objekt auf dem Server geändert, ändert sich nur \textit{dieses} Objekt auf dem Server, nicht aber das auf dem Client.
-    \item \textit{als Rückgabewert} kann das geänderte Objekt aber vom Client verwendet werden
+    \item[] $\rightarrow$ gibt man dann aber das Objekt als \textit{als Rückgabewert} an, sind die geänderten Daten in der Kopie des Objektes vorhanden (wegen Serialisierung und Wertübergabe) - Änderungen daran sind dann aber nicht auf dem Server reflektiert
 \end{itemize}
 
 Datenstrukturen werden unter Verwendung von \code{java.io.Serializable} serialisiert {bzw.} deserialisiert; Objekte, die als ``Foge von Bytes`` serialisiert werden sollen, müssen dabei \code{java.io.Serializable} implementieren  - das gilt auch für die Objekte, die mit dem zu serialisierenden Objekt assoziiert sind (vgl.~\cite[332]{Oec22}).\\
@@ -460,7 +462,7 @@ vgl. ``8.3.1.3. transient Fields`` \url{https://docs.oracle.com/javase/specs/jls
 Bei \textbf{RMI} werden Parameter und Rückgabewerte entweder als Wert oder als Referenz übergeben.\\
 
 \noindent
-Als \textbf{Wert} i.d.R. nur, wenn eine Klasse \code{Serializable} implementiert, ansonsten hat die \textbf{Referenzübergabe} Vorrang, falls ein Objekt einer Klasse \textbf{exportiert} ist (bspw. weil seine Klasse von \code{UnicastRemoteObject} abgeleitet ist).
+Als \textbf{Wert}, falls eine Klasse \textit{nur} \code{Serializable} implementiert und \textit{nicht} exportiert ist, ansonsten hat die \textbf{Referenzübergabe} Vorrang (bspw. weil die Klasse des Objektes ein Remote Interface ist und von \code{UnicastRemoteObject} abgeleitet ist).
 
 \begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
     RMI-Objekte implementieren die \code{Remote}-Schnittstelle und sind exportiert, bspw. indem sie von \code{UnicastRemoteObject} abgeleitet sind.\\
