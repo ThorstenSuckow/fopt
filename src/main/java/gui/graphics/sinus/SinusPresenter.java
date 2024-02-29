@@ -31,45 +31,48 @@ public class SinusPresenter {
         sinusView.getAmplitudeSlider().valueProperty().addListener(this::drawSinusCurve);
         sinusView.getFrequencySlider().valueProperty().addListener(this::drawSinusCurve);
         sinusView.getPhaseSlider().valueProperty().addListener(this::drawSinusCurve);
-        Platform.runLater(this::drawSinusCurve);
+        drawSinusCurve();
     }
 
     private void drawSinusCurve(ObservableValue<? extends Number> observableValue, Number number, Number number1) {
-        Platform.runLater(this::drawSinusCurve);
+        drawSinusCurve();
     }
 
 
     private void drawSinusCurve() {
 
-        Pane sinusCanvas = sinusView.getSinusCanvas();
+        new Thread(()-> {
+            Pane sinusCanvas = sinusView.getSinusCanvas();
+            double width = sinusCanvas.widthProperty().get();
+            double height = sinusCanvas.heightProperty().get();
 
-        double zoom = sinusView.getZoomSlider().valueProperty().get();
-        double phase = sinusView.getPhaseSlider().valueProperty().get();
-        double frequency = sinusView.getFrequencySlider().valueProperty().get();
-        double amplitude = sinusView.getAmplitudeSlider().valueProperty().get();
+            double zoom = sinusView.getZoomSlider().valueProperty().get();
+            double phase = sinusView.getPhaseSlider().valueProperty().get();
+            double frequency = sinusView.getFrequencySlider().valueProperty().get();
+            double amplitude = sinusView.getAmplitudeSlider().valueProperty().get();
 
-        double width = sinusCanvas.widthProperty().get();
-        double height = sinusCanvas.heightProperty().get();
+            double start = -(width / 2);
 
-        double start = - (width / 2);
+            List<Double> tmpPoints = new ArrayList<>();
 
-        ObservableList<Double> points = sinusView.getSinusLine().getPoints();
-        List<Double> tmpPoints = new ArrayList<>();
+            for (double i = 0; i < width; i += 1 / zoom) {
 
-        for (double i = 0; i < width; i+= 1/zoom) {
+                double sinX = (start + i);
+                double sinY = sinusModel.getY(sinX, amplitude, frequency, phase);
 
-            double sinX = (start+i);
-            double sinY = sinusModel.getY(sinX, amplitude, frequency, phase);
+                double x = (sinX * zoom - start);
+                double y = (sinY * zoom + (height / 2));
 
-            double x = (sinX*zoom - start);
-            double y = (sinY*zoom + (height / 2)) ;
+                tmpPoints.add(x);
+                tmpPoints.add(y);
+            }
 
-            tmpPoints.add(x);
-            tmpPoints.add(y);
-        }
-
-        points.clear();
-        points.addAll(tmpPoints);
+            Platform.runLater(()->{
+                ObservableList<Double> points = sinusView.getSinusLine().getPoints();
+                points.clear();
+                points.addAll(tmpPoints);
+            });
+        }).start();
 
 
     }

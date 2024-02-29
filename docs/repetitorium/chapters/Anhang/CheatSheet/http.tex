@@ -1,0 +1,18 @@
+\section{HTTP}
+
+\subsection{URL}
+
+Vereinfacht besteht eine \textbf{URL} (\textit{Universal Resource Locator}) aus Angabe des Protokolls, dem Servername, der Portnummer und des Pfads zu dem angeforderten Dokument (s. \cite[403]{Oec22}).
+
+\subsection{Header ``Connection``}
+Mit dem Header kann der Client dem Server mitteilen, ob die Verbindung aufrecht gehalten werden soll, damit weitere Resourcen über diese Verbindung geladen werden können (Wert: \textit{keep-alive}, Standard für HTTP/1.1-Requests).
+Der Wert \textit{close} weist darauf hin, dass die Verbindung geschlossen wird (gesetzt bspw. durch den Server).
+
+\subsection{Header ``Content-Length``}
+Der Header ``Content-Length`` wird verwendet, um anzugeben, welche Länge der Body der hat.
+Das ist nötig, da es außer dem Trennzeichen \textbf{\textbackslash n\textbackslash n} (Leerzeile) für die Unterscheidung Header-/ Body-Teil kein weiteres Trennzeichen gibt, das eine Begrenzung des Bodies beschreibt, außerdem reicht es nicht, nur bis zum Verbindungsende zu lesen, da die Verbindung ja unter Umständen offen bleibt, um weitere Resourcen anzufordern.
+Die Gegenstelle weiß dadurch, aus wie vielen Bytes der Nachrichten-Body besteht.
+
+\blockquote[{``Content-Length``: \url{https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Length} - abgerufen 29.02.2024}]{
+    The Content-Length header indicates the size of the message body, in bytes, sent to the recipient.
+}

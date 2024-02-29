@@ -1,0 +1,35 @@
+\section{TCP}
+
+\textbf{TCP} (\textit{Transmission Control Protocol}) ist
+
+\begin{itemize}
+    \item verbindungsorientiert
+    \item datenstromorientiert
+    \item zuverlässig mit Fluss-/Überlastkontrolle
+\end{itemize}
+
+
+\section*{Notizen}
+
+\subsection*{Empfangen}
+\begin{itemize}
+    \item \textbf{try-with-resources} vor der while-schleife, nicht nach einem Sende-/Empfangsvorgang die Streams geschlossen werden
+\end{itemize}
+
+
+\begin{minted}[mathescape,
+    fontsize=\small]{java}
+    while (true) {
+        try (Socket s = serverSocket.accept();
+            ... // weitere Autocloseable-Resourcen
+            ) {
+            while (true) {
+                ... // empfangen, senden
+                    // exception beendet die Schleife,
+                    // Verbindung wird geschlossen
+            }
+        } catch (Exception e) {
+            ... // Fehlerbehandlung
+        }
+    }
+\end{minted}

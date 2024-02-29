@@ -64,3 +64,41 @@
     ois.close();
     bais.close();
 \end{minted}
+
+\subsection{Multicast}
+
+\subsection*{Multicast-Kommunikation}
+
+Mittels Multicast können sich mehrere Server auf eine Multicast-Adresse aufschalten.
+Mehrere Rechner sind somit in der Lage, die Nachrichten einzelner Clients zu empfangen.
+Damit die Nachrichten eines Clients an mehrere Server geht, muss der Client an die entsprechende Multicast-Adresse senden.
+Server schalten sich mit Hilfe eines \code{MulticastSocket}s auf die Multicast-IP-Adresse auf.\\
+
+\noindent
+Multicast funktioniert i.d.R. nur in einem lokalen Netz.\\
+
+\noindent
+UDP mit Multicast kann bspw. dazu verwendet werden, um in einem Netz einen Server auszumachen, mit dem dann weiter über TCP-kommuniziert wird.\\
+Hierzu sendet ein Client eine Anfrage an die Multicast-Adresse, bekommt von den aufgeschalteten Servern eine Antwort und kennt dadurch die IP-Adressen der Rechner (zumindest einen Teil, da UDP unzuverlässig).\\
+
+\noindent
+Das folgende Beispiel zeigt das Gerüst für die Erzeugung eines Multicast-Sockets\footnote{
+es werden der Einfachheit halber die Methoden \textit{joinGroup()} / \textit{leaveGroup()} in ihrer \textit{deprecated} Form verwendet
+}:
+
+\begin{minted}[mathescape,
+    fontsize=\small]{java}
+    try (MulticastSocket msck = new MulticastSocket(port)) {
+        msck.joinGroup(mcastaddr);
+
+        while (true) {
+            DatagramPacket p = new DatagramPacket(new byte[128], 128);
+            msck.receive();
+            ...
+        }
+
+        msck.leaveGroup(mcastaddr):
+    } catch (IOException e) {
+        ...
+    }
+\end{minted}

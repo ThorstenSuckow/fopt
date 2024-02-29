@@ -42,9 +42,8 @@ mittels \textit{getWriter()}. S. ``getWriter``: \url{https://jakarta.ee/specific
 } zur Verfügung, mit dem man den \code{OutputStream} (ASCII) der Response verändern kann.
 
 \begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
-    Man sollte stets daran denken, über das \code{HttpServletResponse}-Argument auch den \textbf{Content-Type} der Response zu setzen, bspw.
+    Man sollte stets daran denken, über das \code{HttpServletResponse}-Argument auch den \textbf{Content-Type} der Response zu setzen:
     \begin{minted}[mathescape,
-
         numbersep=5pt,
         gobble=2,
         frame=none,
@@ -87,7 +86,7 @@ Ein Servlet wird beim (Re)deployment des Servers instanziiert, dieses Objekt wir
 Bei der Bearbeitung von Anfragen eines Servlets ist implizit Parallelität im Spiel - jede HTTP-Anfrage wird in einem eigenen Thread ausgeführt.
 
 \begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
-Alle Anfragen arbeiten mit demselben Servlet-Objekt $\rightarrow$ pro Servlet-Klasse wird i.d.R. nur ein Objekt erzeugen.
+Alle Anfragen arbeiten mit demselben Servlet-Objekt $\rightarrow$ pro Servlet-Klasse wird ein Objekt davon für den jeweiligen Context erzeugt.
 \end{tcolorbox}
 
 
@@ -98,10 +97,10 @@ Von unterschiedlichen Servlets kann auf ein und dasselbe Objekt zugegriffen werd
 Über \code{getAttribute():Object} bzw.\\ \code{setAttribute(name:String, object:Object):void} können Objekte unter einem bestimmten Namen im \code{ServletContext} registriert werden.\\
 
 \noindent
-Die über \code{loadOnStartup} definierte Reihenfolge kann entscheiden beim Zugriff auf ein im \code{ServletContext} enthaltenes Attribut sein.\\
+Die über \code{loadOnStartup} definierte Reihenfolge kann entscheidend sein beim Zugriff auf ein im \code{ServletContext} enthaltenes Attribut.\\
 Wird ein Servlet mit \code{loadOnStartup=1} konfiguriert, und wird dort auf ein Attribut des \code{ServletContext} zugegriffen (bspw. in der \code{init()}), dessen Servlet\footnote{
 lies: Das Servlet, dass das Attribut im \textit{ServletContext} registriert
-} noch nicht initialisiert wurde, kann es zu einem unerwarteten Fehler kommen.\\
+} noch nicht initialisiert wurde, kann es zu Fehlern kommen.\\
 
 \noindent
 Neben der Registrierung eines Attributes über die \code{init()}-Methode im Servlet ist es auch möglich, über einen \code{ServletContextListener}\footnote{
@@ -118,7 +117,7 @@ Neben der Registrierung eines Attributes über die \code{init()}-Methode im Serv
 \section{Sessions und Cookies}
 
 Da HTTP zustandslos ist, kann man einen Zustand mit Hilfe einer \textbf{Session} speichern, die den jeweiligen Benutzern einer Web-Anwendung eindeutig zugeordnet werden können\footnote{
-Identifizierung mittels der IP ist nicht möglich, da mehrere Rechner in einem Netz hinter der gleichen IP angeschlossen sein können, bspw. bei der Verwendung eines Proxies (Adressumsetzung auf Schicht 5) oder bei der Verwendung von \textbf{NAT} (Network Address Translation, \textit{Adressenabbildung}), bei der die öffentliche IP des Routers Antworten auf Anfragen an die angeschlossenen Clients weiterleitet (Schicht 3) (vgl.~\cite[425]{Oec22}).
+Identifizierung mittels der IP ist nicht möglich, da mehrere Rechner in einem Netz hinter der gleichen IP angeschlossen sein können, bspw. bei der Verwendung eines Proxies (Adressumsetzung auf Schicht 5) oder bei der Verwendung von \textbf{NAT} (Network Address Translation, \textit{Adressenabbildung}), bei der ein Router über seine öffentliche IP Antworten auf Requests angeschlossener Clients empfängt, und an diese weiterleitet (Schicht 3) (vgl.~\cite[425]{Oec22}).
 }.\\
 
 \noindent
@@ -130,7 +129,7 @@ Identifizierung mittels der IP ist nicht möglich, da mehrere Rechner in einem N
 Über \code{setAttribute()} / \code{getAttribute()} \code{removeAttribute()} (definiert in\\ \code{HttpSession}) lassen sich Sitzungsdaten ändern.\\
 
 \noindent
-Die Methode \code{invalidate()} von \code{HttpSession} löscht explizit eine Session, alternativ kann man mittels \code{setMaxInactiveInterval} angeben, wie lange die Sitzung maximal inaktiv sein darf, bevor sie gelöscht wird, damit der Speicher des Servers nicht unnötig hoch ausgelastet wird.
+Die Methode \code{invalidate()} von \code{HttpSession} löscht explizit eine Session, alternativ kann man mittels \code{setMaxInactiveInterval} angeben, wie lange die Sitzung maximal inaktiv sein darf, bevor sie gelöscht wird, damit der Speicher des Servers nicht unnötig belastet wird.
 
 \begin{tcolorbox}[enlarge top by=0.5cm,enlarge bottom by=0.5cm]
 Auch Sitzungsdaten müssen synchronisiert werden, da ein Anwender parallel mehrere Tabs offen haben kann.\\
@@ -142,7 +141,6 @@ Hierzu muss man nicht zwingend die entsprechende \textit{do*}-Methode synchronis
     frame=none,
     fontsize=\small,
     framesep=2mm]{java}
-
     protected void doGet(HttpServletRequest request, HttpServletResponse response) {
 
         HttpSession session = request.getSession(false); // keine neue Session erzeugen
@@ -176,7 +174,7 @@ Wie beim  \code{ServletContextAttributeListener} gibt es auch den\\ \code{HttpSe
 } zum Überwachen von Attributänderungen der Sitzungsdaten: \code{attributeAdded()}, \code{attributeReplaces()}, \code{attributeRemoved()}\\
 
 \noindent
-Session werden in der Regel über \textbf{Cookies} realisiert, deren Kennung\\ \textbf{JSESSIONID} auf dem Client gespeichert ist und bei Anfragen im \textbf{Cookie-Header} mitgesendet werden.\\
+Sessions werden in der Regel über \textbf{Cookies} realisiert, deren Kennung\\ \textbf{JSESSIONID} auf dem Client gespeichert ist und bei Anfragen im \textbf{Cookie-Header} mitgesendet werden.\\
 $\rightarrow$ Die Anforderung zur Speicherung der Cookie-Daten kommt \textit{über den Response} im Header \code{Set-Cookie}\footnote{
     `´Set-Cookie``: \url{https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie}
 } (die Kennung lässt sich auch über die Methode \code{getId()} von \code{HttpSession} erfragen).\\
@@ -187,7 +185,7 @@ Sitzungsdaten werden i.d.R. im Speicher des Webservers in einer Art \code{HashMa
 $\rightarrow$ Beim Aufruf \code{getSession()} wird geprüft, ob der \code{Cookie}-Header\footnote{
     ``Cookie``: \url{https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cookie} - abgerufen 3.2.2024
 } vorhanden ist.
-Die Sitzungs-Id wird dann verwendet, um in d r Tabelle nach einem assoziierten Sitzungsobjekt zu schauen - soll eine neue Sitzung erzeugt werden, wird dies entsprechend automatisch in der Response im \code{Set-Cookie}-Header vermerkt.\\
+Die Sitzungs-Id wird dann verwendet, um in der Tabelle nach einem assoziierten Sitzungsobjekt zu schauen - soll eine neue Sitzung erzeugt werden, wird dies entsprechend automatisch in der Response im \code{Set-Cookie}-Header vermerkt.\\
 
 \noindent
 Bei horizontaler Skalierung können Sitzungsobjekte i.d.R nicht geteilt werden unter den beteiligten Webservern - hier eignet sich eine zentrale Speicherung der Sitzungsdaten, bspw. in einer Datenbank (vgl.~\cite[433]{Oec22}).

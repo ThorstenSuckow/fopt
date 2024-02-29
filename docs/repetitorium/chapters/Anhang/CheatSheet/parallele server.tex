@@ -8,6 +8,7 @@ Bei statischer Parallelität werden Felder von Threads konstanter Größe verwen
 \begin{itemize}
     \item jedes Feld enthält einen Thread, der dasselbe \code{ServerSocket}-Objekt übergeben bekommt
     \item die \code{run()}-Methode wartet mit \code{accept()} auf Verbindungseingang und bedient die Verbindungen
+    \item $\rightarrow$ ein statisch Paralleler TCP Server der Größe $n$ bedient max. $n$ Verbindungen parallel
 \end{itemize}
 
 
@@ -16,6 +17,7 @@ Bei statischer Parallelität werden Felder von Threads konstanter Größe verwen
 \begin{itemize}
     \item jedes Feld enthält einen Thread, der dasselbe \code{DatagramSocket}-Objekt übergeben bekommt
     \item die \code{run()}-Methode wartet mit \code{receive(p: DatagramPacket)} auf Nachrichten und bearbeitet diese
+    \item $\rightarrow$ ein statisch paralleler UDP Server der Größe $n$ nimmt max. $n$ Nachrichten parallel entgegen
 \end{itemize}
 
 \subsubsection*{Notizen}
@@ -46,7 +48,7 @@ verhindert werden:
 \subsubsection{TCP}
 
 \begin{itemize}
-    \item für jeden Verbindungseingang mit \code{accept()} wird ein neuer Thread erstellt, der die Verbindung in der \code{run()}-Methode
+    \item für jeden Client, zu dem eine Verbindung über \code{accept()} hergestellt wird, wird ein neuer Thread erstellt, der diese Verbindung in der \code{run()}-Methode
     bedient
 \end{itemize}
 
@@ -54,6 +56,5 @@ verhindert werden:
 \subsubsection{UDP}
 
 \begin{itemize}
-    \item für jede Nachricht wird zur Bearbeitung ein neuer Thread erstellt, der das originäre \code{DatagramSocket}-Objekt übergeben bekommt,
-    über das Antworten an die Clients gesendet werden können.
+    \item für jede eingehende Nachricht wird ein neuer Thread erstellt, der die Nachricht bearbeitet und über das originäre \code{DatagramSocket}-Objekt Antworten an die Clients gesendet werden können.
 \end{itemize}
