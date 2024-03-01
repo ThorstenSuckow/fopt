@@ -1,0 +1,23 @@
+\section{Last Minute Remarks}
+
+\begin{itemize}
+    \item wenn zur Laufzeit eine Exception geworfen werden soll, und es keine weitere Aussage zu der Art der Exception gibt, eine RuntimeException nutzen.
+    Ansonsten muss eine checked Exception auch in der throws Klausel der Methode deklariert werden
+    \item \code{List<T>: get(index: int)}, \textit{nicht} \code{getAt}!
+    \item Wenn Queues gefordert sind, bspw. bei fairen Warteschlange, das Hinzufügen und Entfernen der Objekte durchführen.
+    Werden Ausnahmen geworfen, und ein Thread, der die Ausnahme geworfen hat, soll aus der Warteschlange raus, mit try-finally arbeiten!
+    \item \code{BufferedReader.readLine()} liest bis zum Ende der Zeile (\textbf{\textbackslash{n}}) \textbf{oder} bis zum Ende des Input-Streams.
+    Wird also nach einer Antwort verlangt, wie die Daten vom Server gelesen werden, ist es wichtig, die Implementierung des Servers zu kennen.\\
+    Sendet der client über write(), und sendet der Client keine newline, gilt. o.a. Aussage.\\
+    Alles weitere sollte mit dem datenstromorientierten Verhalten von TCP bzw. dem nachrichtenorientierten Charakter von UDP erklärt werden.
+    \item Wenn ein Thread interruptable ist, also man einen Thread bspw. aus wait() herausholen können muss, dann ist ein try-catch um die while-schleife zu setzen, \textbf{oder} man gibt in der throws-Klausel der Methode an, dass die Exception geworfen wird und läßt den catch-Block weg.\\
+    In jedem Fall muss als Schleifenbedingung \code{!isInterrupted()} mit aufgenommen werden (Konjunktion mit der regulären Wartebedingung.)
+    \item Auf die Aufgabenstellung bei \code{synchronized} achten - insb, wie oft und von wem der Objektzustand geändert werden kann.
+    \item Bei \textbf{MVP} laut \cite[227 f. Listing 4.8]{Oec22} meldet die View beim Presenter die Events an: Die View kennt die Methoden des Presenters und kann diese den UI-Elementen als Observer zuweisen.\\
+    Die View ist auch in der Lage, den Presenter anzuweisen.\\
+    Die \code{start}-Methode erzeugt das View-Objekt, ruft davon eine \code{getUI()}-Methode auf, die das \textit{root}-Element für die Scene zurückliefert, und zeigt dann die Stage an.
+    \item Kurzform für Lambda-Methodenreferenz für \code{EventHandler<ActionEvent>} (Parameter für \code{setOnAction()}:\\
+    \begin{minted}[]{java}
+    EventHandler<ActionEvent> h = e -> presenter.doSomething();
+    \end{minted}
+\end{itemize}

@@ -3,7 +3,7 @@
 \section{Aufgabe 1}
 
 Bei der Aufgabe ist es wichtig, die Anforderungen genau zu beachten.\\
-Ob eine Thread die while-wait-Schleife verlassen darf, wird von der Methode \code{tick()} gesteuert - wieviele Ticks ein Thread in der Schleife bleiben soll, wird von dem jeweiligen Thread definiert.\\
+Ob ein Thread die while-wait-Schleife verlassen darf, wird von der Methode \code{tick()} gesteuert - wieviele Ticks ein Thread in der Schleife bleiben soll, wird von dem jeweiligen Thread definiert.\\
 Die \code{tick()}-Methode wird von anderen Threads aufgerufen, es kann also durchaus vorkommen, dass mehrmals hintereinander
 die \code{notifyAll()}-Methode aufgerufen wird - diese entfernt alle Threads aus der Warteschlange, damit die Threads ihre
 Wartebedingungen erneut überprüfen können.\\
