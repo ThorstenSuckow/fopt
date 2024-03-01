@@ -72,7 +72,7 @@ Das macht spätestens der Typ des zweiten formalen Parameters von bspw. \textit{
 }.
 
 \begin{tcolorbox}
-Objekte, die als Remote Objekte funktionieren sollen, \textit{müssen} exportiert sein: ``Server``-Objekte \textit{müssen} also bspw. von \code{UnicastRemoteObject} ableiten, genauso wie Objekte, die über Call-by-Reference verwendet werden sollen\\
+Objekte, die als Remote Objekte funktionieren sollen, \textit{müssen} exportiert sein: ``Server``-Objekte \textit{müssen} also bspw. von \code{UnicastRemoteObject} ableiten, genauso wie Objekte, die über Call-by-Reference verwendet werden sollen.\\
 
     \noindent
     Objekte, die lediglich als Call-By-Value verwendet werden, müssen mindestens \code{Serializable} implementieren, genauso wie Objekte, die zum späteren Zugriff (\textit{nicht} als remote Objekt) in der RMI-Registry gespeichert werden\footnote{
@@ -250,13 +250,13 @@ Auch hier muss ein \textit{Socket-Timeout} gesetzt sein , damit der Client nicht
 
 Das Model ist i.d.R. das Remote Object, gleichzeitige lesende / schreibende Zugriffe auf gemeinsame Daten müssen \textit{synchronisiert} werden.\\
 Der Presenter ruft Methoden auf dem RMI-Objekt auf - die Aufrufe sollten in Threads ausgelagert werden.\\
-Sollen die Ergebnisse der Aufrufe in der UI dargetsellt werden, sollte die Aktualisierung der View mit den Daten Über \code{Platform.runLater()} erfolgen.
+Sollen die Ergebnisse der Aufrufe in der UI dargestellt werden, sollte die Aktualisierung der View mit den Daten Über \code{Platform.runLater()} erfolgen.
 
 
 \begin{figure}
     \centering
     \includegraphics[scale=0.35]{chapters/Anhang/Präsenzphase/img/rmimvp}
     \caption{Das MVP-Architekturmuster in einer verteilten Anwendung. Das Model wird i.d.R. als \textit{remote object} realisiert, mit dem der Presenter kommuniziert.
-    Wird auch der Presenter exportiert, ist das Model dazu in der Lage, die Presenter der Clients über entsprechende Schnittstellen direkt zu beeinflussen (in der Skizze über die bidirektionale Verbindung Presenter - Model dargestellt (s. hierzu auch die Implementierung des Chat-Clients in \cite[349, Bild 6.12]{Oec22}). (Quelle: eigene)}
+    Wird auch der Presenter exportiert, ist das Model dazu in der Lage, die Presenter der Clients über entsprechende Schnittstellen direkt zu beeinflussen (in der Skizze über die \textit{bidirektionale} Verbindung Presenter - Model dargestellt (s. hierzu auch die Implementierung des Chat-Clients in \cite[349, Bild 6.12]{Oec22}). (Quelle: eigene)}
     \label{fig:rmimvp}
 \end{figure}

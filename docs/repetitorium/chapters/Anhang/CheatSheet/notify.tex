@@ -2,9 +2,9 @@
 
 \subsection*{notify() verwendet man...}
 \begin{itemize}
-    \item wenn es nur eine Wartebedingung für einen oder mehrere Threads gibt
+    \item in der Warteschleife befinden sich ausschließlich Threads mit einer identischen Wartebedingung
     \item[] \textbf{UND}
-    \item wenn es nur einen Thread gibt, der davon profitiert, die \textit{while-wait-Schleife} zu verlassen
+    \item wenn es nur einen Thread gibt, der seine \textit{while-wait-Schleife} verlassen kann bzw. soll.
 \end{itemize}\\
 
 \noindent
@@ -19,8 +19,8 @@ War der Stack leer, und es erfolgt ein Aufruf von \code{notify()} \textit{nach} 
 \begin{itemize}
     \item wenn sich mehrere Threads mit unterschiedlichen Wartebedingungen in der Warteschlange befinden.
     \item[] \textbf{ODER}
-    \item wenn es mehrere Threads gibt, die ihre \textit{while-wait-Schleife} verlassen können\footnote{
-    lies: die davon profitieren, aus der Warteschlange herausgelassen zu werden.
+    \item durch die Änderung des Objektzustandes können mehrere Threads ihre \textit{while-wait-Schleife} verlassen \footnote{
+     sie profitieren damit, aus der Warteschlange herausgelassen zu werden.
     }
 \end{itemize}\\
 
@@ -37,7 +37,7 @@ Nur einer profitiert nun davon, den Wert wieder herunterzählen zu können, weil
 Es befinden sich aber niemals Threads in der Warteschlange, die auf ein Hochzählen \textit{und} herunterzählen warten.\\
 
 \noindent
-\code{ital. Ampel}: Mehrere Threads, die davon profitieren, aus der Warteschlange herausgelassen zu werden (nebeneinander fahrende Autos), eine Wartebedingungen (Ampel: rot)\\
+\code{ital. Ampel}: Mehrere Threads, die davon profitieren, aus der Warteschlange herausgelassen zu werden (``nebeneinander fahrende Autos``, wenn die Ampel grün zeigt, können diese ihre \textit{while-wait-Schleife} verlassen), eine Wartebedingungen (Ampel: rot)\\
 
 \noindent
 \code{EventSet}: Mehrere Threads, die davon profitieren, aus der Warteschlange herausgelassen zu werden (\textit{waitAND}, \textit{waitOR}), mehrere Wartebedingungen (alle \code{true}, mind. einer \code{true}).

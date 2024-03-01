@@ -247,7 +247,7 @@ Undo-Redo orientiert sich an dem \textbf{Command}-Pattern\footnote{
 Der \textit{UndoRedo}-Manager speichert in seiner Liste Objekte, die die Schnittstelle \textit{Action} implementieren.\\
 Jede \textit{Action} verfügt über die Methode \code{undo()} / \code{redo()}, deren Implementierungsdetails unbekannt sind.\\
 Die logische Position der Liste ist i.d.R. ``zwischen`` zwei Actions, die konkrete Position die jeweils aktuelle Action.\\
-Wird ein \code{redo()} aufgerufen, und befindet sich rechts der logischen Listenposition eine Element, wird auf diesem Element die Aktion \code{redo()} ausgeführt.
+Wird ein \code{redo()} aufgerufen, und befindet sich rechts der logischen Listenposition ein Element, wird auf diesem Element die Aktion \code{redo()} ausgeführt.
 Der Listenzeiger wandert dann um eins nach rechts.\\
 Wird \code{undo()} aufgerufen, und es befindet sich links der logischen Position ein Element, wird auf diesem Element \code{undo()} aufgerufen, und der Listenzeiger wandert um eins nach links, falls möglich (s. Abbildung \ref{fig:undoredo}).
 
