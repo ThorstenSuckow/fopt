@@ -30,8 +30,7 @@ Mit Hilfe der Schnittstellen \code{Executor} und \code{ExecutorService} kann man
 Eine wichtige Klasse, die die \code{Executor}-Schnittstelle implementiert, ist die Klasse \code{ThreadPoolExecutor}\footnote{
 ``Class ThreadPoolExecutor``: \url{https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/ThreadPoolExecutor.html} - abgerufen 26.02.2024
 }:
-Mit ihr kann man es sich sparen, selbst Threads erzeugen und starten zu müssen (s. a. \cite[146]{Oec22}).
-Die Vorteile sind, dass man nicht selber Threads erzeugen muss, sondern diese vom Thread-Pool verwaltet werden.
+Die Vorteile der Klasse sind, dass man nicht selber Threads erzeugen muss, sondern diese vom Thread-Pool verwaltet werden (s. a. \cite[146]{Oec22}).
 Eine einfache Implementierung wird in \cite[144]{Oec22} gezeigt, bei der eine Art Message Queue mit Feldern von \code{Runnable}
 Objekten arbeitet - diese Objekte werden einzeln entnommen und gestartet; ist ein Thread zu Ende, wird der Platz in der
 Message Queue für den nächsten Auftrag freigemacht.
@@ -75,7 +74,7 @@ Man kann sich zu eine \code{Lock} beliebig viele \code{Condition}s geben lassen,
 
 \subsection*{Atomic-Klassen}
 Die \code{Atomic}-Klassen bieten eine Objekthülle für primitive Datentypen (\code{Boolean}, \code{Integer}, \code{Long}\ldots) und ermöglichen einen Thread-sicheren parallelen lesenden/schreibenden Zugriff auf die gekapselten Werte.
-Neben Methoden zum Ändern von Daten über \textit{get}/\textit{set} besitzen die Klassen Methoden zum Vergleich und Ändern auf einen Schlag, d.h, in \textit{atomarer (unteilbarer)} Weise (s. \code{compareAndSet(expect:int, update: int)} in \cite[157]{Oec22}).\\
+Neben Methoden zum Ändern von Daten über \textit{get}/\textit{set} besitzen die Klassen auch Methoden zum ``vergleichen und ändern auf einen Schlag``, d.h, in \textit{atomarer (unteilbarer)} Weise (s. \code{compareAndSet(expect:int, update: int)} in \cite[157]{Oec22}).\\
 
 \noindent
 Mit den \code{Atomic}-Klassen läßt sich auch eine \code{lock-free} Synchronisation realisieren, die zwar eine Form des aktiven Wartens darstellen, unter Umständen aber effizienter sein können, als eine durch eine Sperre erforderliche Umschaltung auf einen anderen Thread.\\
@@ -183,10 +182,8 @@ Das folgende Beispiel zeigt eine \textit{SynchStack}-Implementierung mit \code{L
             try {
                 lock.lock(); // lock()!
 
-                if (stack.isEmpty()) {
-                    try {
-                        isEmpty.await();
-                    } catch (InterruptedException ignored) {}
+                while (stack.isEmpty()) {
+                    isEmpty.awaitUninterruptibly();
                 }
                 return stack.removeLast();
             } finally {

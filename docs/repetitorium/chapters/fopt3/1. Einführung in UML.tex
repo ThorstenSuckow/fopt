@@ -232,9 +232,9 @@ Assoziationen können auch \textbf{reflexiv} sein:
 \end{tcolorbox}\\
 
 \noindent
-Wenn eine Klasse \code{X} kein Attribut vom Typ \code{Y} benutzt, kann die Klasse \code{Y} dennoch von \code{X} verwendet werden, bspw. bei Methoden als Übergabeparameter, als Rückgabetyp oder als lokale Variable.\\
-
-\noindent
+Wenn eine Klasse \code{X} kein Objekt-Attribut vom Typ \code{Y} deklariert, kann der Typ \code{Y} dennoch von \code{X} \textit{benutzt} werden: Als Parameter und/oder Rückgabetyp von Methoden, oder als lokale Variable\footnote{
+s. hierzu auch ``4.12.3. Kinds of Variables``: \url{https://docs.oracle.com/javase/specs/jls/se21/html/jls-4.html#jls-4.12.3} - abgerufen 02.03.2024
+}.\\
 Eine \textbf{Benutzt-Beziehung} wird durch eine gestrichelte Linie dargestellt.\footnote{
 Das Skript zu FOPT 3 geht bei der Benutzt-Beziehung nicht sehr in die Tiefe, auch wird i.d.R. eine gestrichelte Pfeilspitze anstatt einer geschlossenen für die Benutzt-Beziehungen verwendet. Siehe hierzu auch die UML-Spezifikation unter \url{https://www.omg.org/spec/UML/2.5.1/PDF} - abgerufen 28.01.2024
 }
@@ -253,7 +253,9 @@ Das Skript zu FOPT 3 geht bei der Benutzt-Beziehung nicht sehr in die Tiefe, auc
 
 \textbf{Implementierungsbeziehungen} werden durch einen offenen Pfeil und eine gestrichelte Linie Richtung der implementierten Schnittstelle dargestellt (s. Abbildung~\ref{fig:inheritance} b).\\
 
-In Java können Schnittstellen gleichzeitig von mehreren Schnittstellen erben, was in (s. Abbildung~\ref{fig:inheritance} c) dargestellt ist, und im folgenden Listing demonstriert wird.\\
+In Java kann ein Interface mehrere Superinterfaces implementieren\footnote{
+    ``8.1.5. Superinterfaces``: \url{https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.1.5} - abgerufen 02.03.2024
+}, was in (s. Abbildung~\ref{fig:inheritance} c) dargestellt ist:\\
 
 \begin{minted}[mathescape,
     numbersep=5pt,

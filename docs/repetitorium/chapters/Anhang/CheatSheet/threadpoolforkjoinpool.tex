@@ -12,7 +12,6 @@
 
 \begin{itemize}
     \item realisiert einen Thread-Pool, der speziell für baumartige Berechnungen gedacht ist
-    \item ermöglicht baumartige Berechnungen.
     \item alle Threads des ForkJoinPools sind Hintergrund-Threads.
     \item ein Threads eines ForkJoinPools kann weitere Aufträge bearbeiten, sobald er mit \code{join} auf das Ende eines anderen Auftrages wartet: Ein Thread des Pools, der einen neuen Auftrag erteilt und auf dessen Ende wartet, ist während des Wartens nicht für andere Aufträge blockiert.
     \item[] $\rightarrow$ Threads in einem ForkJoinPool können Aufträge in den Pool werfen, die sie zur Berechnung benötigen, und während des Wartens andere Aufträge ausführen

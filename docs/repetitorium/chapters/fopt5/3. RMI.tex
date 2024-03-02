@@ -155,7 +155,7 @@ Auch bei RMI-Implementierungen bei denen mehrere Clients gleichzeitig auf eine O
 
 \noindent
 Sobald über \staticcode{java.rmi.Naming.rebind()} bzw. \staticcode{bind()}\footnote{
-textit{bind()} wirft eine \textit{AlreadyBoundException}, falls in der RMI-Registry bereits ein Eintrag mit dem Namen existiert, \textit{rebind()} hingegen ersetzt einen ggf. breits existierenden Eintrag mit gleichem Namen.
+\textit{bind()} wirft eine \textit{AlreadyBoundException}, falls in der RMI-Registry bereits ein Eintrag mit dem Namen existiert, \textit{rebind()} hingegen ersetzt einen ggf. breits existierenden Eintrag mit gleichem Namen.
 } der Server gestartet wurde, wird ein Thread gestartet, der den Skeleton repräsentiert, und auf eingehende TCP-Verbindungen wartet.\\
 
 \noindent
@@ -413,7 +413,7 @@ Diese Kopie wird dann auf dem Server in der entsprechenden Methode aufgerufen:
 
 \begin{itemize}
     \item wird das Objekt auf dem Server geändert, ändert sich nur \textit{dieses} Objekt auf dem Server, nicht aber das auf dem Client.
-    \item[] $\rightarrow$ gibt man dann aber das Objekt als \textit{als Rückgabewert} an, sind die geänderten Daten in der Kopie des Objektes vorhanden (wegen Serialisierung und Wertübergabe) - Änderungen daran sind dann aber nicht auf dem Server reflektiert
+    \item[] $\rightarrow$ gibt man dann aber das Objekt als \textit{Rückgabewert} an, sind die geänderten Daten in der Kopie des Objektes vorhanden (wegen Serialisierung und Wertübergabe) - Änderungen daran sind dann aber nicht auf dem Server reflektiert
 \end{itemize}
 
 Datenstrukturen werden unter Verwendung von \code{java.io.Serializable} serialisiert {bzw.} deserialisiert; Objekte, die als ``Foge von Bytes`` serialisiert werden sollen, müssen dabei \code{java.io.Serializable} implementieren  - das gilt auch für die Objekte, die mit dem zu serialisierenden Objekt assoziiert sind (vgl.~\cite[332]{Oec22}).\\
@@ -556,7 +556,7 @@ Ist nun für die RMI-Kommunikation über \begin{center}\code{sun.rmi.transport.t
 }\\
 
 \noindent
-Auf CLient-Seite sollte dies entsprechend berücksichtigt werden.\\
+Auf Client-Seite sollte dies entsprechend berücksichtigt werden.\\
 Per default ist dieser Timeout-Wert nicht gesetzt (vgl. \cite[359]{Oec22}).
 
 \subsection{Verteilte MVP-Anwendung}

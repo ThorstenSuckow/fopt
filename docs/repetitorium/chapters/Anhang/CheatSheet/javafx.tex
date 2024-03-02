@@ -22,4 +22,9 @@
     (bspw. Pane) hinzufügen
     \item \code{VBox.setVgrow(container, Priority.ALWAYS)} sorgt dafür, dass ein Container an die vertikale Größe des Elterncontainers angepaßt wird
     \item Rückgabewert von \code{CheckBox.}\code{selectedProperty()} ist vom Typ \code{Property<Boolean>}, die formalen Parameter für einen \textit{ChangeListener} lauten dann folglich \code{ObservableValue<? extends Boolean> obs}, \code{boolean oldValue}, \code{boolean newValue}
+    \item um Threads, die mit der UI interagieren, mit Beendigung des Hauptprogramms zu beenden, sollte man sie als Daemon-Thread deklarieren\footnote{
+        ``Ein Java-Programm ist zu Ende, wenn alle Threads zu Ende sind - Hintergrund-Threads werden dabei nicht beachtet, nur Vordergrund-Threads (vgl.~\cite[89]{Oec22}).
+    } (Aufruf der Methode \code{setDaemon(true)} auf ein Objekt der Klasse \code{Thread}, \textit{bevor} der Thread gestartet wurde).\\
 \end{itemize}
+
+

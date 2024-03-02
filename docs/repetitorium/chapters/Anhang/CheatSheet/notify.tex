@@ -30,11 +30,17 @@ Beispiele:\\
 \noindent
 \code{BoundedCounter}: Ein Thread, der davon profitiert, aus der Warteschlange herausgelassen zu werden; mehrere Wartebedingungen.\\
 Ähnlich dem SynchStack, aber jetzt gibt es mehrere Wartebedingungen.\\
-Wird \code{up()} aufgerufen, kann es sein, dass die Threads, die \code{down()} aufrufen wollen, in der Warteschlange sind.
-Haben $n$ Aufrufe \code{value==min} ergeben, und wurde zwischenzeitlich die Warteschlange nicht verändert, befinden sich auch $n$ Threads in der Warteschlange.\\
-Nur einer profitiert nun davon, den Wert wieder herunterzählen zu können, weil \code{value} nach einem \code{up()} \code{min+1} ist.
-\textbf{Oder} es existiert andersherum ein Thread, der vom Hochzählen profitiert.\\
-Es befinden sich aber niemals Threads in der Warteschlange, die auf ein Hochzählen \textit{und} herunterzählen warten.\\
+
+\noindent
+Sei $min = 1$, $max = 2$.\\
+Es wird $5$ mal \code{up()} aufgerufen.\\
+Der Wert des Objektes (\code{value}) wird von $1$ auf $2$ gesetzt, 4 \code{up}-Threads landen in der Warteschlange.\\
+Danach wird einmal \code{down()} aufgerufen.\\
+Würde \code{notify()} verwendet, wird nun \textit{ein} \code{up}-Thread $t_u$ geweckt.\\
+Bevor der Thread seine Wartebedingung überprüfen kann, finden noch 2 weitere \code{down()} Aufrufe statt, die beide in der Warteschlange landen.\\
+Nun erhält $t_u$ die Sperre und kann seine Wartebedingung überprüfen und erhöht $value$ wieder auf $2$.\\
+Ruft er nun \code{notify()} auf und es wird erneut ein Thread aus der \code{up}-Warteschlange geweckt, kommt es zu einer Verklemmung, da dieser Thread direkt wieder in die Warteschlange kommt.\\
+Am Ende befinden sich somit $3$ \code{up}-Threads und $2$ \code{down}-Threads in der Warteschlange.
 
 \noindent
 \code{ital. Ampel}: Mehrere Threads, die davon profitieren, aus der Warteschlange herausgelassen zu werden (``nebeneinander fahrende Autos``, wenn die Ampel grün zeigt, können diese ihre \textit{while-wait-Schleife} verlassen), eine Wartebedingungen (Ampel: rot)\\
