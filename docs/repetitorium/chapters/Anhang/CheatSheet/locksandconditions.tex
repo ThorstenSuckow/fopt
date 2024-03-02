@@ -6,6 +6,10 @@
 
 \begin{itemize}
     \item Teil der concurrent-Klassenbibliothek in Java.
+    \item \code{tryLock()} ermöglicht es, eine Sperre zu setzen, falls das Objekt noch nicht gesperrt wurde (Rückgabewert \code{true}, ansonsten \code{false}.
+    Auch möglich unter Angabe eines timeouts.\footnote{
+s. ``tryLock``: \url{https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/locks/Lock.html#tryLock--} - abgerufen 02.03.2024
+    }).
     \item ermöglicht das Setzen \code{lock()} / Entfernen \code{unlock()} von Sperren im Code auch über Methoden hinweg\footnote{
         grob formuliert wirkt sich \textit{synchronized} auf eine Methode aus
     }, aber nur \textit{von ein und demselben} Thread\footnote{Lehrbuch: das kann als Vor-/Nachteil gesehen werden - \cite[149]{Oec22}}.
