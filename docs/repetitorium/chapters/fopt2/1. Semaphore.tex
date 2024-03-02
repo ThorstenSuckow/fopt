@@ -154,7 +154,7 @@ zu
 \end{minted}\\
 
 \noindent
-Durch die parametrisierte Wertebedingung ist es nötig, wartende Threads mittels \code{notifyAll()} aus der Warteschlange zu holen: Erstens kann es mehrere Threads geben, bei denen insgesamt $\sum_{i=1}^{n} \Delta_i\ \geq\ 0$ sein kann (es dürfen dann mehrere Threads parallel in den kritischen Bereich); zweitens wird die Wartebedingung in Abhängigkeit von \code{x} parametrisiert - sollte nur \code{notify} verwendet werden kann es passieren, dass ein Thread direkt danach wieder in die Warteschlange kommt - und infolgedessen kein anderer Thread mehr in den kritischen Bereich, und kein Aufruf von \code{v()} mehr stattfindet.\\
+Durch die parametrisierte Wartebedingung ist es nötig, wartende Threads mittels \code{notifyAll()} aus der Warteschlange zu holen: Erstens kann es mehrere Threads geben, bei denen insgesamt $\sum_{i=1}^{n} \Delta_i\ \geq\ 0$ sein kann (es dürfen dann mehrere Threads parallel in den kritischen Bereich); zweitens wird die Wartebedingung in Abhängigkeit von \code{x} parametrisiert - sollte nur \code{notify} verwendet werden kann es passieren, dass ein Thread direkt danach wieder in die Warteschlange kommt - und infolgedessen kein anderer Thread mehr in den kritischen Bereich, und kein Aufruf von \code{v()} mehr stattfindet.\\
 
 \noindent
 Es sollte selbstverständlich sein, dass in einer Implementierung der Wert des Semaphors \textbf{auf einen Schlag} (durch Subtraktion / Addition) verändert wird, ansonsten kann es zu einer \textbf{Verklemmungssituation} kommen, wenn der Wert Stückweise inkrementiert/dekrementiert wird (vgl.~\cite[109]{Oec22}).
