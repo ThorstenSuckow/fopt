@@ -57,15 +57,19 @@ s. \cite[Abschnitt 2.6.1]{Oec22}
 }.\\
 \noindent
 Es gibt für die Threads unterschiedliche Wartebedingungen.\\
-Aus diesem Grund muss sowohl bei \code{up()} als auch \code{down()} die Methode \code{notifyAll()} benutzt werden, damit alle wartenden Threads ihre Wartebedingungen überprüfen können (s.a. Abschnitt~\ref{subsec:notifyAll}).
-Ansonsten kann es sein, dass ein Thread, der in \code{up()} durch ein  \code{notify()} aufgeweckt wird, ein Thread ist, der den Zähler dekrementieren möchte.\\
-Da der Zähler aber bereits wegen des durch $value == min$ festgelegten Zustandes kein weiteres Herunterzählen ermöglicht, wird der Verbraucher-Thread wieder in die Warteschlange des Objektes eingereiht.\\
+Aus diesem Grund muss sowohl bei \code{up()} als auch \code{down()} die Methode \code{notifyAll()} benutzt werden, damit alle wartenden Threads ihre Wartebedingungen überprüfen können (s.a. Abschnitt~\ref{subsec:notifyAll}).\\
 
 \noindent
-Im dem (fehlerhaften) Fall weckt ein \textit{Verbraucher-Thread} also einen anderen \textit{Verbraucher-Thread}, obwohl ein weiteres Konsumieren des passiven Objektes nicht mehr möglich ist und deshalb ein \textit{Erzeuger-Thread} hätte geweckt werden müssen.\\
+Sei $min = 1$, $max = 2$.\\
+Es wird $5$ mal \code{up()} aufgerufen.\\
+Der Wert des Objektes (\code{value}) wird von $1$ auf $2$ gesetzt, 4 \code{up}-Threads landen in der Warteschlange.\\
+Danach wird einmal \code{down()} aufgerufen.\\
+Würde \code{notify()} verwendet, wird nun \textit{ein} \code{up}-Thread $t_u$ geweckt.\\
+Bevor der Thread seine Wartebedingung überprüfen kann, finden noch 2 weitere \code{down()} Aufrufe statt, die beide in der Warteschlange landen.\\
+Nun erhält $t_u$ die Sperre und kann seine Wartebedingung überprüfen und erhöht $value$ wieder auf $2$.\\
+Ruft er nun \code{notify()} auf und es wird erneut ein Thread aus der \code{up}-Warteschlange geweckt, kommt es zu einer Verklemmung, da dieser Thread direkt wieder in die Warteschlange kommt.\\
+Am Ende befinden sich somit $3$ \code{up}-Threads und $2$ \code{down}-Threads in der Warteschlange.
 
-\noindent
-Kurzum: Mittels \code{notifyAll()} werden alle Threads geweckt, sodass ggf. ein \textit{Erzeuger-Thread} für ein Inkrementieren des Wertes sorgen kann.
 
 \subsection*{Was passiert bei notifyAll()}
 
